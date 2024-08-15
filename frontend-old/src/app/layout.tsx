@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Frigorifico Central",
-  description: "Preço baixo e carne de qualidade!",
+  description: "Preço baixo e carne de qualidade",
 };
 
 export default function RootLayout({
