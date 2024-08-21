@@ -1,41 +1,40 @@
-.headerContainer{
+.headerContainer {
     height: 5rem;
 }
 
-.headerContent{
-    max-width: 1280px;
+.headerContent {
     height: 6rem;
     margin: 0 auto;
     padding: 0 16px;
-    
+    border-bottom: 0.8px solid var(--cinza-800);
+    background-color: var(--roxo-1000);
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    nav{
-
+    nav {
         display: flex;
         align-items: center;
         gap: 14px;
 
-        a{
+        a {
             color: var(--white);
             text-decoration: none;
 
-            &:hover{
+            &:hover {
                 color: var(--red-900);
             }
         }
 
-        button{
+        button {
             border: 0;
             background: transparent;
             margin-left: 16px;
             transition: transform 0.8s;
 
-            &:hover{
-               transform: scale(1.2); 
+            &:hover {
+                transform: scale(1.2);
             }
         }
     }

@@ -17,9 +17,17 @@
     --gray-100: #8a8a8a;
     --green-900: #3fffa3;
     --red-900: #cf2123;
-  
+
+    //code theme
+    --lilas-900: #0d0f16;
+    --roxo-900: #161b21;
+    --roxo-700: #21262c;
+    --roxo-1000: #000000;
+    --cinza-800: #2d2d2d;
+ 
   }
   
+
   button{
     cursor: pointer;
   }
@@ -30,11 +38,19 @@
   }
   
   body{
-    background: var(--dark-700);
+    background: var(--lilas-900);
   }
   
   body, input, textarea, select, button{
     font: 400, 1rem sans-serif; // 1 rem = 16px
+  }
+
+  .separator {
+    max-width: 100%;
+    border: 0;
+    height: 1px;
+    background-color: var(--white);
+    margin: 16px 0;
   }
   
   //medidas

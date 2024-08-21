@@ -1,0 +1,210 @@
+.tableWrapper {
+    position: relative;
+    background-color: var(--lilas-900);
+    padding: 1rem;
+}
+
+.header {
+    margin-bottom: 1rem;
+    background-color: var(--lilas-900);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        color: #c24c4c;
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .headerControls {
+        display: flex;
+        align-items: center;
+        gap: 1rem; // Espaço entre o campo de pesquisa e o seletor
+    }
+
+    .searchContainer {
+        position: relative;
+
+        .filterInput {
+            padding: 0.5rem 2rem 0.5rem 0.5rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--cinza-800);
+            border-radius: 4px;
+            background-color: var(--lilas-800);
+            color: var(--white);
+            outline: none;
+            width: 200px; // Ajuste a largura conforme necessário
+
+            &:focus {
+                border-color: var(--white);
+            }
+        }
+
+        .searchIcon {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--cinza-800);
+            pointer-events: none;
+            font-size: 0.75rem; // Tamanho menor para o ícone de busca
+        }
+    }
+
+    .resultsPerPage {
+        display: flex;
+        align-items: center;
+
+        label {
+            margin-right: 0.5rem;
+            color: var(--white); // Cor do texto
+        }
+
+        select {
+            background-color: var(--lilas-800); // Cor de fundo do seletor
+            color: var(--white); // Cor do texto do seletor
+            border: 1px solid var(--cinza-800); // Borda do seletor
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-size: 0.875rem; // Tamanho da fonte
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            
+            // Remove a seta padrão do seletor para estilizar com mais controle
+            &::-ms-expand {
+                display: none;
+            }
+
+            // Estilo para a opção selecionada
+            option {
+                background-color: var(--roxo-900); // Cor de fundo das opções
+                color: var(--white); // Cor do texto das opções
+            }
+
+            // Foco no seletor
+            &:focus {
+                border-color: var(--white); // Cor da borda ao focar no seletor
+                background-color: var(--lilas-700); // Cor de fundo ao focar
+            }
+        }
+    }
+}
+
+.horizontalBorder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--cinza-700);
+    z-index: 1;
+}
+
+.tableContainer {
+    overflow-x: auto;
+    margin-top: 2px;
+}
+
+.clientsTable {
+    width: 100%;
+    border-radius: 8px;
+    background-color: var(--lilas-900);
+    position: relative;
+    border-collapse: collapse;
+
+    th, td {
+        border: 0.8px solid var(--cinza-800);
+        padding: 8px;
+        text-align: left;
+        font-size: 0.875rem;
+        min-width: 120px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    th {
+        background-color: var(--lilas-900);
+        color: var(--white);
+        font-weight: bold;
+        &:nth-child(1) { width: 150px; }
+        &:nth-child(2) { width: 200px; }
+        &:nth-child(3) { width: 120px; }
+        &:nth-child(4) { width: 200px; }
+        &:nth-child(5) { width: 100px; }
+        &:nth-child(6) { width: 80px; }
+    }
+
+    tr {
+        color: var(--gray-100);
+    }
+
+    tr:nth-child(even) {
+        background-color: var(--lilas-900);
+    }
+
+    tr:hover {
+        background-color: var(--lilas-800);
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1rem;
+    margin-right: 1px;
+
+    button {
+        background-color: var(--lilas-800);
+        color: var(--white);
+        border: 1px solid var(--cinza-800);
+        border-radius: 4px;
+        padding: 0.5rem;
+        cursor: pointer;
+        font-size: 0.75rem; // Tamanho menor para o texto do botão
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:disabled {
+            background-color: var(--cinza-600);
+            cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled) {
+            background-color: var(--lilas-700);
+        }
+
+        svg {
+            width: 30px; // Ajuste o tamanho dos ícones de navegação
+            height: 15px; // Ajuste o tamanho dos ícones de navegação
+        }
+    }
+
+    .pageNumber {
+        background-color: var(--lilas-800);
+        color: var(--white);
+        border: 1px solid var(--cinza-800);
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: background-color 0.3s ease;
+        margin: 0 0.25rem;
+
+        &.active {
+            background-color: var(--lilas-700);
+            border-color: var(--lilas-700);
+            font-weight: bold;
+        }
+
+        &:hover {
+            background-color: var(--lilas-700);
+        }
+    }
+}

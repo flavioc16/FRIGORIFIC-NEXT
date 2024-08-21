@@ -39,6 +39,8 @@ enum Role {
 model Cliente {
   id         String    @id @default(uuid())
   nome       String
+  endereco   String @default("Não informado")
+  referencia String @default("Não informado")
   email      String
   telefone   String
   created_at DateTime  @default(now())
