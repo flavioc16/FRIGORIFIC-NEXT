@@ -1,20 +1,22 @@
 .menu {
-  width: 100%;
+  width: 100%; /* Ocupa 100% do espaço disponível, ajustável */
+  max-width: 270px; /* Largura máxima do menu */
+  min-width: 200px; /* Largura mínima do menu, ajustável conforme necessário */
   background-color: var(--white);
-  max-width: 270px;
-  margin-top: 50px;
+  margin-top: 16px;
   position: relative;
- 
-  border-right: 0.8px solid var(--cinza-800);
+  border-right: var(--border-width) solid var(--cinza-800); /* Usando a variável */
+  overflow: hidden; /* Garante que a pseudo-borda não afete o layout */
+  
 
   /* Extensão da borda para cima */
   &::before {
     content: '';
     position: absolute;
-    top: -35px; /* Ajuste o valor conforme necessário para estender mais para cima */
-    right: 0;
-    width: 0.3px;
-    height: 100px; /* Altura da extensão */
+    top: -1px; /* Ajuste o valor conforme necessário para estender mais para cima */
+    right: -var(--border-width); /* Ajuste o valor para alinhar com a borda */
+    width: var(--border-width); /* Largura da pseudo-borda */
+    height: calc(100% + 1px); /* Altura da extensão para cobrir a borda e o espaço adicional */
     background-color: var(--cinza-800);
   }
 
@@ -47,13 +49,3 @@
     }
   }
 }
-
-/* Separador Horizontal */
-.separatorHorizontal {
-  width: 100%;
-  height: 1px;
-  background-color: var(--white);
-  margin: 0;
-}
-
-
