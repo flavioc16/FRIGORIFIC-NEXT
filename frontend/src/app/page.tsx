@@ -12,13 +12,17 @@ import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { BeatLoader } from 'react-spinners';
+
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await api.post('/session', {
@@ -28,83 +32,83 @@ export default function Login() {
 
       const { token, role } = response.data;
 
-      // Configura o tempo de expiração para 1 mês a partir da data atual
       const expires = new Date();
       expires.setMonth(expires.getMonth() + 1);
 
-      // Verifica se está em ambiente de produção
       const isProduction = process.env.NODE_ENV === 'production';
-
-      // Define as opções de HttpOnly e Secure com base no ambiente
       const cookieOptions = [
         `expires=${expires.toUTCString()}`,
         'path=/',
-        isProduction ? 'Secure' : '', // Apenas em produção
-        isProduction ? 'HttpOnly' : '', // Apenas em produção
+        isProduction ? 'Secure' : '',
+        isProduction ? 'HttpOnly' : '',
       ]
         .filter(Boolean)
         .join('; ');
 
-      // Armazena o token nos cookies com as opções configuradas
       document.cookie = `token=${token}; ${cookieOptions}`;
 
-      // Redireciona com base na função do usuário
       if (role === 'ADMIN') {
         router.push('/dashboard');
       } else if (role === 'USER') {
         toast.info('Realize o login no nosso APP.');
-        //router.push('/user/dashboard');
       } else {
         router.push('/');
       }
     } catch (error) {
+      setIsLoading(false);
       console.error('Erro ao realizar login:', error);
       toast.error('Erro ao realizar login. Verifique suas credenciais.');
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <>
-      <div className={styles.containerCenter}>
-        <Image 
+      <div
+        className={`${styles.containerCenter} ${
+          isLoading ? styles.loading : ''
+        }`} // Adiciona a classe loading durante o estado de carregamento
+      >
+        <Image
           src={LOGOVERTICAL}
-          alt='Logo pizzaria'
+          alt="Logo pizzaria"
           width={443}
           height={169}
+          className={styles.logo}
         />
-    
+
         <section className={styles.login}>
           <form onSubmit={handleLogin}>
-            <input 
+            <input
               type="text"
               autoFocus
               required
-              name='username'
-              placeholder='Usuário'
+              name="username"
+              placeholder="Usuário"
               className={styles.input}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
 
-            <input 
+            <input
               type="password"
               required
-              name='password'
-              placeholder='Senha'
+              name="password"
+              placeholder="Senha"
               className={styles.input}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <button type="submit">
-              Entrar
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? <BeatLoader color="#fff" size={6} /> : 'Entrar'}
             </button>
           </form>
 
-          <Link href='/signup' className={styles.text}>
+          <Link href="/signup" className={styles.text}>
             Não sabe a senha? fale conosco
           </Link>
-
         </section>
       </div>
 

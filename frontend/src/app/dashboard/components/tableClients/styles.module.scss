@@ -164,16 +164,18 @@
         color: var(--white);
         font-weight: bold;
 
-        &:nth-child(1) { width: 150px; }
+        &:nth-child(1) { width: 400px; }
         &:nth-child(2) { width: 200px; }
-        &:nth-child(3) { width: 120px; }
+        &:nth-child(3) { width: 100px; }
         &:nth-child(4) { width: 200px; }
-        &:nth-child(5) { width: 100px; }
-        &:nth-child(6) { width: 80px; }
+        &:nth-child(5) { width: 10px; }
+        
     }
 
     tr {
         color: var(--gray-100);
+
+        
     }
 
     tr:nth-child(even) {
@@ -181,8 +183,33 @@
     }
 
     tr:hover {
-        background-color: var(--lilas-800);
+        background-color: var(--roxo-700);
     }
+
+    .actionIcons {
+       
+        align-items: center;
+        justify-content: flex-end; /* Alinha os ícones à direita */
+        gap: 8px; /* Ajusta o espaço entre os ícones */
+    }
+
+    .iconPlus, .iconInfo {
+        font-size: 0.75rem; /* Ajuste o tamanho dos ícones */
+        color: var(--cinza-700); /* Ajuste a cor dos ícones conforme necessário */
+        transition: color 0.3s ease, transform 0.3s ease; /* Adiciona transições suaves */
+    }
+
+    .iconPlus:hover, .iconInfo:hover {
+        color: var(--white); /* Altere a cor ao passar o mouse */
+        transform: scale(1.1); /* Aumenta o ícone ligeiramente ao passar o mouse */
+        
+    }
+
+    
+}
+
+.ppage{
+    margin-left: 9px;
 }
 
 .noRecords {

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react'; // Importa o ícone X
+import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react'; // Adicionando ícones Plus e Info
 import styles from './styles.module.scss';
 
-// Definição da interface Client
 export interface Client {
     id: string;
     nome: string;
@@ -15,37 +14,40 @@ export interface Client {
     userId: string;
 }
 
-// Define a tipagem das props do componente
 interface TableClientsProps {
     clients: Client[];
-    loading: boolean; // Adicionando a propriedade loading
+    loading: boolean;
 }
 
 export function TableClients({ clients, loading }: TableClientsProps) {
-    const [searchTerm, setSearchTerm] = useState(''); // Termo de busca
-    const [currentPage, setCurrentPage] = useState(1); // Página atual
-    const [clientsPerPage, setClientsPerPage] = useState(10); // Clientes por página
-    const [isFocusing, setIsFocusing] = useState(true); // Controle de foco automático
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [clientsPerPage, setClientsPerPage] = useState(10);
+    const [isFocusing, setIsFocusing] = useState(true);
 
-    const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // ID do intervalo de foco
-    const inputRef = useRef<HTMLInputElement>(null); // Referência para o input de busca
+    const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (isFocusing) resetFocusInterval(); // Inicia o intervalo de foco automático
+        // Foco imediato ao carregar a página
+        inputRef.current?.focus();
 
-        const handleMouseMove = () => resetFocusInterval(); // Reinicia o intervalo ao mover o mouse
+        // Configuração do intervalo de foco a cada 10 segundos
+        if (isFocusing) resetFocusInterval();
+
+        const handleMouseMove = () => resetFocusInterval();
         window.addEventListener('mousemove', handleMouseMove);
 
         return () => {
-            if (intervalIdRef.current) clearInterval(intervalIdRef.current); // Limpa o intervalo ao desmontar
-            window.removeEventListener('mousemove', handleMouseMove); // Remove o listener do mouse
+            if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+            window.removeEventListener('mousemove', handleMouseMove);
         };
     }, [isFocusing]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                setSearchTerm(''); // Limpa o campo de busca ao pressionar "Esc"
+                setSearchTerm('');
             }
         };
 
@@ -57,8 +59,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     }, []);
 
     const resetFocusInterval = () => {
-        if (intervalIdRef.current) clearInterval(intervalIdRef.current); // Limpa o intervalo existente
-        intervalIdRef.current = setInterval(() => inputRef.current?.focus(), 10000); // Foco automático a cada 10 segundos
+        if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+        intervalIdRef.current = setInterval(() => inputRef.current?.focus(), 3000);
     };
 
     const filteredClients = clients.filter(client =>
@@ -72,8 +74,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
     const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setClientsPerPage(Number(event.target.value));
-        setCurrentPage(1); // Reinicia para a primeira página ao mudar o número de resultados
-        setIsFocusing(false); // Desativa o foco automático
+        setCurrentPage(1);
+        setIsFocusing(false);
     };
 
     const handleSelectFocus = (event: React.FocusEvent<HTMLSelectElement>) => 
@@ -81,9 +83,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     const handleSelectBlur = (event: React.FocusEvent<HTMLSelectElement>) => 
         event.target.classList.remove(styles.dropdownExpanded);
 
-    const handleSearchClear = () => setSearchTerm(''); // Função para limpar o campo de busca
+    const handleSearchClear = () => setSearchTerm('');
 
-    const hasRecords = filteredClients.length > 0; // Verifica se há registros
+    const hasRecords = filteredClients.length > 0;
 
     return (
         <div className={styles.tableWrapper}>
@@ -98,20 +100,20 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                         <h1>CLIENTES CADASTRADOS</h1>
                         <div className={styles.headerControls}>
                             <div className={styles.resultsPerPage}>
-                                <label htmlFor="resultsPerPage">Exibir:</label>
-                                <select
-                                    id="resultsPerPage"
-                                    value={clientsPerPage}
-                                    onChange={handleClientsPerPageChange}
-                                    onFocus={handleSelectFocus}
-                                    onBlur={handleSelectBlur}
-                                    className={styles.customSelect}
-                                >
-                                    <option value={10}>10</option>
-                                    <option value={50}>50</option>
-                                    <option value={100}>100</option>
-                                </select>
-                                <label htmlFor="resultsPerPages"> por página</label>
+                            <label htmlFor="resultsPerPage">Exibir:</label>
+                            <select
+                                id="resultsPerPage"
+                                value={clientsPerPage}
+                                onChange={handleClientsPerPageChange}
+                                onFocus={handleSelectFocus}
+                                onBlur={handleSelectBlur}
+                                className={styles.customSelect}
+                            >
+                                <option value={10}>10</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                            <label htmlFor="resultsPerPage" className={styles.ppage}> por página</label>
                             </div>
                             <div className={styles.searchContainer}>
                                 <input
@@ -125,7 +127,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                                 {searchTerm ? (
                                     <X
                                         className={styles.clearIcon}
-                                        onClick={handleSearchClear} // Limpa o campo de pesquisa ao clicar no ícone "X"
+                                        onClick={handleSearchClear}
                                     />
                                 ) : (
                                     <Search className={styles.searchIcon} />
@@ -139,7 +141,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                                 <tr>
                                     <th>Nome</th>
                                     <th>Referência</th>
-                                    <th>Email</th>
                                     <th>Telefone</th>
                                     <th>Endereço</th>
                                     <th>Ação</th>
@@ -151,10 +152,18 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                                         <tr key={client.id}>
                                             <td>{client.nome}</td>
                                             <td>{client.referencia || ""}</td>
-                                            <td>{client.email || ""}</td>
                                             <td>{client.telefone}</td>
                                             <td>{client.endereco || ""}</td>
-                                            <td>{/* Ações para o cliente, se houver */}</td>
+                                            <td className={styles.actionIcons}>
+                                                <Plus
+                                                    className={styles.iconPlus}
+                                                    onClick={() => console.log(`Adicionar ${client.nome}`)} // Ação do ícone Plus
+                                                />
+                                                <Info
+                                                    className={styles.iconInfo}
+                                                    onClick={() => console.log(`Informações sobre ${client.nome}`)} // Ação do ícone Info
+                                                />
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (

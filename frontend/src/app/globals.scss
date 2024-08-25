@@ -63,3 +63,27 @@ body, input, textarea, select, button {
     font-size: 93.75%;
   }
 }
+
+/* Personalizando a barra de rolagem */
+::-webkit-scrollbar {
+  width: 10px; /* Largura da barra de rolagem */
+  height: 10px; /* Altura da barra de rolagem horizontal */
+}
+
+/* Estilo da parte de trás da barra de rolagem */
+::-webkit-scrollbar-track {
+  background:var(--roxo-700); /* Cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Estilo da alça da barra de rolagem */
+::-webkit-scrollbar-thumb {
+  background: var( --cinza-800); /* Cor da alça (thumb) */
+  border-radius: 10px;
+}
+
+/* Estilo da alça ao passar o mouse por cima */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Cor da alça ao passar o mouse */
+}
+
