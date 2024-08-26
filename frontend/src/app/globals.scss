@@ -71,10 +71,10 @@ body, input, textarea, select, button {
 }
 
 /* Estilo da parte de trás da barra de rolagem */
-::-webkit-scrollbar-track {
-  background:var(--roxo-700); /* Cor do fundo da barra */
-  border-radius: 10px;
-}
+//::-webkit-scrollbar-track {
+//background:var(--roxo-700); /* Cor do fundo da barra */
+//border-radius: 10px;
+//}
 
 /* Estilo da alça da barra de rolagem */
 ::-webkit-scrollbar-thumb {

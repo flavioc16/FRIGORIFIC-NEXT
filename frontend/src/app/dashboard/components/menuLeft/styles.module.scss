@@ -1,30 +1,32 @@
 .menu {
-  width: 100%; /* Ocupa 100% do espaço disponível, ajustável */
+  width: 100%; /* Ocupa 100% do espaço disponível */
   max-width: 270px; /* Largura máxima do menu */
-  min-width: 200px; /* Largura mínima do menu, ajustável conforme necessário */
+  min-width: 200px; /* Largura mínima do menu */
   background-color: var(--white);
   margin-top: 16px;
   position: relative;
-  border-right: var(--border-width) solid var(--cinza-800); /* Usando a variável */
-  overflow: hidden; /* Garante que a pseudo-borda não afete o layout */
-  
+  border-right: var(--border-width) solid var(--cinza-800);
+  overflow: hidden;
 
   /* Extensão da borda para cima */
   &::before {
     content: '';
     position: absolute;
-    top: -1px; /* Ajuste o valor conforme necessário para estender mais para cima */
-    right: -var(--border-width); /* Ajuste o valor para alinhar com a borda */
-    width: var(--border-width); /* Largura da pseudo-borda */
-    height: calc(100% + 1px); /* Altura da extensão para cobrir a borda e o espaço adicional */
+    top: -1px;
+    right: -var(--border-width);
+    width: var(--border-width);
+    height: calc(100% + 1px);
     background-color: var(--cinza-800);
   }
 
   h1 {
     display: flex;
+    background-color: var(--lilas-900);
     color: var(--white);
     text-indent: 1rem;
     padding: 10px 15px;
+    font-size: 1.5rem; /* Ajuste o tamanho da fonte conforme necessário */
+    font-weight: bold; /* Estilo da fonte para o título */
   }
 
   nav {
@@ -35,16 +37,30 @@
     height: 100vh;
 
     a {
-      border-radius: 10px;
+      border-radius: 2px;
       display: flex;
       align-items: center;
       color: var(--white);
-      text-indent: 1rem;
       text-decoration: none;
       padding: 10px 15px;
+      gap: 10px; /* Espaço entre o texto e o ícone */
+      font-size: 1rem; /* Ajuste o tamanho da fonte conforme necessário */
+      font-weight: 500; /* Peso da fonte para os links */
+
+      /* Adicionar ícones com Lucide */
+      svg {
+        width: 20px;
+        height: 20px;
+        color: var(--gray-100); /* Cor padrão do ícone */
+        transition: color 0.3s ease;
+      }
 
       &:hover {
-        background-color: var(--dark-900);
+        background-color: var(--roxo-700);
+
+        svg {
+          color: var(--lilas-500); /* Mudar a cor do ícone no hover */
+        }
       }
     }
   }

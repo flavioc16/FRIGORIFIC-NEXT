@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { api } from '@/services/api';
 import styles from './page.module.scss';
 
@@ -13,11 +13,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { BeatLoader } from 'react-spinners';
+import { User, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   async function handleLogin(e: FormEvent) {
@@ -63,12 +66,25 @@ export default function Login() {
     }
   }
 
+  // Função para alternar a visualização da senha e posicionar o cursor no final do input
+  function toggleShowPassword() {
+    setShowPassword(!showPassword);
+
+    // Aguarda a renderização antes de focar no campo e mover o cursor para o final
+    setTimeout(() => {
+      if (passwordInputRef.current) {
+        passwordInputRef.current.focus();
+        passwordInputRef.current.setSelectionRange(password.length, password.length);
+      }
+    }, 0);
+  }
+
   return (
     <>
       <div
         className={`${styles.containerCenter} ${
           isLoading ? styles.loading : ''
-        }`} // Adiciona a classe loading durante o estado de carregamento
+        }`}
       >
         <Image
           src={LOGOVERTICAL}
@@ -79,27 +95,49 @@ export default function Login() {
         />
 
         <section className={styles.login}>
-          <form onSubmit={handleLogin}>
-            <input
-              type="text"
-              autoFocus
-              required
-              name="username"
-              placeholder="Usuário"
-              className={styles.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+          <form onSubmit={handleLogin} className={styles.form}>
+            <div className={styles.inputContainer}>
+              <input
+                type="text"
+                autoFocus
+                required
+                name="username"
+                placeholder="Usuário"
+                className={styles.input}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <User className={styles.icon} />
+            </div>
 
-            <input
-              type="password"
-              required
-              name="password"
-              placeholder="Senha"
-              className={styles.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className={styles.inputContainer}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                name="password"
+                placeholder="Senha"
+                className={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                ref={passwordInputRef}
+              />
+              {password === '' ? (
+                <Lock
+                  className={styles.icon}
+                  onClick={() => passwordInputRef.current?.focus()}
+                />
+              ) : showPassword ? (
+                <Eye
+                  className={styles.icon}
+                  onClick={toggleShowPassword}
+                />
+              ) : (
+                <EyeOff
+                  className={styles.icon}
+                  onClick={toggleShowPassword}
+                />
+              )}
+            </div>
 
             <button type="submit" disabled={isLoading}>
               {isLoading ? <BeatLoader color="#fff" size={6} /> : 'Entrar'}

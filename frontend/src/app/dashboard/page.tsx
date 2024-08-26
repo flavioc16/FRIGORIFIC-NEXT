@@ -16,6 +16,7 @@ export interface Client {
   created_at: string;
   updated_at: string;
   userId: string;
+  
 }
 
 export default function Dashboard() {
@@ -40,7 +41,7 @@ export default function Dashboard() {
     }
 
     fetchClients();
-  }, []);
+  }, [clients]);
 
   return (
     <main className={styles.contentArea}>
