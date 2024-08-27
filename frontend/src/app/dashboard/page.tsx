@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next"; // Função para obter cookies
@@ -19,29 +19,54 @@ export interface Client {
   
 }
 
+
 export default function Dashboard() {
   const [clients, setClients] = useState<Client[]>([]); // Tipagem dos clientes
   const [loading, setLoading] = useState(true); // Estado de carregamento
+  const [activeElement, setActiveElement] = useState<string | null>(null); // Estado para rastrear o elemento focado
+  const inputRef = useRef<HTMLInputElement>(null);
+  const intervalIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     async function fetchClients() {
       try {
-        const token = getCookie("token"); // Obtém o token dos cookies
+        const token = getCookie("token");
         const response = await api.get("/clients", {
-          headers: {
-            Authorization: `Bearer ${token}`, // Inclui o token no cabeçalho da requisição
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setClients(response.data);
       } catch (error) {
         console.error("Erro ao buscar clientes:", error);
       } finally {
-        setLoading(false); // Define loading como false quando a chamada termina
+        setLoading(false);
       }
     }
 
     fetchClients();
-  }, [clients]);
+  }, []);
+
+  useEffect(() => {
+const resetFocusInterval = () => {
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+      intervalIdRef.current = window.setInterval(() => {
+        if (activeElement !== "menuSearch") {
+          inputRef.current?.focus();
+        }
+      }, 3000);
+    };
+
+    if (activeElement !== "menuSearch") {
+      resetFocusInterval();
+    }
+
+    const handleMouseMove = () => resetFocusInterval();
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [activeElement]);
 
   return (
     <main className={styles.contentArea}>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
 :root {
   --white: #FFF;
   --black: #000;
@@ -12,7 +14,11 @@
   --lilas-900: #0d0f16;
   --roxo-900: #161b21;
   --roxo-700: #21262c;
-  --roxo-1000: #000000;
+  --roxo-1000: #0b0a11;
+
+  //se saiu mehlhor nas linhas
+  --cinza-700: #21262C;
+  
   --cinza-800: #2d2d2d;
 
   --border-width: 1px; /* Definindo a variável globalmente */

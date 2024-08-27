@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react';
 import styles from './styles.module.scss';
-import Button from '../buttonEdit';
+import { useFocus } from '@/app/context/FocusContext';
 
 export interface Client {
   id: string;
@@ -24,42 +24,57 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage, setClientsPerPage] = useState(10);
-  const [isFocusing, setIsFocusing] = useState(true);
 
-  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isMenuInputFocused } = useFocus(); // Pegando o contexto
 
-  useEffect(() => {
-    inputRef.current?.focus();
-    if (isFocusing) resetFocusInterval();
+  const [mouseMoved, setMouseMoved] = useState(false);
 
-    const handleMouseMove = () => resetFocusInterval();
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [isFocusing]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setSearchTerm('');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const resetFocusInterval = () => {
-    if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-    intervalIdRef.current = setInterval(() => inputRef.current?.focus(), 3000);
+  const applyFocus = () => {
+    if (!isMenuInputFocused && inputRef.current && !mouseMoved) {
+      inputRef.current.focus();
+    }
   };
+  
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      applyFocus();
+    }, 3000);
+  
+    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar o componente
+  }, [isMenuInputFocused, mouseMoved]);
+
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setMouseMoved(true);
+      setTimeout(() => setMouseMoved(false), 3000); // Reseta o estado após 3 segundos
+    };
+  
+    window.addEventListener('mousemove', handleMouseMove);
+  
+    return () => window.removeEventListener('mousemove', handleMouseMove); // Limpa o evento ao desmontar o componente
+  }, []);
+  
+  
+  const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setClientsPerPage(Number(event.target.value));
+    setCurrentPage(1);
+  };
+
+  const handleSelectFocus = (event: React.FocusEvent<HTMLSelectElement>) => {
+    event.target.classList.add(styles.dropdownExpanded);
+  };
+
+  const handleSelectBlur = (event: React.FocusEvent<HTMLSelectElement>) => {
+    event.target.classList.remove(styles.dropdownExpanded);
+  };
+
+  const handleSearchClear = () => setSearchTerm('');
 
   const filteredClients = clients.filter((client) =>
     client.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
   const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
@@ -67,75 +82,49 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setClientsPerPage(Number(event.target.value));
-    setCurrentPage(1);
-    setIsFocusing(false);
-  };
-
-  const handleSelectFocus = (event: React.FocusEvent<HTMLSelectElement>) =>
-    event.target.classList.add(styles.dropdownExpanded);
-  const handleSelectBlur = (event: React.FocusEvent<HTMLSelectElement>) =>
-    event.target.classList.remove(styles.dropdownExpanded);
-
-  const handleSearchClear = () => setSearchTerm('');
-
-  const hasRecords = filteredClients.length > 0;
-
   const generatePagination = (): (number | string)[] => {
     const pagination: (number | string)[] = [];
-    const maxPagesToShow = 5; // Máximo de páginas a serem exibidas
+    const maxPagesToShow = 5;
     const firstPage = 1;
     const lastPage = totalPages;
 
-    // Caso especial: se o total de páginas for menor ou igual ao número máximo de páginas a serem exibidas
     if (totalPages <= maxPagesToShow) {
-        for (let i = 1; i <= totalPages; i++) {
-            pagination.push(i);
-        }
+      for (let i = 1; i <= totalPages; i++) {
+        pagination.push(i);
+      }
     } else {
-        // Se a página atual estiver nas primeiras páginas
-        if (currentPage <= maxPagesToShow - 2) {
-            for (let i = 1; i <= maxPagesToShow; i++) {
-                pagination.push(i);
-            }
-            pagination.push('...', lastPage);
+      if (currentPage <= maxPagesToShow - 2) {
+        for (let i = 1; i <= maxPagesToShow; i++) {
+          pagination.push(i);
         }
-        // Se a página atual estiver nas últimas páginas
-        else if (currentPage >= totalPages - (maxPagesToShow - 2)) {
-            pagination.push(firstPage, '...');
-            for (let i = totalPages - (maxPagesToShow - 1); i <= totalPages; i++) {
-                pagination.push(i);
-            }
+        pagination.push('...', lastPage);
+      } else if (currentPage >= totalPages - (maxPagesToShow - 2)) {
+        pagination.push(firstPage, '...');
+        for (let i = totalPages - (maxPagesToShow - 1); i <= totalPages; i++) {
+          pagination.push(i);
         }
-        // Se a página atual estiver no meio
-        else {
-            pagination.push(firstPage, '...');
-            for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-                pagination.push(i);
-            }
-            pagination.push('...', lastPage);
+      } else {
+        pagination.push(firstPage, '...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pagination.push(i);
         }
+        pagination.push('...', lastPage);
+      }
     }
 
-    // Remove duplicatas e ajusta as reticências
     const filteredPagination: (number | string)[] = [];
     pagination.forEach((page, index) => {
-        if (page === '...') {
-            // Adiciona reticências somente se não for a última adição
-            if (filteredPagination[filteredPagination.length - 1] !== '...') {
-                filteredPagination.push(page);
-            }
-        } else {
-            filteredPagination.push(page);
+      if (page === '...') {
+        if (filteredPagination[filteredPagination.length - 1] !== '...') {
+          filteredPagination.push(page);
         }
+      } else {
+        filteredPagination.push(page);
+      }
     });
 
-    // Remove reticências duplicadas consecutivas
     return filteredPagination;
-};
-
-
+  };
 
   return (
     <div className={styles.tableWrapper}>
@@ -206,18 +195,18 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       <td className={styles.actionIcons}>
                         <Plus
                           className={styles.iconPlus}
-                          onClick={() => console.log(`Adicionar ${client.nome}`)} // Ação do ícone Plus
+                          onClick={() => console.log(`Adicionar ${client.nome}`)}
                         />
                         <Info
                           className={styles.iconInfo}
-                          onClick={() => console.log(`Informações sobre ${client.nome}`)} // Ação do ícone Info
+                          onClick={() => console.log(`Informações sobre ${client.nome}`)}
                         />
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className={styles.noRecords}>
+                    <td colSpan={5} className={styles.noRecords}>
                       Nenhum registro encontrado
                     </td>
                   </tr>
@@ -225,7 +214,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               </tbody>
             </table>
           </div>
-          <div className={`${styles.pagination} ${hasRecords ? '' : styles.hidden}`}>
+          <div className={`${styles.pagination} ${currentClients.length ? '' : styles.hidden}`}>
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -236,9 +225,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               typeof page === 'number' ? (
                 <span
                   key={index}
-                  className={`${styles.pageNumber} ${
-                    currentPage === page ? styles.active : ''
-                  }`}
+                  className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ''}`}
                   onClick={() => handlePageChange(page)}
                 >
                   {page}
@@ -256,7 +243,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               <ChevronRight />
             </button>
           </div>
-          <Button />
         </>
       )}
     </div>

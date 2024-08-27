@@ -1,21 +1,24 @@
 .menu {
-  width: 100%; /* Ocupa 100% do espaço disponível */
-  max-width: 270px; /* Largura máxima do menu */
-  min-width: 200px; /* Largura mínima do menu */
+  display: flex;
+  flex-direction: column; /* Garante que o menu se expanda verticalmente */
+  height: calc(100vh - 100px); /* Altura do menu ajustada para 100% da viewport menos o margin-top */
+  margin: 0;
+  width: 100%;
+  max-width: 270px;
   background-color: var(--white);
   margin-top: 16px;
   position: relative;
   border-right: var(--border-width) solid var(--cinza-800);
   overflow: hidden;
+  font-family: 'Montserrat', sans-serif; /* Definindo a fonte Montserrat */
 
-  /* Extensão da borda para cima */
   &::before {
     content: '';
     position: absolute;
-    top: -1px;
-    right: -var(--border-width);
+    top: 0; /* Alinhar ao topo */
+    right: -var(--border-width); /* Posicionar fora da área visível */
     width: var(--border-width);
-    height: calc(100% + 1px);
+    height: calc(100% + 16px); /* Altura ajustada para 100% mais o margin-top do menu */
     background-color: var(--cinza-800);
   }
 
@@ -25,43 +28,126 @@
     color: var(--white);
     text-indent: 1rem;
     padding: 10px 15px;
-    font-size: 1.5rem; /* Ajuste o tamanho da fonte conforme necessário */
-    font-weight: bold; /* Estilo da fonte para o título */
+    font-size: 1.5rem;
+    font-weight: bold;
   }
 
   nav {
     background-color: var(--lilas-900);
     color: var(--white);
-    padding-top: 2px;
+    padding-top: 3px;
+    padding-left: 8px;
     width: 100%;
-    height: 100vh;
+    flex: 1; /* Faz com que o nav se expanda para preencher o espaço disponível */
+    overflow: auto;
+  }
 
-    a {
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      color: var(--white);
-      text-decoration: none;
-      padding: 10px 15px;
-      gap: 10px; /* Espaço entre o texto e o ícone */
-      font-size: 1rem; /* Ajuste o tamanho da fonte conforme necessário */
-      font-weight: 500; /* Peso da fonte para os links */
+  .input {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 97%;
+    background-color: var(--lilas-900);
+  }
 
-      /* Adicionar ícones com Lucide */
-      svg {
-        width: 20px;
-        height: 20px;
-        color: var(--gray-100); /* Cor padrão do ícone */
-        transition: color 0.3s ease;
-      }
+  .value {
+    background-color: transparent;
+    border: none;
+    padding: 6px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    width: 97.5%;
 
-      &:hover {
-        background-color: var(--roxo-700);
-
-        svg {
-          color: var(--lilas-500); /* Mudar a cor do ícone no hover */
-        }
-      }
+    svg {
+      color: #c24c4c;
+      margin-left: 8px;
     }
   }
+
+  .value.selected {
+    background-color: var(--roxo-700);
+  }
+
+  .value.selected::before {
+    opacity: 1;
+  }
+
+  .value:not(:active):hover,
+  .value:focus {
+    background-color: var(--roxo-700);
+  }
+
+  .value:focus,
+  .value:active {
+    background-color: var(--roxo-700);
+    outline: none;
+  }
+
+  .value::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 2px;
+    height: 80%;
+    background-color: #c24c4c;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+
+  .value:focus::before,
+  .value:active::before {
+    opacity: 1;
+  }
+
+  .value svg {
+    width: 20px;
+  }
+}
+
+// Estilos para o campo de entrada no menu lateral
+.input {
+  position: relative;
+}
+
+.filterInput {
+  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--cinza-800);
+  border-radius: 4px;
+  background-color: var(--lilas-800);
+  color: var(--white);
+  outline: none;
+  width: 100%; // Ajuste a largura conforme necessário
+  margin-bottom: 1rem; // Adiciona um espaçamento abaixo do input
+
+  &:focus {
+    border-color: var(--white);
+  }
+}
+
+.searchIcon,
+.clearIcon {
+  position: absolute;
+  top: 34%;
+  transform: translateY(-50%);
+  color: var(--cinza-800);
+  cursor: pointer;
+  height: 24px; // Ajuste o tamanho conforme necessário
+}
+
+.searchIcon {
+  right: 8px;
+}
+
+.clearIcon {
+  right: 8px; // Ajuste para posicionar o ícone de limpar mais próximo do input
 }

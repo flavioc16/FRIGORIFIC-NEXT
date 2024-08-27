@@ -25,8 +25,11 @@ export function Header() {
                 <Link href="/dashboard">
                     <Image alt='Logo Frigorifico'
                         src={LOGOVERTICAL}
-                        width={116}
-                        height={44}
+                        width={167}
+                        height={63}
+                        
+
+
                         priority={true}
                         quality={100}
                     />

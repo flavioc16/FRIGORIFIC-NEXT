@@ -92,6 +92,7 @@ export default function Login() {
           width={443}
           height={169}
           className={styles.logo}
+          priority={true}
         />
 
         <section className={styles.login}>
