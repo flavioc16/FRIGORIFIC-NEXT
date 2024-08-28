@@ -26,7 +26,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const [clientsPerPage, setClientsPerPage] = useState(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isMenuInputFocused } = useFocus(); // Pegando o contexto
+  const { isMenuInputFocused, setIsMenuInputFocused } = useFocus(); // Pegando o contexto
 
   const [mouseMoved, setMouseMoved] = useState(false);
 
@@ -43,6 +43,22 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   
     return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar o componente
   }, [isMenuInputFocused, mouseMoved]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMenuInputFocused) {
+        // Clear the search term only if the menu input is focused
+        setSearchTerm('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMenuInputFocused]); 
+
 
   useEffect(() => {
     const handleMouseMove = () => {

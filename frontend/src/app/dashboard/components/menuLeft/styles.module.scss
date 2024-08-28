@@ -1,10 +1,9 @@
 .menu {
+  width: 25%;
   display: flex;
   flex-direction: column; /* Garante que o menu se expanda verticalmente */
-  height: calc(100vh - 100px); /* Altura do menu ajustada para 100% da viewport menos o margin-top */
+  height: 100vh; /* Altura do menu ajustada para 100% da viewport */
   margin: 0;
-  width: 100%;
-  max-width: 270px;
   background-color: var(--white);
   margin-top: 16px;
   position: relative;
@@ -18,7 +17,7 @@
     top: 0; /* Alinhar ao topo */
     right: -var(--border-width); /* Posicionar fora da área visível */
     width: var(--border-width);
-    height: calc(100% + 16px); /* Altura ajustada para 100% mais o margin-top do menu */
+    height: 100%; /* Ajustado para 100% da altura do menu */
     background-color: var(--cinza-800);
   }
 
@@ -111,43 +110,43 @@
   .value svg {
     width: 20px;
   }
-}
 
-// Estilos para o campo de entrada no menu lateral
-.input {
-  position: relative;
-}
-
-.filterInput {
-  padding: 0.5rem 2rem 0.5rem 0.5rem;
-  font-size: 0.875rem;
-  border: 1px solid var(--cinza-800);
-  border-radius: 4px;
-  background-color: var(--lilas-800);
-  color: var(--white);
-  outline: none;
-  width: 100%; // Ajuste a largura conforme necessário
-  margin-bottom: 1rem; // Adiciona um espaçamento abaixo do input
-
-  &:focus {
-    border-color: var(--white);
+  // Estilos para o campo de entrada no menu lateral
+  .input {
+    position: relative;
   }
-}
 
-.searchIcon,
-.clearIcon {
-  position: absolute;
-  top: 34%;
-  transform: translateY(-50%);
-  color: var(--cinza-800);
-  cursor: pointer;
-  height: 24px; // Ajuste o tamanho conforme necessário
-}
+  .filterInput {
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--cinza-800);
+    border-radius: 4px;
+    background-color: var(--lilas-800);
+    color: var(--white);
+    outline: none;
+    width: 100%; // Ajuste a largura conforme necessário
+    margin-bottom: 1rem; // Adiciona um espaçamento abaixo do input
 
-.searchIcon {
-  right: 8px;
-}
+    &:focus {
+      border-color: var(--white);
+    }
+  }
 
-.clearIcon {
-  right: 8px; // Ajuste para posicionar o ícone de limpar mais próximo do input
+  .searchIcon,
+  .clearIcon {
+    position: absolute;
+    top: 34%;
+    transform: translateY(-50%);
+    color: var(--cinza-800);
+    cursor: pointer;
+    height: 24px; // Ajuste o tamanho conforme necessário
+  }
+
+  .searchIcon {
+    right: 8px;
+  }
+
+  .clearIcon {
+    right: 8px; // Ajuste para posicionar o ícone de limpar mais próximo do input
+  }
 }

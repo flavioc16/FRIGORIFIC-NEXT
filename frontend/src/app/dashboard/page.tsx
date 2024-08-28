@@ -19,13 +19,9 @@ export interface Client {
   
 }
 
-
 export default function Dashboard() {
   const [clients, setClients] = useState<Client[]>([]); // Tipagem dos clientes
   const [loading, setLoading] = useState(true); // Estado de carregamento
-  const [activeElement, setActiveElement] = useState<string | null>(null); // Estado para rastrear o elemento focado
-  const inputRef = useRef<HTMLInputElement>(null);
-  const intervalIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     async function fetchClients() {
@@ -44,29 +40,6 @@ export default function Dashboard() {
 
     fetchClients();
   }, []);
-
-  useEffect(() => {
-const resetFocusInterval = () => {
-      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-      intervalIdRef.current = window.setInterval(() => {
-        if (activeElement !== "menuSearch") {
-          inputRef.current?.focus();
-        }
-      }, 3000);
-    };
-
-    if (activeElement !== "menuSearch") {
-      resetFocusInterval();
-    }
-
-    const handleMouseMove = () => resetFocusInterval();
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [activeElement]);
 
   return (
     <main className={styles.contentArea}>

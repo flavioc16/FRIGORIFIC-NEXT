@@ -1,5 +1,5 @@
-// context/FocusContext.tsx
 "use client"
+
 import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 
 interface FocusContextType {

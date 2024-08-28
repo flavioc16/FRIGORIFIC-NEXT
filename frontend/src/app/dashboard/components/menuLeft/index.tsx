@@ -18,26 +18,12 @@ const menuItems: { id: MenuItemId, label: string, icon: JSX.Element }[] = [
 ];
 
 export default function MenuLeft() {
-  const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
+  
   const [selected, setSelected] = useState<MenuItemId>('/');
   const [searchTerm, setSearchTerm] = useState('');
   const menuInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const handleFocus = () => setIsMenuInputFocused(true);
-    const handleBlur = () => setIsMenuInputFocused(false);
-
-    const menuInput = menuInputRef.current;
-    if (menuInput) {
-      menuInput.addEventListener('focus', handleFocus);
-      menuInput.addEventListener('blur', handleBlur);
-
-      return () => {
-        menuInput.removeEventListener('focus', handleFocus);
-        menuInput.removeEventListener('blur', handleBlur);
-      };
-    }
-  }, [setIsMenuInputFocused]);
+ 
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
