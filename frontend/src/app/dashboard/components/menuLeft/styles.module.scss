@@ -1,5 +1,5 @@
 .menu {
-  width: 25%;
+  width: 350px;
   display: flex;
   flex-direction: column; /* Garante que o menu se expanda verticalmente */
   height: 100vh; /* Altura do menu ajustada para 100% da viewport */
@@ -45,7 +45,7 @@
     margin-top: 15px;
     display: flex;
     flex-direction: column;
-    width: 97%;
+    width: 98%;
     background-color: var(--lilas-900);
   }
 
