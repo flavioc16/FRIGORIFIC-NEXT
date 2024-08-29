@@ -13,6 +13,7 @@ import Modal from 'react-bootstrap/Modal';
 import stylesModal from './stylesModal.module.scss'; // Ajuste o caminho conforme necessári
 
 import LOGOVERTICAL from '/public/LOGOVERTICAL.png';
+import { tree } from 'next/dist/build/templates/app-page';
 
 export function Header() {
   const [showModal, setShowModal] = useState(false);
@@ -54,10 +55,9 @@ export function Header() {
       <Modal
         show={showModal}
         onHide={handleClose}
-        backdrop="static"
         animation={false}
         size='sm'
-        keyboard={false}
+        keyboard={true}
         dialogClassName={stylesModal.customModalContent}
       >
         <Modal.Header className={stylesModal.customModalHeader}>
