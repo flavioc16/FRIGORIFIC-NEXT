@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { User, Settings, House, Sun, Eye, CalendarCheck, X, Search } from 'lucide-react';
+import { User, ScanBarcode, House, Bell, CircleDollarSign, CalendarCheck, X, Search } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useMenu } from '@/app/context/MenuContext';
 import { MenuItemId } from '@/app/types/menu';
@@ -9,10 +9,10 @@ import { MenuItemId } from '@/app/types/menu';
 const menuItems: { id: MenuItemId, label: string, icon: JSX.Element }[] = [
   { id: '/', label: 'Inicio [f2]', icon: <House /> },
   { id: 'clients', label: 'Clientes', icon: <User /> },
-  { id: 'settings', label: 'Account', icon: <Settings /> },
-  { id: 'appearance', label: 'Appearance', icon: <Sun /> },
+  { id: 'products', label: 'Produtos', icon: <ScanBarcode /> },
+  { id: 'reminders', label: 'Lembretes', icon: <Bell /> },
   { id: 'reports', label: 'Relatórios', icon: <CalendarCheck /> },
-  { id: 'visibility', label: 'Visibility', icon: <Eye /> },
+  { id: 'moneybox', label: 'Caixa', icon: <CircleDollarSign />},
 ];
 
 export default function MenuLeft() {
@@ -32,7 +32,6 @@ export default function MenuLeft() {
   );
 
   
-
   // Limpa o termo de pesquisa quando a tecla Escape é pressionada, se o campo de entrada estiver focado
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

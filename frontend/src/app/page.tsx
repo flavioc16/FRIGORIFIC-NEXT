@@ -55,8 +55,18 @@ export default function Login() {
       } else if (role === 'USER') {
         toast.info('Realize o login no nosso APP.');
       } else {
-        router.push('/');
+        console.log('Função não reconhecida, adicionando item ao localStorage');
+      
+        // Adiciona o item no localStorage
+        localStorage.setItem('selectedMenuItem', '/');
+      
+        // Aguarda um pequeno delay antes de redirecionar
+        setTimeout(() => {
+          router.push('/');
+        }, 5000);
       }
+      
+      
     } catch (error) {
       setIsLoading(false);
       console.error('Erro ao realizar login:', error);

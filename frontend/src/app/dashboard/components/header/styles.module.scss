@@ -40,3 +40,10 @@
         }
     }
 }
+
+.logoutLink{
+    cursor: pointer; /* Exibe o cursor pointer ao passar o mouse */
+    &:hover {
+      transform: scale(1.2);
+  }
+}

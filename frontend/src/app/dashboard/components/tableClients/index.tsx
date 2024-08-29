@@ -59,6 +59,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     };
   }, [isMenuInputFocused]); 
 
+  
+
 
   useEffect(() => {
     const handleMouseMove = () => {

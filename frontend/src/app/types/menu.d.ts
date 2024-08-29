@@ -1,10 +1,10 @@
 export type MenuItemId = 
     '/' | 
     'clients' | 
-    'settings' | 
-    'appearance' | 
+    'products' | 
+    'reminders' | 
     'reports' |
-    'visibility' | 
+    'moneybox' | 
     null;
 
 export interface MenuContextType {

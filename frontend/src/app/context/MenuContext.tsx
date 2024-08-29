@@ -13,7 +13,12 @@ export const MenuProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Recuperar o valor do localStorage
     const savedSelection = localStorage.getItem('selectedMenuItem') as MenuItemId | null;
     // Verificar se o valor recuperado é válido
-    if (savedSelection && ['/', 'clients', 'settings', 'appearance', 'reports', 'visibility'].includes(savedSelection)) {
+    if (savedSelection && ['/', 
+      'clients', 
+      'products', 
+      'reminders', 
+      'reports', 
+      'moneybox'].includes(savedSelection)) {
       setSelected(savedSelection);
     }
   }, []);

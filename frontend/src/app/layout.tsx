@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.scss";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { FocusProvider } from "./context/FocusContext"; // Ajuste o caminho conforme necessário
 import { MenuProvider } from "./context/MenuContext"; // Importa o MenuProvider
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="icon" href="/favicon.png" />
+      
       <body className={inter.className}>
         
           <MenuProvider>
