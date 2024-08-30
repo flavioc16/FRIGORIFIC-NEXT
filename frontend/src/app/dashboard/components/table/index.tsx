@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
@@ -26,7 +26,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const [clientsPerPage, setClientsPerPage] = useState(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isMenuInputFocused, setIsMenuInputFocused } = useFocus(); // Pegando o contexto
+  const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
 
   const [mouseMoved, setMouseMoved] = useState(false);
 
@@ -35,19 +35,18 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       inputRef.current.focus();
     }
   };
-  
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       applyFocus();
     }, 3000);
-  
-    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar o componente
+
+    return () => clearInterval(intervalId);
   }, [isMenuInputFocused, mouseMoved]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isMenuInputFocused) {
-        // Clear the search term only if the menu input is focused
         setSearchTerm('');
       }
     };
@@ -57,23 +56,19 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMenuInputFocused]); 
-
-  
-
+  }, [isMenuInputFocused]);
 
   useEffect(() => {
     const handleMouseMove = () => {
       setMouseMoved(true);
-      setTimeout(() => setMouseMoved(false), 3000); // Reseta o estado após 3 segundos
+      setTimeout(() => setMouseMoved(false), 3000);
     };
-  
+
     window.addEventListener('mousemove', handleMouseMove);
-  
-    return () => window.removeEventListener('mousemove', handleMouseMove); // Limpa o evento ao desmontar o componente
+
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-  
-  
+
   const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setClientsPerPage(Number(event.target.value));
     setCurrentPage(1);
@@ -89,9 +84,12 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const handleSearchClear = () => setSearchTerm('');
 
-  const filteredClients = clients.filter((client) =>
-    client.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Memoized filtered clients to optimize performance
+  const filteredClients = useMemo(() => {
+    return clients.filter((client) =>
+      client.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [clients, searchTerm]);
 
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
@@ -164,13 +162,13 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   onFocus={handleSelectFocus}
                   onBlur={handleSelectBlur}
                   className={styles.customSelect}
+                  aria-label="Número de clientes por página"
                 >
                   <option value={10}>10</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
                 </select>
                 <label htmlFor="resultsPerPage" className={styles.ppage}>
-                  {' '}
                   por página
                 </label>
               </div>
@@ -182,11 +180,12 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.filterInput}
                   ref={inputRef}
+                  aria-label="Buscar Cliente"
                 />
                 {searchTerm ? (
-                  <X className={styles.clearIcon} onClick={handleSearchClear} />
+                  <X className={styles.clearIcon} onClick={handleSearchClear} role="button" aria-label="Limpar pesquisa" />
                 ) : (
-                  <Search className={styles.searchIcon} />
+                  <Search className={styles.searchIcon} aria-hidden="true" />
                 )}
               </div>
             </div>
@@ -214,10 +213,14 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                         <Plus
                           className={styles.iconPlus}
                           onClick={() => console.log(`Adicionar ${client.nome}`)}
+                          role="button"
+                          aria-label={`Adicionar ${client.nome}`}
                         />
                         <Info
                           className={styles.iconInfo}
                           onClick={() => console.log(`Informações sobre ${client.nome}`)}
+                          role="button"
+                          aria-label={`Informações sobre ${client.nome}`}
                         />
                       </td>
                     </tr>
@@ -236,6 +239,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
+              aria-label="Página anterior"
             >
               <ChevronLeft />
             </button>
@@ -245,11 +249,13 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   key={index}
                   className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ''}`}
                   onClick={() => handlePageChange(page)}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                  role="button"
                 >
                   {page}
                 </span>
               ) : (
-                <span key={index} className={styles.ellipsis}>
+                <span key={index} className={styles.ellipsis} aria-hidden="true">
                   {page}
                 </span>
               )
@@ -257,6 +263,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
+              aria-label="Próxima página"
             >
               <ChevronRight />
             </button>

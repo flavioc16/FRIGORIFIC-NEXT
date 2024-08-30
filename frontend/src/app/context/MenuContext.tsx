@@ -18,7 +18,9 @@ export const MenuProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       'products', 
       'reminders', 
       'reports', 
-      'moneybox'].includes(savedSelection)) {
+      'moneybox',
+      'payments'
+    ].includes(savedSelection)) {
       setSelected(savedSelection);
     }
   }, []);

@@ -4,7 +4,8 @@ export type MenuItemId =
     'products' | 
     'reminders' | 
     'reports' |
-    'moneybox' | 
+    'moneybox' |
+     'payments' |
     null;
 
 export interface MenuContextType {

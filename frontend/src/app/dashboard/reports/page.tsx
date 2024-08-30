@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next"; // Função para obter cookies
-import { TableClients } from "../components/tableClients";
+import { TableClients } from "../components/table";
 
 export interface Client {
   id: string;

@@ -1,7 +1,16 @@
 "use client"
 import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { User, ScanBarcode, House, Bell, CircleDollarSign, CalendarCheck, X, Search } from 'lucide-react';
+import { User, 
+  ScanBarcode, 
+  House, 
+  Bell, 
+  CircleDollarSign, 
+  CalendarCheck,
+  X, 
+  Search,
+  HandCoins
+} from 'lucide-react';
 import styles from './styles.module.scss';
 import { useMenu } from '@/app/context/MenuContext';
 import { MenuItemId } from '@/app/types/menu';
@@ -12,7 +21,9 @@ const menuItems: { id: MenuItemId, label: string, icon: JSX.Element }[] = [
   { id: 'products', label: 'Produtos', icon: <ScanBarcode /> },
   { id: 'reminders', label: 'Lembretes', icon: <Bell /> },
   { id: 'reports', label: 'Relatórios', icon: <CalendarCheck /> },
+  { id: 'payments', label: 'Pagamentos', icon: <HandCoins />},
   { id: 'moneybox', label: 'Caixa', icon: <CircleDollarSign />},
+  
 ];
 
 export default function MenuLeft() {

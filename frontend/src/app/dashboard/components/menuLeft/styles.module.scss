@@ -64,13 +64,18 @@
     width: 97.5%;
 
     svg {
-      color: #c24c4c;
+      color: var(--cinza-800);
       margin-left: 8px;
     }
   }
 
   .value.selected {
     background-color: var(--roxo-700);
+
+    /* Alterar a cor do ícone svg quando selecionado */
+    svg {
+      color: var(--red-800);
+    }
   }
 
   .value.selected::before {
@@ -80,22 +85,32 @@
   .value:not(:active):hover,
   .value:focus {
     background-color: var(--roxo-700);
+
+    /* Alterar a cor do ícone svg no estado de hover ou focus */
+    svg {
+      color: var(--red-800);
+    }
   }
 
   .value:focus,
   .value:active {
     background-color: var(--roxo-700);
     outline: none;
+
+    /* Alterar a cor do ícone svg no estado de focus ou active */
+    svg {
+      color: var(--red-800);
+    }
   }
 
   .value::before {
     content: "";
     position: absolute;
-    top: 5px;
+    top: 4px;
     left: 0;
     width: 2px;
     height: 80%;
-    background-color: #c24c4c;
+    background-color: var(--red-800);
     border-radius: 5px;
     opacity: 0;
     transition: opacity 0.3s ease;
