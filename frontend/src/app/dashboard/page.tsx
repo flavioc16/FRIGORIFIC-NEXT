@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next"; // Função para obter cookies
-import { TableClients } from "./components/table";
+import { Table } from "./components/table";
 
 export interface Client {
   id: string;
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   return (
     <main className={styles.contentArea}>
-      <TableClients clients={clients} loading={loading} />
+      <Table clients={clients} loading={loading} />
     </main>
   );
 }

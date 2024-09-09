@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next"; // Função para obter cookies
-import { TableClients } from "../components/table";
+import { TableClients } from "./components/tableClient";
 
 export interface Client {
   id: string;
@@ -40,7 +40,7 @@ export default function Clients() {
     }
 
     fetchClients();
-  }, []);
+  }, [clients]);
 
   return (
     <main className={styles.contentArea}>

@@ -20,7 +20,7 @@ interface TableClientsProps {
   loading: boolean;
 }
 
-export function TableClients({ clients, loading }: TableClientsProps) {
+export function Table ({ clients, loading }: TableClientsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage, setClientsPerPage] = useState(10);
@@ -145,9 +145,11 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   return (
     <div className={styles.tableWrapper}>
       {loading ? (
-        <div className={styles.loadingSpinner}>
-          <div className={styles.spinner}></div>
-        </div>
+        <div className={styles.loadingLineContainer}>
+          <div className={styles.loadingLine} style={{ width: '100%', height: '25px' }}></div>
+          <div className={styles.loadingLine} style={{ width: '200px', height: '25px' }}></div>
+      </div>
+      
       ) : (
         <>
           <div className={styles.header}>
@@ -183,7 +185,12 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   aria-label="Buscar Cliente"
                 />
                 {searchTerm ? (
-                  <X className={styles.clearIcon} onClick={handleSearchClear} role="button" aria-label="Limpar pesquisa" />
+                  <X
+                    className={styles.clearIcon}
+                    onClick={handleSearchClear}
+                    role="button"
+                    aria-label="Limpar pesquisa"
+                  />
                 ) : (
                   <Search className={styles.searchIcon} aria-hidden="true" />
                 )}
@@ -235,7 +242,11 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               </tbody>
             </table>
           </div>
-          <div className={`${styles.pagination} ${currentClients.length ? '' : styles.hidden}`}>
+          <div
+            className={`${styles.pagination} ${
+              currentClients.length ? '' : styles.hidden
+            }`}
+          >
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -247,7 +258,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               typeof page === 'number' ? (
                 <span
                   key={index}
-                  className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ''}`}
+                  className={`${styles.pageNumber} ${
+                    currentPage === page ? styles.activePage : ''
+                  }`}
                   onClick={() => handlePageChange(page)}
                   aria-current={currentPage === page ? 'page' : undefined}
                   role="button"
@@ -272,4 +285,5 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       )}
     </div>
   );
+  
 }

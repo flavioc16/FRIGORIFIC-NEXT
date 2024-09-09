@@ -1,5 +1,3 @@
-
-
 .tableContainer {
     max-height: 500px; // Altura máxima da tabela
     overflow-y: auto; // Rolagem vertical quando necessário
@@ -308,41 +306,160 @@
     }
 }
 
+.customModalContent {
+    background-color: var(--roxo-900);
+    color: #FFF;
+    border: none;
+    border: 1px solid #3d3d3d;
+  }
+  
+  .customModalHeader {
+    background-color: var(--roxo-900);
+    color: #FFF;
+    border-bottom: 1px solid #2d2d2d;
+  }
+  
+  .customModalBody {
+    background-color: var(--roxo-900);
+    color: #FFF;
+  }
+  .customModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px; /* Espaço entre os botões */
+  background-color: var(--roxo-900);
+  border: none;
+}
 
-.loadingLineContainer {
-    display: flex;
-    flex-direction: column; /* Alinha as linhas verticalmente */
-    
-    background-color: var(--lilas-900); /* Fundo da área de carregamento */
-  }
-  
-  .loadingLine {
-    background-color: var(--cinza-800); /* Cor base da linha */
-    position: relative; /* Necessário para o posicionamento do brilho */
-    overflow: hidden; /* Oculta partes fora da linha */
-    margin: 10px 0; /* Espaço entre as linhas */
-  }
-  
-  .loadingLine::before {
-    content: '';
+.customFormControl {
+  background-color: #2d2d2d;
+  color: #FFF;
+  border: 1px solid #3d3d3d;
+  height: 45px;
+  font-size: 16px;
+}
+
+.customFormLabel {
+  color: #FFF;
+  font-size: 16px;
+}
+
+.customBtnPrimary {
+    background-color: green;
     position: absolute;
-    top: 0;
-    left: -100%; /* Começa fora da tela */
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    animation: loadingGlow 1.5s infinite; /* Animação de brilho */
+    border: none;
+    color: #FFF;
+    padding: 8px 20px; /* Ajuste o padding conforme necessário */
+    margin-top: 33px;
+    margin-left: 555px;
+    border-radius: 4px;
+    cursor: pointer;
+  
+    &:hover {
+      background-color: darkgreen;
+    }
+  
+    &:focus,
+    &:active {
+      background-color: darkgreen;
+      outline: none;
+      box-shadow: none;
+    }
   }
   
-  @keyframes loadingGlow {
-    0% {
-      left: -100%; /* Começa fora da linha */
+  .customBtnSecondary {
+    background-color: #21262c;
+    border: 1px solid #21262c;
+    color: #FFF;
+    border-radius: 4px;
+    padding: 8px 20px; /* Ajuste o padding conforme necessário */
+    cursor: pointer;
+  
+    &:hover {
+      background-color: #2d2d2d;
+      border-color: #2d2d2d;
     }
-    50% {
-      left: 100%; /* Termina fora do outro lado da linha */
-    }
-    100% {
-      left: -100%; /* Reinicia a animação */
+  
+    &:focus,
+    &:active {
+      background-color: #2d2d2d;
+      outline: none;
+      box-shadow: none;
     }
   }
   
+  
+  /* Ajustes para os inputs */
+  .customFormControl {
+    background-color: #2d2d2d;
+    color: #FFF;
+    border: 1px solid #3d3d3d;
+    height: 35px;
+    font-size: 16px;
+  
+    &:focus {
+      background-color: #3d3d3d;
+      color: #FFF;
+      border: none;
+    }
+  }
+  
+  /* Ajuste para o label */
+  .customFormLabel {
+    color: #FFF;
+    margin-top: 10px;
+    margin-bottom: 1px;
+    font-size: 16px;
+  }
+    
+  
+/* styles.module.scss */
+.Popover {
+    background-color: #2d333b; // Fundo escuro para o Popover
+    color: #c9d1d9; // Cor do texto clara
+    border: 1px solid #30363d; // Borda levemente mais clara
+  
+    .popover-arrow {
+      &:before {
+        border-width: 6px;
+        border-style: solid;
+        border-color: #2d333b transparent transparent transparent !important; // Cor da seta
+      }
+    }
+  }
+  
+  .PopoverHeader {
+    background-color: #21262d; // Fundo escuro do cabeçalho do Popover
+    color: #c9d1d9; // Cor do texto clara
+    border-bottom: 1px solid #30363d; // Borda inferior do cabeçalho
+    
+  }
+  
+  .PopoverBody {
+    color: #c9d1d9; // Cor do texto clara
+  }
+  
+  
+
+.loadingSpinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh; // Tamanho do spinner para centralizá-lo verticalmente
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--red-900);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

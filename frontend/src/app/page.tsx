@@ -5,6 +5,7 @@ import { FormEvent, useRef, useState } from 'react';
 import { api } from '@/services/api';
 import styles from './page.module.scss';
 
+
 import LOGOVERTICAL from '/public/LOGOVERTICAL.png';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -153,6 +154,7 @@ export default function Login() {
             <button type="submit" disabled={isLoading}>
               {isLoading ? <BeatLoader color="#fff" size={6} /> : 'Entrar'}
             </button>
+            
           </form>
 
           <Link href="/signup" className={styles.text}>

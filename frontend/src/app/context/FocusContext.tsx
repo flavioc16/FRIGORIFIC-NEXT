@@ -9,7 +9,8 @@ interface FocusContextType {
 
 const FocusContext = createContext<FocusContextType | undefined>(undefined);
 
-export function FocusProvider({ children }: { children: ReactNode }) {
+export function FocusProvider({ children }:
+   { children: ReactNode }) {
   const [isMenuInputFocused, setIsMenuInputFocused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 

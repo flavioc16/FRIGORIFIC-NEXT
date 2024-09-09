@@ -57,7 +57,7 @@ export function Header() {
         onHide={handleClose}
         animation={false}
         size='sm'
-        keyboard={true}
+        keyboard={false}
         dialogClassName={stylesModal.customModalContent}
       >
         <Modal.Header className={stylesModal.customModalHeader}>
