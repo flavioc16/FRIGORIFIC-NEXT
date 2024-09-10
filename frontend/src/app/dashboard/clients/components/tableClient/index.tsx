@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, Info, UserPen, Trash } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 import ButtonAdd from '@/app/dashboard/components/buttonAdd';
@@ -9,6 +9,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Form, Popover } from 'react-bootstrap';
 import { getCookie } from 'cookies-next';
+
+import { useOutsideClick } from '@/app/hooks/useOutsideClick';
 
 export interface User {
   id: string;
@@ -54,6 +56,11 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const [infoVisible, setInfoVisible] = useState<string | null>(null);
+  const infoOptionsRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(infoOptionsRef, () => setInfoVisible(null));
+
   const popoverContent = (
     <Popover id="popover-basic" className={styles.Popover}>
       <Popover.Header as="h3" className={styles.PopoverHeader}>
@@ -74,6 +81,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     setUsername(username);
     setPassword(password);
     setShowModal(true);
+    
   };
 
   const handleCloseModal = () => {
@@ -266,22 +274,37 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       <td>{client.user?.name || ''}</td>
                       <td>{client.user?.username || ''}</td>
                       <td className={styles.actionIcons}>
-                        <Plus
-                          className={styles.iconPlus}
-                          onClick={() => {
-                            handleOpenModal();
-                          }}
-                          role="button"
-                          aria-label={`Adicionar ${client.nome}`}
-                        />
                         <Info
                           className={styles.iconInfo}
-                          onClick={() => {
-                            handleOpenModal();
-                          }}
+                          onClick={() => setInfoVisible(infoVisible === client.id ? null : client.id)}
                           role="button"
                           aria-label={`Informações sobre ${client.nome}`}
                         />
+                        {infoVisible === client.id && (
+                          <div className={styles.infoOptions} ref={infoOptionsRef}>
+                            <div 
+                              onClick={handleOpenModal} 
+                              role="button" 
+                              tabIndex={0} 
+                              className={styles.buttonLike}
+                              aria-label="Editar"
+                            >
+                              Editar
+                              <UserPen className={styles.icon} />
+                            </div>
+                            <div 
+                              onClick={() => console.log('Deletar')} 
+                              onKeyDown={(e) => e.key === 'Enter' && console.log('Deletar')} 
+                              role="button" 
+                              tabIndex={0} 
+                              className={styles.buttonLike}
+                              aria-label="Deletar"
+                            >
+                              Deletar
+                              <Trash className={styles.icon} />
+                            </div>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -334,88 +357,107 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             show={showModal}
             onHide={handleCloseModal}
             className={styles.customModal}
-            size='lg'
+            size="xl"
           >
-            <Modal.Header closeButton className={styles.customModalHeader}>
-              <Modal.Title>Cadastrar Cliente</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className={styles.customModalBody}>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="clientNome">
-                  <Form.Label className={styles.customFormLabel}>Nome</Form.Label>
-                  <Form.Control
+            <div className={styles.customModalHeader}>
+              <h2>preencha os dados do cliente</h2>
+              <button onClick={handleCloseModal} className={styles.closeButton}>
+                <X size={24} color="var(--white)" /> {/* Ajuste o tamanho e a cor conforme necessário */}
+              </button>
+            </div>
+            <div className={styles.customModalBody}>
+              <form onSubmit={handleSubmit}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientNome" className={styles.customFormLabel}>Nome</label>
+                  <input
+                    id="clientNome"
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     autoFocus
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientEmail">
-                  <Form.Label className={styles.customFormLabel}>Email</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientEmail" className={styles.customFormLabel}>Email</label>
+                  <input
+                    id="clientEmail"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientTelefone">
-                  <Form.Label className={styles.customFormLabel}>Telefone</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientTelefone" className={styles.customFormLabel}>Telefone</label>
+                  <input
+                    id="clientTelefone"
                     type="text"
                     value={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientEndereco">
-                  <Form.Label className={styles.customFormLabel}>Endereço</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientEndereco" className={styles.customFormLabel}>Endereço</label>
+                  <input
+                    id="clientEndereco"
                     type="text"
                     value={endereco}
                     onChange={(e) => setEndereco(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientReferencia">
-                  <Form.Label className={styles.customFormLabel}>Referência</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientReferencia" className={styles.customFormLabel}>Referência</label>
+                  <input
+                    id="clientReferencia"
                     type="text"
                     value={referencia}
                     onChange={(e) => setReferencia(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientUsername">
-                  <Form.Label className={styles.customFormLabel}>Username</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientUsername" className={styles.customFormLabel}>Username</label>
+                  <input
+                    id="clientUsername"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <Form.Group controlId="clientPassword">
-                  <Form.Label className={styles.customFormLabel}>Password</Form.Label>
-                  <Form.Control
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientPassword" className={styles.customFormLabel}>Password</label>
+                  <input
+                    id="clientPassword"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className={styles.customFormControl}
                   />
-                </Form.Group>
-                <button type="submit" className={styles.customBtnPrimary}>
-                  Cadastrar
-                </button>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer className={styles.customModalFooter}>
-              <button onClick={handleCloseModal} className={styles.customBtnSecondary}>
-                Fechar
-              </button>
-            </Modal.Footer>
+                </div>
+
+                <div className={styles.buttonContainer}>
+                  <button type="submit" className={styles.customBtnPrimary}>
+                    Cadastrar
+                  </button>
+                  <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
+                    Fechar
+                  </button>
+                </div>
+              </form>
+            </div>
+          
           </Modal>
+
           <ToastContainer />
         </>
       )}
