@@ -8,10 +8,6 @@ class DetailUserControle {
 
         const role = req.role;
 
-        console.log("ID do User: ", user_id)
-
-        console.log("Role: ", role)
-
         const detailUserService = new DetailUserService();
 
         const user = await detailUserService.execute(user_id, role);

@@ -14,7 +14,7 @@ interface ButtonAddProps {
 export default function ButtonAdd({ onClick, label, icon, iconStyle, style, popover }: ButtonAddProps) {
   return (
     <OverlayTrigger
-      trigger="hover" // Muda o trigger para hover
+      trigger={['hover', 'focus']}
       placement="left" // Ajusta a posição do Popover
       overlay={popover || <></>} // Garante que sempre há um valor para overlay
     >

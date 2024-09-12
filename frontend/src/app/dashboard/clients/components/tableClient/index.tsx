@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, Info, UserPen, Trash } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, UserPen, Trash } from 'lucide-react';
 import styles from './styles.module.scss';
+import stylesModal from './stylesModal.module.scss'
 import { useFocus } from '@/app/context/FocusContext';
 import ButtonAdd from '@/app/dashboard/components/buttonAdd';
 import { api } from '@/services/api';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Modal, Form, Popover } from 'react-bootstrap';
+import { Modal, Tooltip, OverlayTrigger, Popover } from 'react-bootstrap';
 import { getCookie } from 'cookies-next';
 
 import { useOutsideClick } from '@/app/hooks/useOutsideClick';
@@ -35,6 +36,11 @@ export interface Client {
   user?: User;
 }
 
+interface ClientDelete {
+  name: string;
+  id: string;
+}
+
 interface TableClientsProps {
   clients: Client[];
   loading: boolean;
@@ -48,18 +54,25 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
 
   const [showModal, setShowModal] = useState(false);
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('email@defaut.com');
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [nome, setNome] = useState<string | undefined>();
+  const [email, setEmail] = useState<string | undefined>('email');
   const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [referencia, setReferencia] = useState('');
-  const [username, setUsername] = useState('');
+  const [endereco, setEndereco] = useState<string | undefined>();
+  const [referencia, setReferencia] = useState<string | undefined>();
+  const [username, setUsername] = useState<string | undefined>();
   const [password, setPassword] = useState('');
 
-  const [infoVisible, setInfoVisible] = useState<string | null>(null);
-  const infoOptionsRef = useRef<HTMLDivElement>(null);
+  const [clientName, setClientName] = useState('');
+  const [id, setClientId] = useState<string | null>(null);
 
-  useOutsideClick(infoOptionsRef, () => setInfoVisible(null));
+  const [isEdit, setIsEdit] = useState(false); // Novo estado para controlar se é edição
+
+
+  //const [infoVisible, setInfoVisible] = useState<string | null>(null);
+  //const infoOptionsRef = useRef<HTMLDivElement>(null);
+
+  //useOutsideClick(infoOptionsRef, () => setInfoVisible(null));
 
   const popoverContent = (
     <Popover id="popover-basic" className={styles.Popover}>
@@ -72,17 +85,43 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     </Popover>
   );
 
-  const handleOpenModal = () => {
-    setNome(nome);
-    setEmail(email);
-    setTelefone(telefone);
-    setEndereco(endereco);
-    setReferencia(referencia);
-    setUsername(username);
-    setPassword(password);
+  const handleOpenCreateModal  = () => {
+    setIsEdit(false); // Modo de cadastro
+    setNome('');
+    setEmail('');
+    setTelefone('');
+    setEndereco('');
+    setReferencia('');
+    setUsername('');
+    setPassword('');
     setShowModal(true);
-    
   };
+
+  const handleOpenEditModal = (client: Client) => {
+    setClientId(client.id);
+    setIsEdit(true);
+    setNome(client.nome || '');  // Valor padrão para evitar undefined
+    setEmail(client.email || '');
+    setTelefone(client.telefone || '');
+    setEndereco(client.endereco || '');
+    setReferencia(client.referencia || '');
+    setUsername(client.user?.username || '');  // Verifica se o username existe na relação User
+    setPassword(''); // Não preenche o password por segurança
+    setShowModal(true);
+  };
+
+  const handleOpenModalDelete = (name: string, id: string) => {
+    setClientName(name);
+    setClientId(id);
+    setShowModalDelete(true);
+  };
+
+  const handleCloseModalDelete = () => {
+    setShowModalDelete(false);
+    setClientName(''); 
+    setClientId('');
+  };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -90,47 +129,116 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+  
     try {
       const token = getCookie("token");
-
-      const newClient = {
+  
+      if (!token) {
+        toast.error("Token de autenticação não encontrado. Faça login novamente.");
+        return;
+      }
+  
+      // Cria o objeto clientData a partir dos estados
+      const clientData = {
         nome,
-        email,
-        telefone,
         endereco,
         referencia,
+        email,
+        telefone,
         username,
-        password,
+        password, // Incluindo senha para cadastro
+        ...(isEdit && { id: id }) // Inclui ID apenas para edição
       };
 
-      const response = await api.post("/clients", newClient, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  
+      if (isEdit) {
+        if (!id) {
+          throw new Error("ID do cliente não fornecida.");
+        }
+  
+        const response = await api.put(`/clients`, clientData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+         const updatedClientName = response.data.nome || "Cliente";
+        
+        toast.success(`Cliente ${updatedClientName} editado com sucesso.`);
+        console.log("Cliente editado com sucesso:", response.data);
 
-      toast.success("Cliente cadastrado com sucesso.");
-      console.log("Cliente cadastrado com sucesso:", response.data);
+      } else {
+        const response = await api.post("/clients", clientData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const newClientName = response.data.cliente?.nome || "Novo cliente";
+        
+        toast.success(`Cliente ${newClientName} cadastrado com sucesso.`);
+        console.log("Cliente cadastrado com sucesso:", response.data.nome);
+      }
+  
+      // Reseta o formulário após a ação (cadastro ou edição)
       setNome('');
-      setEmail('email@defaut.com');
+      setEmail('');
       setTelefone('');
       setEndereco('');
       setReferencia('');
       setUsername('');
       setPassword('');
-      handleCloseModal();
+  
+      handleCloseModal(); // Fecha o modal ao terminar
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || "Erro ao cadastrar cliente.";
+        const errorMessage = error.response?.data?.error || (isEdit ? "Erro ao editar cliente." : "Erro ao cadastrar cliente.");
         toast.error(errorMessage);
-        console.error("Erro ao cadastrar cliente:", error.response?.data);
+        console.error("Erro ao processar cliente:", error.response?.data);
       } else {
         toast.error("Erro desconhecido.");
         console.error("Erro desconhecido:", error);
       }
     }
   };
+
+  const handleConfirmDelete = async () => { 
+    try {
+      const token = getCookie('token'); // Obtém o token de autenticação
+  
+      if (!token) {
+        toast.error('Token de autenticação não encontrado. Faça login novamente.');
+        return;
+      }
+  
+      // Envia a ID como um JSON no corpo da requisição DELETE
+      const response = await api.delete(`/clients`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json', // Certifique-se de definir o tipo de conteúdo como JSON
+        },
+        data: {
+          id: id, // Enviando a ID no corpo da requisição
+        },
+      });
+  
+      toast.success(`Cliente ${clientName} excluído com sucesso.`);
+      console.log("Cliente excluído com sucesso:", response.data);
+  
+      handleCloseModalDelete(); // Fecha o modal ao terminar
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.error || "Erro ao excluir cliente.";
+        toast.error(errorMessage);
+        console.error("Erro ao excluir cliente:", error.response?.data);
+      } else {
+        toast.error("Erro desconhecido.");
+        console.error("Erro desconhecido:", error);
+      }
+    }
+  };
+
+
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -217,7 +325,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             <h1>CLIENTES CADASTRADOS</h1>
             <div className={styles.headerControls}>
             <ButtonAdd
-              onClick={handleOpenModal}
+              onClick={handleOpenCreateModal}
               label="Cadastrar Cliente"
               icon={<Plus style={{ width: '19px', height: '18px' }} />}
               iconStyle={{
@@ -274,37 +382,42 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       <td>{client.user?.name || ''}</td>
                       <td>{client.user?.username || ''}</td>
                       <td className={styles.actionIcons}>
-                        <Info
-                          className={styles.iconInfo}
-                          onClick={() => setInfoVisible(infoVisible === client.id ? null : client.id)}
-                          role="button"
-                          aria-label={`Informações sobre ${client.nome}`}
-                        />
-                        {infoVisible === client.id && (
-                          <div className={styles.infoOptions} ref={infoOptionsRef}>
-                            <div 
-                              onClick={handleOpenModal} 
-                              role="button" 
-                              tabIndex={0} 
-                              className={styles.buttonLike}
-                              aria-label="Editar"
-                            >
-                              Editar
-                              <UserPen className={styles.icon} />
-                            </div>
-                            <div 
-                              onClick={() => console.log('Deletar')} 
-                              onKeyDown={(e) => e.key === 'Enter' && console.log('Deletar')} 
-                              role="button" 
-                              tabIndex={0} 
-                              className={styles.buttonLike}
-                              aria-label="Deletar"
-                            >
-                              Deletar
-                              <Trash className={styles.icon} />
-                            </div>
-                          </div>
-                        )}
+                        {/* Tooltip para o ícone UserPen */}
+                        <OverlayTrigger
+                          trigger={['hover', 'focus']}
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-user-${client.id}`} className={styles.customTooltip}>
+                              Editar {client.nome}
+                            </Tooltip>
+                          }
+                        >
+                          <UserPen
+                            className={styles.iconUser}
+                            role="button"
+                            aria-label={`Editar ${client.nome}`}
+                            onClick={() => handleOpenEditModal(client)} 
+                          />
+                        </OverlayTrigger>
+
+
+                        {/* Tooltip para o ícone Trash */}
+                        <OverlayTrigger
+                          trigger={['hover', 'focus']}
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-trash-${client.id}`} className={styles.customTooltip}>
+                              Deletar {client.nome}
+                            </Tooltip>
+                          }
+                        >
+                          <Trash
+                            className={styles.iconTrash}
+                            role="button"
+                            aria-label={`Deletar ${client.nome}`}
+                            onClick={() => handleOpenModalDelete(client.nome, client.id)}
+                          />
+                        </OverlayTrigger>
                       </td>
                     </tr>
                   ))
@@ -360,9 +473,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             size="xl"
           >
             <div className={styles.customModalHeader}>
-              <h2>preencha os dados do cliente</h2>
+              <h2>{isEdit ? 'Editar Cliente' : 'Preencha os dados do cliente'}</h2>
               <button onClick={handleCloseModal} className={styles.closeButton}>
-                <X size={24} color="var(--white)" /> {/* Ajuste o tamanho e a cor conforme necessário */}
+                <X size={24} color="var(--white)" />
               </button>
             </div>
             <div className={styles.customModalBody}>
@@ -372,6 +485,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientNome"
                     type="text"
+                    required
+                    placeholder="Nome do cliente"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     autoFocus
@@ -384,6 +499,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientEmail"
                     type="email"
+                    required
+                    placeholder="Email do cliente"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles.customFormControl}
@@ -395,6 +512,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientTelefone"
                     type="text"
+                    required
+                    placeholder="Telefone do cliente"
                     value={telefone}
                     onChange={(e) => setTelefone(e.target.value)}
                     className={styles.customFormControl}
@@ -406,6 +525,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientEndereco"
                     type="text"
+                    required
+                    placeholder="Endereço do cliente"
                     value={endereco}
                     onChange={(e) => setEndereco(e.target.value)}
                     className={styles.customFormControl}
@@ -416,7 +537,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <label htmlFor="clientReferencia" className={styles.customFormLabel}>Referência</label>
                   <input
                     id="clientReferencia"
+                    placeholder="Referência do cliente"
                     type="text"
+                    required
                     value={referencia}
                     onChange={(e) => setReferencia(e.target.value)}
                     className={styles.customFormControl}
@@ -428,7 +551,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientUsername"
                     type="text"
+                    placeholder="Nome de usuário do cliente"
                     value={username}
+                    required
                     onChange={(e) => setUsername(e.target.value)}
                     className={styles.customFormControl}
                   />
@@ -439,7 +564,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <input
                     id="clientPassword"
                     type="password"
+                    placeholder="Senha do cliente"
                     value={password}
+                    
                     onChange={(e) => setPassword(e.target.value)}
                     className={styles.customFormControl}
                   />
@@ -447,7 +574,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>
-                    Cadastrar
+                    {isEdit ? 'Salvar Alterações' : 'Cadastrar'}
                   </button>
                   <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
                     Fechar
@@ -456,6 +583,30 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               </form>
             </div>
           
+          </Modal>
+          {/* Modal personalizado */}
+          <Modal
+            show={showModalDelete}
+            onHide={handleCloseModalDelete}
+            className={stylesModal.customModal}
+            size="sm"
+          >
+            <div className={stylesModal.customModalHeader}>
+              <h2>Deseja realmente excluir o cliente {clientName}?</h2>
+              <button onClick={handleCloseModalDelete} className={stylesModal.closeButton}>
+                <X size={24} color="var(--white)" /> {/* Ícone de fechar */}
+              </button>
+            </div>
+            <div className={stylesModal.customModalBody}>
+              <div className={stylesModal.buttonContainer}>
+                <button onClick={handleConfirmDelete} className={stylesModal.customBtnPrimary}>
+                  Excluir
+                </button>
+                <button onClick={handleCloseModalDelete} className={stylesModal.customBtnSecondary}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
           </Modal>
 
           <ToastContainer />
