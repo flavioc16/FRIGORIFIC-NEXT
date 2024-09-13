@@ -3,13 +3,15 @@ import { CreateClienteService } from '../../../services/admin/client/CreateClien
 
 class CreateClienteController {
     async handle(req: Request, res: Response) {
-        const { nome, email, telefone, username, password } = req.body;
+        const { nome, endereco, referencia,  email, telefone, username, password } = req.body;
 
         const createClienteService = new CreateClienteService();
 
         try {
             const { cliente } = await createClienteService.execute({
                 nome,
+                endereco,
+                referencia,
                 email,
                 telefone,   
                 username,

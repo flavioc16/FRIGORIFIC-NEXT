@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 
 interface ClienteRequest {
     nome: string;
+    endereco: string;
+    referencia: string;
     email: string;
     telefone: string;
     username: string;
@@ -10,7 +12,7 @@ interface ClienteRequest {
 }
 
 class CreateClienteService {
-    async execute({ nome, email, telefone, username, password }: ClienteRequest) {
+    async execute({ nome, endereco, referencia, email, telefone, username, password }: ClienteRequest) {
         if (!username) {
             throw new Error("Username is required");
         }
@@ -44,12 +46,16 @@ class CreateClienteService {
         const cliente = await prismaClient.cliente.create({
             data: {
                 nome: nome,
+                endereco: endereco,
+                referencia: referencia,
                 email: email,
                 telefone: telefone,
                 userId: user.id
             }, select:{
                 id: true,
                 nome: true,
+                endereco: true,
+                referencia: true,
                 email: true,
                 telefone: true
             }

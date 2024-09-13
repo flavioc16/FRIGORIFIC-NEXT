@@ -145,12 +145,21 @@ export function TableClients({ clients, loading }: TableClientsProps) {
         referencia,
         email,
         telefone,
-        username,
-        password, // Incluindo senha para cadastro
-        ...(isEdit && { id: id }) // Inclui ID apenas para edição
+        ...(isEdit 
+          ? { 
+              user: { // Estrutura para edição
+                username,
+                password, // Incluindo senha para atualização (se necessário)
+              },
+              id // Inclui o ID na edição
+            }
+          : { 
+              username, // Estrutura para cadastro
+              password  // Incluindo senha para cadastro
+            }
+        ),
       };
-
-  
+      
       if (isEdit) {
         if (!id) {
           throw new Error("ID do cliente não fornecida.");
@@ -258,9 +267,14 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const filteredClients = useMemo(() => {
     return clients.filter((client) =>
-      client.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        // Verifica valores de nível superior do cliente
+        Object.values(client).some(value => 
+            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+        ) 
+        // Verifica especificamente o username dentro de user
+        || (client.user?.username && client.user.username.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [clients, searchTerm]);
+}, [clients, searchTerm]);
 
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
@@ -365,7 +379,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   <th>Referência</th>
                   <th>Email</th>
                   <th>Telefone</th>
-                  <th>Nome</th>
                   <th>Username</th>
                   <th>Ação</th>
                 </tr>
@@ -379,7 +392,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       <td>{client.referencia || ''}</td>
                       <td>{client.email || ''}</td>
                       <td>{client.telefone}</td>
-                      <td>{client.user?.name || ''}</td>
                       <td>{client.user?.username || ''}</td>
                       <td className={styles.actionIcons}>
                         {/* Tooltip para o ícone UserPen */}
@@ -470,7 +482,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             show={showModal}
             onHide={handleCloseModal}
             className={styles.customModal}
-            size="xl"
+            size="lg"
           >
             <div className={styles.customModalHeader}>
               <h2>{isEdit ? 'Editar Cliente' : 'Preencha os dados do cliente'}</h2>
@@ -490,32 +502,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     autoFocus
-                    className={styles.customFormControl}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="clientEmail" className={styles.customFormLabel}>Email</label>
-                  <input
-                    id="clientEmail"
-                    type="email"
-                    required
-                    placeholder="Email do cliente"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={styles.customFormControl}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="clientTelefone" className={styles.customFormLabel}>Telefone</label>
-                  <input
-                    id="clientTelefone"
-                    type="text"
-                    required
-                    placeholder="Telefone do cliente"
-                    value={telefone}
-                    onChange={(e) => setTelefone(e.target.value)}
                     className={styles.customFormControl}
                   />
                 </div>
@@ -542,6 +528,32 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     required
                     value={referencia}
                     onChange={(e) => setReferencia(e.target.value)}
+                    className={styles.customFormControl}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientEmail" className={styles.customFormLabel}>Email</label>
+                  <input
+                    id="clientEmail"
+                    type="email"
+                    required
+                    placeholder="Email do cliente"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={styles.customFormControl}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientTelefone" className={styles.customFormLabel}>Telefone</label>
+                  <input
+                    id="clientTelefone"
+                    type="text"
+                    required
+                    placeholder="Telefone do cliente"
+                    value={telefone}
+                    onChange={(e) => setTelefone(e.target.value)}
                     className={styles.customFormControl}
                   />
                 </div>

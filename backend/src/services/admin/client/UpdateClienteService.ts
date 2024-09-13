@@ -1,4 +1,5 @@
 import prismaClient from "../../../prisma";
+import bcrypt from "bcryptjs"; // Certifique-se de ter o bcrypt instalado
 
 interface ClienteRequest {
     id: string;
@@ -8,8 +9,8 @@ interface ClienteRequest {
     email?: string;
     telefone?: string;
     user?: {
-        name?: string;
         username?: string;
+        password?: string; // Adiciona a senha ao request do usuário
     };
 }
 
@@ -41,12 +42,20 @@ class UpdateClienteService {
 
         // Atualiza os dados do usuário associado, se houver
         if (user) {
+            const updatedUserData: any = {
+                username: user.username || clienteExistente.user.username, // Agora pega o username do user
+              };
+              
+              // Se a senha foi fornecida, faça o hash
+              if (user.password) {
+                const hashedPassword = await bcrypt.hash(user.password, 10);
+                updatedUserData.password = hashedPassword;
+              }
+              
+
             await prismaClient.user.update({
                 where: { id: clienteExistente.userId },
-                data: {
-                    name: user.name || clienteExistente.user.name,
-                    username: user.username || clienteExistente.user.username,
-                },
+                data: updatedUserData,
             });
         }
 
