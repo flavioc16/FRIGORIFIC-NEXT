@@ -18,10 +18,11 @@ import { DeleteClienteController } from './controllers/admin/client/DeleteClient
 // Admin Compra Controllers
 import { GetTotalComprasDoDiaController } from './controllers/admin/compra/GetTotalComprasDoDiaController';
 import { GetAllComprasController } from './controllers/admin/compra/GetComprasController';
-import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 import { CreateCompraController } from './controllers/admin/compra/CreateCompraController';
 import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByIdController';
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
+
+import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 
 // Admin Pagamento Controllers
 import { CreatePagamentoController } from './controllers/admin/pagamento/CreatePagamentoController';
@@ -44,8 +45,10 @@ router.post('/clients', isAuthenticated, authorizeRole('ADMIN'), new CreateClien
 router.put('/clients', isAuthenticated, authorizeRole('ADMIN'), new UpdateClienteController().handle);
 router.get('/clients', isAuthenticated, authorizeRole('ADMIN'), new GetAllClientesController().handle);
 router.get('/clients/:clientId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
-router.get('/clients/:clientId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
+
+router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
+
 
 //  Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);

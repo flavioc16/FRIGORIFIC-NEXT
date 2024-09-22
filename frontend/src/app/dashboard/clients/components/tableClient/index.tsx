@@ -559,7 +559,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="clientUsername" className={styles.customFormLabel}>Username</label>
+                  <label htmlFor="clientUsername" className={styles.customFormLabel}>Usuario</label>
                   <input
                     id="clientUsername"
                     type="text"
@@ -572,7 +572,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="clientPassword" className={styles.customFormLabel}>Password</label>
+                  <label htmlFor="clientPassword" className={styles.customFormLabel}>Senha</label>
                   <input
                     id="clientPassword"
                     type="password"

@@ -3,6 +3,8 @@ import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 
+import Link from 'next/link';
+
 export interface Client {
   id: string;
   nome: string;
@@ -223,12 +225,13 @@ export function Table ({ clients, loading }: TableClientsProps) {
                           role="button"
                           aria-label={`Adicionar ${client.nome}`}
                         />
-                        <Info
-                          className={styles.iconInfo}
-                          onClick={() => console.log(`Informações sobre ${client.nome}`)}
-                          role="button"
-                          aria-label={`Informações sobre ${client.nome}`}
-                        />
+                        <Link href={`/dashboard/purchases/${client.id}`}>
+                          <Info
+                            className={styles.iconInfo}
+                            role="button"
+                            aria-label={`Informações sobre ${client.nome}`}
+                          />
+                        </Link>
                       </td>
                     </tr>
                   ))

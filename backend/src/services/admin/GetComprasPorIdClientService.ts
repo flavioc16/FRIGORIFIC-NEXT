@@ -10,10 +10,16 @@ class GetComprasPorIdService {
                 statusCompra: 0 // Não pago
             },
             include: {
-                cliente: true,
+                cliente:{
+                    select:{
+                        nome: true,
+                    },
+                },
                 user: false
             }
         });
+
+        console.log('Buscando compras para clienteId:', clienteId);
 
         if (comprasRestantes.length > 0) {
             // Se houver compras restantes, retorna apenas essas compras
