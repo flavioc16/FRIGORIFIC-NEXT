@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Tooltip, OverlayTrigger, Popover } from 'react-bootstrap';
 import { getCookie } from 'cookies-next';
 
-import { useOutsideClick } from '@/app/hooks/useOutsideClick';
 
 export interface User {
   id: string;
@@ -394,6 +393,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       <td>{client.telefone}</td>
                       <td>{client.user?.username || ''}</td>
                       <td className={styles.actionIcons}>
+                        
                         {/* Tooltip para o ícone UserPen */}
                         <OverlayTrigger
                           trigger={['hover', 'focus']}
@@ -411,7 +411,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                             onClick={() => handleOpenEditModal(client)} 
                           />
                         </OverlayTrigger>
-
 
                         {/* Tooltip para o ícone Trash */}
                         <OverlayTrigger
@@ -586,7 +585,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>
-                    {isEdit ? 'Salvar Alterações' : 'Cadastrar'}
+                    {isEdit ? 'Salvar Alterações' : 'Cadastrar Cliente'}
                   </button>
                   <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
                     Fechar
@@ -596,6 +595,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
             </div>
           
           </Modal>
+          
           {/* Modal personalizado */}
           <Modal
             show={showModalDelete}

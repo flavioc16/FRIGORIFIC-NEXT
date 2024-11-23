@@ -356,7 +356,6 @@
   }
 }
 
-  
 .customModalHeader {
   display: flex;
   justify-content: space-between;
@@ -365,8 +364,8 @@
   padding: 1rem;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-  
+} 
+
 .customModalBody {
   padding: 1.5rem;
   border-bottom-left-radius: 4px;
@@ -396,55 +395,50 @@
   }
 }
    
+.customFormGroup {
+  margin-bottom: 1rem;
+}
   
-  .customFormGroup {
-    margin-bottom: 1rem;
-  }
-  
-  .customFormLabel {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-  }
-  
-  .customFormControl {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-
-    border-radius: 0.25rem;
-    font-size: 1rem;
-  }
-  
-  .customBtnPrimary {
-    background-color: #007bff;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-  }
-  
-  .customBtnSecondary {
-    background-color: #6c757d;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-  }
-  
-  .customModalFooter {
-    padding: 10px;
-    text-align: right;
-  }
+.customFormLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
   
 
+.customBtnPrimary {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+} 
+
+.customBtnSecondary {
+  background-color: #6c757d;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+  
+.customModalFooter {
+  padding: 10px;
+  text-align: right;
+}
+  
 .customFormControl {
   background-color: #2d2d2d;
-  color: #FFF;
-  border: 1px solid #3d3d3d;
-  height: 45px;
-  font-size: 16px;
+    color:var(--white);
+    border: 1px solid #3d3d3d;
+    height: 34px;
+    font-size: 16px;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 1rem;
 }
 
 .customFormLabel {
@@ -501,32 +495,13 @@
   }
 }
   
-  /* Ajustes para os inputs */
-.customFormControl {
-    background-color: var(--roxo-900);
-    color: #FFF;
-    border: 1px solid #3d3d3d;
-    height: 34px;
-    font-size: 16px;
-    padding: 0 10px;
-    border-radius: 4px;
-    
-    &:focus {
-        border: 1px solid #3d3d3d;
-        outline: none; /* Remove a borda padrão de foco */
-      
-    }
-  }
-  
-  /* Ajuste para o label */
-  .customFormLabel {
+.customFormLabel {
     color: #FFF;
     margin-top: 10px;
     margin-bottom: 1px;
     font-size: 16px;
-  }
+}
     
-  
 /* styles.module.scss */
 .Popover {
     background-color: #2d333b; // Fundo escuro para o Popover
