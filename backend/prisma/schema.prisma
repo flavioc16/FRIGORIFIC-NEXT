@@ -63,6 +63,7 @@ model Compra {
   statusCompra   Int
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+  dataDaCompra   DateTime?
 
   userId         String
   clienteId      String

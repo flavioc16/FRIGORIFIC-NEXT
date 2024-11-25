@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 import { getCookie } from 'cookies-next';
 
+
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -48,19 +49,49 @@ export function Table ({ clients, loading }: TableClientsProps) {
     return today.toISOString().split('T')[0];
   });
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
-  const [totalCompra, setTotalCompra] = useState<string | undefined>();
+  const [totalCompra, setTotalCompra] = useState<string>(""); // Valor formatado para exibição
+  const [rawValue, setRawValue] = useState<number | null>(null); // Valor bruto para o banco
   const [tipoCompra, setTipoCompra] = useState('');
-  const [statusCompra, setStatusCompra] = useState<string | undefined>();
-
+  
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value;
+  
+    // Remove tudo que não for número
+    const numericValue = value.replace(/[^\d]/g, '');
+  
+    // Converte o valor para número bruto
+    const rawNumber = parseFloat(numericValue) / 100;
+  
+    // Atualiza o estado bruto
+    setRawValue(isNaN(rawNumber) ? 0 : rawNumber);
+  
+    // Formata o valor para exibição imediata
+    const formattedValue = rawNumber.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  
+    setTotalCompra(formattedValue); // Atualiza o valor formatado no input
+  };
+  
+  const handleBlur = () => {
+    // Reaplica a formatação ao perder o foco (não essencial neste caso)
+    if (rawValue !== null) {
+      const formattedValue = rawValue.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      setTotalCompra(formattedValue);
+    }
+  };
 
   const handleOpenModalCreateCompra  = (client: Client) => {
-    
     setDescricaoCompra('');
     setTotalCompra('');
     setTipoCompra('');
-    setStatusCompra('');
+  
     setSelectedClient(client);
     setShowModalCreateCompra(true);
 
@@ -72,63 +103,70 @@ export function Table ({ clients, loading }: TableClientsProps) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+    
     const token = getCookie("token");
-  
+    
     if (!token) {
-      toast.error("Token de autenticação não encontrado. Faça login novamente.");
-      return;
+        toast.error("Token de autenticação não encontrado. Faça login novamente.");
+        return;
+    }
+  
+    if (!selectedClient?.id) {
+        toast.error("Nenhum cliente selecionado. Por favor, selecione um cliente.");
+        return;
     }
   
     try {
-      // Monta o objeto de dados da compra a partir dos estados dos inputs
-      const compraData = {
-        dataCompra,
-        descricaoCompra,
-        totalCompra,
-        tipoCompra,
-        statusCompra,
-        // Se necessário, pode incluir o ID do cliente ou outro dado relevante
-        clientId: selectedClient?.id,
-      };
-
-      // Envia os dados para a API
-      const response = await api.post("/compras", compraData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        // Monta o objeto de dados da compra a partir dos estados dos inputs
+        const compraData = {
+            dataDaCompra: dataCompra || "", // Garante que seja uma string
+            descricaoCompra: descricaoCompra || "", // Garante que seja uma string
+            totalCompra: totalCompra 
+                ? parseFloat(totalCompra.replace('.', '').replace(',', '.')) 
+                : 0, // Trata undefined e converte corretamente o formato pt-BR
+            tipoCompra: tipoCompra ? parseInt(tipoCompra, 10) : 0, // Trata undefined e converte
+            statusCompra: 0, // Status padrão
+            clienteId: selectedClient.id, // Já verificado como válido
+        };
   
-      const newCompraDescription = response.data.descricaoCompra || "Compra";
-      toast.success(`Compra de ${newCompraDescription} cadastrada com sucesso.`);
-      console.log("Compra cadastrada com sucesso:", response.data);
+        console.log(compraData);
+        
+        // Envia os dados para a API
+        const response = await api.post("/compras", compraData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
   
-      // Reseta os campos do formulário após o envio
-      setDataCompra('');
-      setDescricaoCompra('');
-      setTotalCompra('');
-      setTipoCompra('');
-      setStatusCompra('');
+        const newCompraDescription = selectedClient.nome || "Compra";
+        toast.success(`Compra de ${newCompraDescription} cadastrada com sucesso.`);
+        console.log("Compra cadastrada com sucesso:", response.data);
   
-      handleCloseModalCreateCompra(); // Fecha o modal após a ação
+        // Reseta os campos do formulário após o envio
+        setDescricaoCompra('');
+        setTotalCompra('');
+        setTipoCompra('');
+  
+        handleCloseModalCreateCompra(); // Fecha o modal após a ação
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || "Erro ao cadastrar compra.";
-        toast.error(errorMessage);
-        console.error("Erro ao processar compra:", error.response?.data);
-      } else {
-        toast.error("Erro desconhecido.");
-        console.error("Erro desconhecido:", error);
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data?.error || "Erro ao cadastrar compra.";
+            toast.error(errorMessage);
+            console.error("Erro ao processar compra:", error.response?.data);
+        } else {
+            toast.error("Erro desconhecido.");
+            console.error("Erro desconhecido:", error);
       }
     }
   };
   
 
-  const applyFocus = () => {
-    if (!isMenuInputFocused && inputRef.current && !mouseMoved) {
-      inputRef.current.focus();
-    }
-  };
+
+const applyFocus = () => {
+  if (!isMenuInputFocused && inputRef.current && !mouseMoved) {
+    inputRef.current.focus();
+  }
+};
 
   useEffect(() => {
     applyFocus();
@@ -199,23 +237,27 @@ export function Table ({ clients, loading }: TableClientsProps) {
     const maxPagesToShow = 5;
     const firstPage = 1;
     const lastPage = totalPages;
-
+  
     if (totalPages <= maxPagesToShow) {
+      // Exibir todas as páginas, caso o total de páginas seja menor ou igual ao máximo a ser exibido.
       for (let i = 1; i <= totalPages; i++) {
         pagination.push(i);
       }
     } else {
       if (currentPage <= maxPagesToShow - 2) {
+        // Se a página atual for nas primeiras páginas
         for (let i = 1; i <= maxPagesToShow; i++) {
           pagination.push(i);
         }
-        pagination.push('...', lastPage);
+        pagination.push('...', lastPage); // Adiciona as reticências e a última página
       } else if (currentPage >= totalPages - (maxPagesToShow - 2)) {
+        // Se a página atual for nas últimas páginas
         pagination.push(firstPage, '...');
         for (let i = totalPages - (maxPagesToShow - 1); i <= totalPages; i++) {
           pagination.push(i);
         }
       } else {
+        // Caso a página atual esteja no meio
         pagination.push(firstPage, '...');
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pagination.push(i);
@@ -223,10 +265,12 @@ export function Table ({ clients, loading }: TableClientsProps) {
         pagination.push('...', lastPage);
       }
     }
-
+  
+    // Filtra a duplicação de reticências consecutivas
     const filteredPagination: (number | string)[] = [];
     pagination.forEach((page, index) => {
       if (page === '...') {
+        // Evita duplicação de reticências
         if (filteredPagination[filteredPagination.length - 1] !== '...') {
           filteredPagination.push(page);
         }
@@ -234,10 +278,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
         filteredPagination.push(page);
       }
     });
-
+  
     return filteredPagination;
   };
-
+  
   return (
     <div className={styles.tableWrapper}>
       {loading ? (
@@ -429,32 +473,33 @@ export function Table ({ clients, loading }: TableClientsProps) {
                 />
               </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
-                  <input
-                    id="descricaoCompra"
-                    type="text"
-                    required
-                    placeholder="Descrição"
-                    value={descricaoCompra}
-                    onChange={(e) => setDescricaoCompra(e.target.value)}
-                    autoFocus
-                    className={styles.customFormControl}
-                  />
-                </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
+                <input
+                  id="descricaoCompra"
+                  type="text"
+                  required
+                  placeholder="Descrição"
+                  value={descricaoCompra}
+                  onChange={(e) => setDescricaoCompra(e.target.value)}
+                  autoFocus
+                  className={styles.customFormControl}
+                />
+              </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="totalCompra" className={styles.customFormLabel}>Total</label>
-                  <input
-                    id="totalCompra"
-                    type="text"
-                    required
-                    placeholder="Valor"
-                    value={totalCompra}
-                    onChange={(e) => setTotalCompra(e.target.value)}
-                    className={styles.customFormControl}
-                  />
-                </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="totalCompra" className={styles.customFormLabel}>Total</label>
+                <input
+                  id="totalCompra"
+                  type="text"
+                  value={totalCompra}  // Valor formatado para exibição
+                  onBlur={handleBlur}
+                  onChange={handleChange}  // Atualiza o valor durante a digitação
+                  className={styles.customFormControl}
+                  placeholder="Valor"
+                  required
+                />
+              </div>
 
                 <div className={styles.formGroup}>
                   <label htmlFor="tipoCompra" className={styles.customFormLabel}>Tipo de Compra</label>
@@ -465,23 +510,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
                     onChange={(e) => setTipoCompra(e.target.value)}
                     className={styles.customFormControl}
                   >
-                    <option value="" disabled>Selecione o tipo</option>
-                    <option value="Produto">Produto</option>
-                    <option value="Serviço">Serviço</option>
+                    <option value="0">Produto</option>
+                    <option value="1">Serviço</option>
+                    <option value="2">Restante</option>
                   </select>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="statusCompra" className={styles.customFormLabel}>Status</label>
-                  <input
-                    id="statusCompra"
-                    type="text"
-                    required
-                    placeholder="Status"
-                    value={statusCompra}
-                    onChange={(e) => setStatusCompra(e.target.value)}
-                    className={styles.customFormControl}
-                  />
                 </div>
 
                 <div className={styles.buttonContainer}>
@@ -493,17 +525,13 @@ export function Table ({ clients, loading }: TableClientsProps) {
                   </button>
                 </div>
               </form>
-
               </div>
-            
             </Modal>
 
-            
           </div>
           <ToastContainer />
         </>
       )}
     </div>
-  );
-  
+  ); 
 }

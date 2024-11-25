@@ -1,4 +1,4 @@
-import prismaClient from "../../../prisma";
+import prismaClient from '../../../prisma';
 
 interface CompraRequest {
     descricaoCompra: string;
@@ -7,10 +7,11 @@ interface CompraRequest {
     statusCompra: number;
     clienteId: string;
     userId: string;
+    dataDaCompra?: string; // Torne opcional
 }
 
 class CreateCompraService {
-    async execute({ descricaoCompra, totalCompra, tipoCompra, statusCompra, clienteId, userId}: CompraRequest) {
+    async execute({ descricaoCompra, totalCompra, tipoCompra, statusCompra, clienteId, userId, dataDaCompra }: CompraRequest) {
         const compra = await prismaClient.compra.create({
             data: {
                 descricaoCompra,
@@ -18,12 +19,13 @@ class CreateCompraService {
                 tipoCompra,
                 statusCompra,
                 cliente: {
-                    connect: { id: clienteId }
+                    connect: { id: clienteId },
                 },
                 user: {
-                    connect: { id: userId }
-                }
-            }
+                    connect: { id: userId },
+                },
+                dataDaCompra: dataDaCompra ? new Date(dataDaCompra) : null, // Converta a dataDaCompra para Date ou defina como null
+            },
         });
 
         return compra;
@@ -31,4 +33,3 @@ class CreateCompraService {
 }
 
 export { CreateCompraService };
-
