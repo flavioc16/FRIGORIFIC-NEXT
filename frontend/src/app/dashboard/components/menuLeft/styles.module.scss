@@ -1,23 +1,23 @@
 .menu {
   width: 350px;
   display: flex;
-  flex-direction: column; /* Garante que o menu se expanda verticalmente */
-  height: 100vh; /* Altura do menu ajustada para 100% da viewport */
+  flex-direction: column;
+  height: 100vh;
   margin: 0;
   background-color: var(--white);
   margin-top: 16px;
   position: relative;
   border-right: var(--border-width) solid var(--cinza-800);
   overflow: hidden;
-  font-family: 'Montserrat', sans-serif; /* Definindo a fonte Montserrat */
+  font-family: 'Montserrat', sans-serif;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; /* Alinhar ao topo */
-    right: -var(--border-width); /* Posicionar fora da área visível */
+    top: 0;
+    right: -var(--border-width);
     width: var(--border-width);
-    height: 100%; /* Ajustado para 100% da altura do menu */
+    height: 100%;
     background-color: var(--cinza-800);
   }
 
@@ -37,7 +37,7 @@
     padding-top: 3px;
     padding-left: 8px;
     width: 100%;
-    flex: 1; /* Faz com que o nav se expanda para preencher o espaço disponível */
+    flex: 1;
     overflow: auto;
   }
 
@@ -51,6 +51,7 @@
 
   .value {
     background-color: transparent;
+    margin-bottom: 2px;
     border: none;
     padding: 6px;
     color: white;
@@ -60,73 +61,65 @@
     cursor: pointer;
     border-radius: 4px;
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     width: 97.5%;
 
     svg {
       color: var(--cinza-800);
       margin-left: 8px;
+      transition: color 0.3s ease; /* Transição suave para o ícone */
     }
-  }
 
-  .value.selected {
-    background-color: var(--roxo-700);
+    &:focus {
+      outline: none; /* Remove o outline de foco */
+    }
 
-    /* Alterar a cor do ícone svg quando selecionado */
+    /* Hover para itens não selecionados */
+    &:not(.selected):hover {
+      background-color: var(--roxo-700);
+      
+      /* Modificando o ícone e a linha à esquerda no hover */
+      svg {
+        color: var(--red-750); /* Muda a cor do ícone no hover */
+      }
+
+      &::before {
+        opacity: 1; /* Torna a linha visível no hover */
+      }
+    }
+
+    /* Selecionado: muda a cor do fundo e do ícone */
+    &.selected {
+      background-color: var(--roxo-700);
+
+      svg {
+        color: var(--red-750);
+      }
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 2px;
+      height: 80%;
+      background-color: var(--red-750);
+      border-radius: 5px;
+      opacity: 0; /* Inicialmente invisível */
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
     svg {
-      color: var(--red-750);
+      width: 20px;
     }
   }
 
-  .value.selected::before {
-    opacity: 1;
-  }
-
-  .value:not(:active):hover,
-  .value:focus {
-    background-color: var(--roxo-700);
-
-    /* Alterar a cor do ícone svg no estado de hover ou focus */
-    svg {
-      color: var(--red-750);
-    }
-  }
-
-  .value:focus,
-  .value:active {
-    background-color: var(--roxo-700);
-    outline: none;
-
-    /* Alterar a cor do ícone svg no estado de focus ou active */
-    svg {
-      color: var(--red-750);
-    }
-  }
-
-  .value::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 0;
-    width: 2px;
-    height: 80%;
-    background-color: var(--red-750);
-    border-radius: 5px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1;
-  }
-
-  .value:focus::before,
-  .value:active::before {
-    opacity: 1;
-  }
-
-  .value svg {
-    width: 20px;
-  }
-
-  // Estilos para o campo de entrada no menu lateral
   .input {
     position: relative;
   }
@@ -139,8 +132,8 @@
     background-color: var(--lilas-800);
     color: var(--white);
     outline: none;
-    width: 100%; // Ajuste a largura conforme necessário
-    margin-bottom: 1rem; // Adiciona um espaçamento abaixo do input
+    width: 100%;
+    margin-bottom: 1rem;
 
     &:focus {
       border-color: var(--white);
@@ -154,7 +147,7 @@
     transform: translateY(-50%);
     color: var(--cinza-800);
     cursor: pointer;
-    height: 24px; // Ajuste o tamanho conforme necessário
+    height: 24px;
   }
 
   .searchIcon {
@@ -162,6 +155,6 @@
   }
 
   .clearIcon {
-    right: 8px; // Ajuste para posicionar o ícone de limpar mais próximo do input
+    right: 8px;
   }
 }

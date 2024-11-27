@@ -36,7 +36,7 @@ export function FocusProvider({ children }:
       if (!isMenuInputFocused) {
         // Trigger focus in your component or other logic
       }
-    }, 3000);
+    },);
 
     return () => {
       if (intervalRef.current) {

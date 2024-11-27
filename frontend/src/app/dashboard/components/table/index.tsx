@@ -1,5 +1,6 @@
+"use client"; // Garantindo que o código seja executado no cliente 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, Info } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, Info, FileSpreadsheet } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 import { getCookie } from 'cookies-next';
@@ -13,6 +14,8 @@ import { api } from '@/services/api';
 
 import Link from 'next/link';
 import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import useF2Redirect from "@/app/hooks/useF2Redirect";  // Importando o hook
 
 export interface Client {
   id: string;
@@ -32,73 +35,81 @@ interface TableClientsProps {
 }
 
 export function Table ({ clients, loading }: TableClientsProps) {
+  const { searchInputRef } = useF2Redirect(); // Pegando a ref do hook
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage, setClientsPerPage] = useState(10);
-
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);  // Estado para o modal
   const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
 
   const [mouseMoved, setMouseMoved] = useState(false);
 
   const [showModalCreateCompra, setShowModalCreateCompra] = useState(false);
 
-
-  const [dataCompra, setDataCompra] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [dataCompra, setDataCompra] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
-  const [totalCompra, setTotalCompra] = useState<string>(""); // Valor formatado para exibição
-  const [rawValue, setRawValue] = useState<number | null>(null); // Valor bruto para o banco
+  const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
+  const [rawValue, setRawValue] = useState<number>(0);
   const [tipoCompra, setTipoCompra] = useState('');
   
+
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+  useEffect(() => {
+    if (showModalCreateCompra) {
+      const today = new Date();
+      setDataCompra(today.toISOString().split('T')[0]);
+    }
+  }, [showModalCreateCompra]);
+
+  useEffect(() => {
+    setTotalCompra("0,00");
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
   
     // Remove tudo que não for número
-    const numericValue = value.replace(/[^\d]/g, '');
+    const numericValue = value.replace(/[^\d]/g, "");
   
-    // Converte o valor para número bruto
+    // Converte o valor para número bruto (dividido por 100 para considerar casas decimais)
     const rawNumber = parseFloat(numericValue) / 100;
   
     // Atualiza o estado bruto
     setRawValue(isNaN(rawNumber) ? 0 : rawNumber);
   
     // Formata o valor para exibição imediata
-    const formattedValue = rawNumber.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    const formattedValue = isNaN(rawNumber)
+      ? "0,00"
+      : rawNumber.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
   
     setTotalCompra(formattedValue); // Atualiza o valor formatado no input
   };
   
   const handleBlur = () => {
-    // Reaplica a formatação ao perder o foco (não essencial neste caso)
-    if (rawValue !== null) {
-      const formattedValue = rawValue.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-      setTotalCompra(formattedValue);
-    }
+    // Reaplica a formatação ao perder o foco
+    const formattedValue = rawValue.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    setTotalCompra(formattedValue); // Garante que o valor exibido é formatado corretamente
   };
-
+  
   const handleOpenModalCreateCompra  = (client: Client) => {
     setDescricaoCompra('');
-    setTotalCompra('');
+    setTotalCompra("0,00");
     setTipoCompra('');
-  
+    setIsModalOpen(true)
     setSelectedClient(client);
     setShowModalCreateCompra(true);
-
   };
 
   const handleCloseModalCreateCompra = () => {
     setShowModalCreateCompra(false);
+    setIsModalOpen(false)
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -115,7 +126,12 @@ export function Table ({ clients, loading }: TableClientsProps) {
         toast.error("Nenhum cliente selecionado. Por favor, selecione um cliente.");
         return;
     }
-  
+
+   if (totalCompra === "0,00" || isNaN(parseFloat(totalCompra.replace('.', '').replace(',', '.')))) {
+    toast.error("Digite um valor válido para a compra");
+    return;
+  }
+    
     try {
         // Monta o objeto de dados da compra a partir dos estados dos inputs
         const compraData = {
@@ -129,8 +145,6 @@ export function Table ({ clients, loading }: TableClientsProps) {
             clienteId: selectedClient.id, // Já verificado como válido
         };
   
-        console.log(compraData);
-        
         // Envia os dados para a API
         const response = await api.post("/compras", compraData, {
             headers: {
@@ -138,15 +152,15 @@ export function Table ({ clients, loading }: TableClientsProps) {
             },
         });
   
-        const newCompraDescription = selectedClient.nome || "Compra";
+        const newCompraDescription = selectedClient.nome || "Cliente";
         toast.success(`Compra de ${newCompraDescription} cadastrada com sucesso.`);
         console.log("Compra cadastrada com sucesso:", response.data);
   
         // Reseta os campos do formulário após o envio
         setDescricaoCompra('');
-        setTotalCompra('');
+        setTotalCompra("0,00");
         setTipoCompra('');
-  
+        setSearchTerm('');
         handleCloseModalCreateCompra(); // Fecha o modal após a ação
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -160,13 +174,11 @@ export function Table ({ clients, loading }: TableClientsProps) {
     }
   };
   
-
-
-const applyFocus = () => {
-  if (!isMenuInputFocused && inputRef.current && !mouseMoved) {
-    inputRef.current.focus();
-  }
-};
+  const applyFocus = () => {
+    if (!isMenuInputFocused && searchInputRef.current && !mouseMoved) {
+      searchInputRef.current.focus();
+    }
+  };
 
   useEffect(() => {
     applyFocus();
@@ -180,7 +192,7 @@ const applyFocus = () => {
   useEffect(() => {
     const handleUserInteraction = () => {
       setMouseMoved(true);
-      setTimeout(() => setMouseMoved(false), 3000);
+      setTimeout(() => setMouseMoved(false),);
     };
   
     window.addEventListener('mousemove', handleUserInteraction);
@@ -194,14 +206,16 @@ const applyFocus = () => {
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMenuInputFocused) {
-        setSearchTerm('');
+      // Verifica se o modal está fechado e o input do menu está focado
+      if (event.key === 'Escape' && isMenuInputFocused && !isModalOpen) {
+        setSearchTerm(''); // Reseta o searchTerm apenas quando o modal estiver fechado
       }
     };
-
+  
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMenuInputFocused]);
+  }, [isMenuInputFocused, isModalOpen]); // Dependência de isModalOpen
+  
 
   const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setClientsPerPage(Number(event.target.value));
@@ -218,10 +232,11 @@ const applyFocus = () => {
 
   const handleSearchClear = () => setSearchTerm('');
 
-  // Memoized filtered clients to optimize performance
   const filteredClients = useMemo(() => {
     return clients.filter((client) =>
-      client.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        // Verifica valores de nível superior do cliente
+        Object.values(client).some(value => 
+            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())) 
     );
   }, [clients, searchTerm]);
 
@@ -320,7 +335,7 @@ const applyFocus = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.filterInput}
-                  ref={inputRef}
+                  ref={searchInputRef}
                   aria-label="Buscar Cliente"
                 />
                 {searchTerm ? (
@@ -451,6 +466,8 @@ const applyFocus = () => {
               onHide={handleCloseModalCreateCompra}
               className={styles.customModal}
               size="lg"
+              backdrop={false}
+              keyboard={true}
             >
               <div className={styles.customModalHeader}>
               <h2> {selectedClient?.nome}</h2>
@@ -502,7 +519,7 @@ const applyFocus = () => {
               </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="tipoCompra" className={styles.customFormLabel}>Tipo de Compra</label>
+                  <label htmlFor="tipoCompra" className={styles.customFormLabel}>Tipo de Serviço</label>
                   <select
                     id="tipoCompra"
                     required
@@ -518,16 +535,15 @@ const applyFocus = () => {
 
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>
-                  Cadastrar Compra
+                  Cadastrar
                   </button>
                   <button type="button" onClick={handleCloseModalCreateCompra} className={styles.customBtnSecondary}>
-                    Fechar
+                    Cancelar
                   </button>
                 </div>
               </form>
               </div>
             </Modal>
-
           </div>
           <ToastContainer />
         </>

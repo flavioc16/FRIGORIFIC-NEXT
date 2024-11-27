@@ -585,10 +585,10 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>
-                    {isEdit ? 'Salvar Alterações' : 'Cadastrar Cliente'}
+                    {isEdit ? 'Salvar' : 'Cadastrar'}
                   </button>
                   <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
-                    Fechar
+                    Cancelar
                   </button>
                 </div>
               </form>

@@ -5,10 +5,11 @@ export type MenuItemId =
     'reminders' | 
     'reports' |
     'moneybox' |
-     'payments' |
+    'payments' |
     null;
 
 export interface MenuContextType {
   selected: MenuItemId;
   setSelected: (id: MenuItemId) => void;
+
 }

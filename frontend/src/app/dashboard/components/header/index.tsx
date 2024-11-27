@@ -1,27 +1,28 @@
-// src/app/dashboard/components/yourComponent.jsx
-'use client';
+'use client'; // Garantindo que o código seja executado no cliente
 
-import { useState } from 'react';
-import Link from 'next/link';
-import styles from './styles.module.scss'; // Ajuste o caminho conforme necessário
-import Image from 'next/image';
-import { LogOutIcon, X } from 'lucide-react';
-import { deleteCookie } from 'cookies-next';
-import { useRouter } from 'next/navigation';
-import Modal from 'react-bootstrap/Modal';
-
-import stylesModal from './stylesModal.module.scss'; // Ajuste o caminho conforme necessári
-
-import LOGOVERTICAL from '/public/LOGOVERTICAL.png';
+import { useState } from "react";
+import Link from "next/link";
+import styles from "./styles.module.scss";
+import Image from "next/image";
+import { LogOutIcon, X } from "lucide-react";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import Modal from "react-bootstrap/Modal";
+import stylesModal from "./stylesModal.module.scss";
+import useF2Redirect from "@/app/hooks/useF2Redirect"; // Importando o hook
+import { useMenu } from "@/app/context/MenuContext";
 
 export function Header() {
+  useF2Redirect(); // usando o hook para usar f2 inicio
+  const { setSelected } = useMenu(); // Acessando o contexto do menu
+
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
   const handleLogout = () => {
-    deleteCookie('token', { path: '/' });
-    localStorage.removeItem('selectedMenuItem');
-    router.replace('/');
+    deleteCookie("token", { path: "/" });
+    localStorage.removeItem("selectedMenuItem");
+    router.replace("/");
   };
 
   const handleOpenModal = () => {
@@ -32,14 +33,22 @@ export function Header() {
     setShowModal(false);
   };
 
+  const handleLogoClick = () => {
+    setSelected("/"); // Atualiza o contexto para o item "Início"
+  };
+
+  const handleClientsClick = () => {
+    setSelected("clients"); // Atualiza o contexto para o item "Clientes"
+  };
+
   return (
     <>
       <header className={styles.headerContainer}>
         <div className={styles.headerContent}>
-          <Link href="/dashboard">
+          <Link href="/dashboard" onClick={handleLogoClick}>
             <Image
               alt="Logo Frigorifico"
-              src={LOGOVERTICAL}
+              src={"/LOGOVERTICAL.png"}
               width={167}
               height={63}
               priority={true}
@@ -48,7 +57,9 @@ export function Header() {
           </Link>
 
           <nav>
-            <Link href="/dashboard/clients">Clientes</Link>
+            <Link href="/dashboard/clients" onClick={handleClientsClick}>
+              Clientes
+            </Link>
             <a onClick={handleOpenModal} className={styles.logoutLink}>
               <LogOutIcon size={22} color="#FFF" />
             </a>
@@ -56,7 +67,6 @@ export function Header() {
         </div>
       </header>
 
-      {/* Modal personalizado */}
       <Modal
         show={showModal}
         onHide={handleCloseModal}
@@ -66,7 +76,7 @@ export function Header() {
         <div className={stylesModal.customModalHeader}>
           <h2>Deseja realmente sair?</h2>
           <button onClick={handleCloseModal} className={stylesModal.closeButton}>
-            <X size={24} color="var(--white)" /> {/* Ícone de fechar */}
+            <X size={24} color="var(--white)" />
           </button>
         </div>
         <div className={stylesModal.customModalBody}>

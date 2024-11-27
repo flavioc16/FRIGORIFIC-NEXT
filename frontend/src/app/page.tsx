@@ -6,7 +6,6 @@ import { api } from '@/services/api';
 import styles from './page.module.scss';
 
 
-import LOGOVERTICAL from '/public/LOGOVERTICAL.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -51,8 +50,13 @@ export default function Login() {
 
       document.cookie = `token=${token}; ${cookieOptions}`;
 
+      localStorage.removeItem('selectedMenuItem');
+
       if (role === 'ADMIN') {
+        // Adiciona o item no localStorage
+        localStorage.setItem('selectedMenuItem', '/');
         router.push('/dashboard');
+        
       } else if (role === 'USER') {
         toast.info('Realize o login no nosso APP.');
       } else {
@@ -97,14 +101,16 @@ export default function Login() {
           isLoading ? styles.loading : ''
         }`}
       >
-        <Image
-          src={LOGOVERTICAL}
-          alt="Logo pizzaria"
+       <Image
+          src="/LOGOVERTICAL.png"
+          alt="Logo Frigorifico"
           width={443}
           height={169}
           className={styles.logo}
           priority={true}
+          unoptimized={true}
         />
+
 
         <section className={styles.login}>
           <form onSubmit={handleLogin} className={styles.form}>

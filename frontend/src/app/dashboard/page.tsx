@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next"; // Função para obter cookies
@@ -16,7 +16,6 @@ export interface Client {
   created_at: string;
   updated_at: string;
   userId: string;
-  
 }
 
 export default function Dashboard() {
