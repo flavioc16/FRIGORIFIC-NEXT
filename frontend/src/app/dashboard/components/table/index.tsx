@@ -1,9 +1,10 @@
 "use client"; // Garantindo que o código seja executado no cliente 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, Info, FileSpreadsheet } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, Info, ShoppingBasket } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 import { getCookie } from 'cookies-next';
+
 
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -41,6 +42,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
   const [clientsPerPage, setClientsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);  // Estado para o modal
   const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
+  const inputRef = useRef<HTMLInputElement>(null); // Define o tipo da ref
 
   const [mouseMoved, setMouseMoved] = useState(false);
 
@@ -97,6 +99,16 @@ export function Table ({ clients, loading }: TableClientsProps) {
     });
     setTotalCompra(formattedValue); // Garante que o valor exibido é formatado corretamente
   };
+
+  
+
+   // Função para capitalizar a primeira letra de cada palavra
+  const capitalizeWords = (value: string): string => {
+    return value
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
   
   const handleOpenModalCreateCompra  = (client: Client) => {
     setDescricaoCompra('');
@@ -127,11 +139,12 @@ export function Table ({ clients, loading }: TableClientsProps) {
         return;
     }
 
-   if (totalCompra === "0,00" || isNaN(parseFloat(totalCompra.replace('.', '').replace(',', '.')))) {
-    toast.error("Digite um valor válido para a compra");
-    return;
-  }
-    
+    if (totalCompra === "0,00" || isNaN(parseFloat(totalCompra.replace('.', '').replace(',', '.')))) {
+        toast.error("Digite um valor válido para a compra");
+        inputRef.current?.focus(); // Define o foco no input
+        return;
+    }
+
     try {
         // Monta o objeto de dados da compra a partir dos estados dos inputs
         const compraData = {
@@ -161,7 +174,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
         setTotalCompra("0,00");
         setTipoCompra('');
         setSearchTerm('');
-        handleCloseModalCreateCompra(); // Fecha o modal após a ação
+        //handleCloseModalCreateCompra(); // Fecha o modal após a ação
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const errorMessage = error.response?.data?.error || "Erro ao cadastrar compra.";
@@ -310,7 +323,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
             <h1>CLIENTES CADASTRADOS</h1>
             <div className={styles.headerControls}>
               <div className={styles.resultsPerPage}>
-                <label htmlFor="resultsPerPage">Exibir:</label>
+                <label htmlFor="resultsPerPage"> Exibir :</label>
                 <select
                   id="resultsPerPage"
                   value={clientsPerPage}
@@ -331,6 +344,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
               <div className={styles.searchContainer}>
                 <input
                   type="text"
+                  autoFocus
                   placeholder="Buscar Cliente"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -356,9 +370,9 @@ export function Table ({ clients, loading }: TableClientsProps) {
               <thead>
                 <tr>
                   <th>Nome</th>
+                  <th>Endereço</th>
                   <th>Referência</th>
                   <th>Telefone</th>
-                  <th>Endereço</th>
                   <th>Ação</th>
                 </tr>
               </thead>
@@ -367,9 +381,9 @@ export function Table ({ clients, loading }: TableClientsProps) {
                   currentClients.map((client) => (
                     <tr key={client.id}>
                       <td>{client.nome}</td>
+                      <td>{client.endereco || ''}</td>
                       <td>{client.referencia || ''}</td>
                       <td>{client.telefone}</td>
-                      <td>{client.endereco || ''}</td>
                       <td className={styles.actionIcons}>
                         
                       <OverlayTrigger
@@ -399,11 +413,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
                         }
                       >
                         <Link href={`/dashboard/purchases/${client.id}`}>
-                          <Info
+                          <ShoppingBasket
                             className={styles.iconInfo}
                             role="button"
-                            aria-label={`Informações sobre ${client.nome}`}
-                          />
+                            aria-label={`Informações sobre ${client.nome}`} />
                         </Link>
                       </OverlayTrigger>
 
@@ -498,7 +511,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
                   required
                   placeholder="Descrição"
                   value={descricaoCompra}
-                  onChange={(e) => setDescricaoCompra(e.target.value)}
+                  onChange={(e) => setDescricaoCompra(capitalizeWords(e.target.value))}
                   autoFocus
                   className={styles.customFormControl}
                 />
@@ -514,6 +527,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
                   onChange={handleChange}  // Atualiza o valor durante a digitação
                   className={styles.customFormControl}
                   placeholder="Valor"
+                  ref={inputRef} // Atribui a ref ao input
                   required
                 />
               </div>
@@ -527,9 +541,8 @@ export function Table ({ clients, loading }: TableClientsProps) {
                     onChange={(e) => setTipoCompra(e.target.value)}
                     className={styles.customFormControl}
                   >
-                    <option value="0">Produto</option>
-                    <option value="1">Serviço</option>
-                    <option value="2">Restante</option>
+                    <option value="0">Compra</option>
+                    <option value="1">Restante</option>
                   </select>
                 </div>
 

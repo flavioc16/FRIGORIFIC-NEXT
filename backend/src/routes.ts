@@ -44,7 +44,7 @@ router.post('/users', new CreateUserController().handle);
 router.post('/clients', isAuthenticated, authorizeRole('ADMIN'), new CreateClienteController().handle);
 router.put('/clients', isAuthenticated, authorizeRole('ADMIN'), new UpdateClienteController().handle);
 router.get('/clients', isAuthenticated, authorizeRole('ADMIN'), new GetAllClientesController().handle);
-router.get('/clients/:clientId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
+router.get('/clients/:clienteId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
 
 router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);

@@ -6,6 +6,9 @@ class GetAllClientesService {
         const clientes = await prismaClient.cliente.findMany({
             include: {
                 user: true
+            },
+            orderBy: {
+                nome: 'asc' // Ordena pelo campo 'nome' de forma crescente
             }
         });
 

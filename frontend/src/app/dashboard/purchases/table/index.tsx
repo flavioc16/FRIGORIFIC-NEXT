@@ -6,13 +6,18 @@ import Link from 'next/link';
 export interface Compra {
   id: string;
   descricaoCompra: string;
+  dataDaCompra?: string;  // Torne-a opcional se não for sempre preenchida
   totalCompra: number;
   tipoCompra: number;
   statusCompra: number;
   created_at: string;
   updated_at: string;
   clienteId: string;
+  cliente?: {
+    nome: string;
+  };
 }
+
 
 interface TableComprasProps {
   compras: Compra[];
@@ -24,14 +29,55 @@ export function TableCompras({ compras, loading, clienteNome }: TableComprasProp
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [comprasPerPage, setComprasPerPage] = useState(10);
+  const [somaAtual, setSomaAtual] = useState<number>(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  function formatDate(dateString: string): string {
+    if (!dateString) return '';
+  
+    const date = new Date(dateString);
+    // Ajusta a data conforme o fuso horário universal
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+  
+    // Retorna a data formatada no padrão brasileiro
+    return date.toLocaleDateString('pt-BR');
+  }
+
+  function adjustDate(dateString: string): string {
+    return formatDate(dateString); // Utiliza a mesma função de formatação
+  }
+  
+  
+
   const filteredCompras = useMemo(() => {
-    return compras.filter((compra) =>
-      compra.descricaoCompra.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = compras.filter((compra) => {
+      const searchLower = searchTerm.toLowerCase();
+  
+      // Utilize a função unificada para formatar a data
+      const formattedDate = formatDate(compra.created_at);
+  
+      const formatCurrency = (value: number): string => {
+        return value
+          .toFixed(2)
+          .replace('.', ',');
+      };
+  
+      return (
+        compra.descricaoCompra.toLowerCase().includes(searchLower) ||
+        formattedDate.includes(searchLower) ||
+        formatCurrency(compra.totalCompra).includes(searchLower)
+      );
+    });
+  
+    const total = filtered.reduce((acc, compra) => acc + compra.totalCompra, 0);
+    setSomaAtual(total);
+  
+    return filtered;
   }, [compras, searchTerm]);
+  
+  
+  
 
   const indexOfLastCompra = currentPage * comprasPerPage;
   const indexOfFirstCompra = indexOfLastCompra - comprasPerPage;
@@ -76,10 +122,9 @@ export function TableCompras({ compras, loading, clienteNome }: TableComprasProp
   return (
     <div className={styles.tableWrapper}>
       {loading ? (
-        <div className={styles.loadingLineContainer}>
-          <div className={styles.loadingLine} style={{ width: '100%', height: '25px' }}></div>
-          <div className={styles.loadingLine} style={{ width: '200px', height: '25px' }}></div>
-        </div>
+        <div className={styles.loadingSpinner}>
+        <div className={styles.spinner}></div>
+      </div>
       ) : (
         <>
           <div className={styles.header}>
@@ -105,6 +150,7 @@ export function TableCompras({ compras, loading, clienteNome }: TableComprasProp
                   type="text"
                   placeholder="Buscar Compra"
                   value={searchTerm}
+                  autoFocus
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.filterInput}
                   ref={inputRef}
@@ -124,46 +170,62 @@ export function TableCompras({ compras, loading, clienteNome }: TableComprasProp
             </div>
           </div>
           <div className={styles.tableContainer}>
-            <table className={styles.comprasTable}>
-              <thead>
-                <tr>
-                  <th>Descrição</th>
-                  <th>Total</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Data de Criação</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentCompras.length > 0 ? (
-                  currentCompras.map((compra) => (
-                    <tr key={compra.id}>
-                      <td>{compra.descricaoCompra}</td>
-                      <td>{compra.totalCompra}</td>
-                      <td>{compra.tipoCompra}</td>
-                      <td>{compra.statusCompra}</td>
-                      <td>{new Date(compra.created_at).toLocaleDateString()}</td>
-                      <td className={styles.actionIcons}>
-                        <Link href={`/dashboard/compra/${compra.id}`}>
-                          <Info
-                            className={styles.iconInfo}
-                            role="button"
-                            aria-label={`Informações sobre compra ${compra.id}`}
-                          />
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className={styles.noRecords}>
-                      Nenhuma compra encontrada
+          <table className={styles.comprasTable}>
+            <thead>
+              <tr>
+                <th>Data da compra</th>
+                <th>Descrição</th>
+                <th>Total</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentCompras.length > 0 ? (
+                currentCompras.map((compra) => (
+                  <tr key={compra.id}>
+                    <td>{adjustDate(compra.created_at ?? '')}</td>
+                    <td>{compra.descricaoCompra}</td>
+                    <td>
+                      {compra.totalCompra.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                    </td>
+                    <td className={styles.actionIcons}>
+                      <Link href={`/dashboard/compra/${compra.id}`}>
+                        <Info
+                          className={styles.iconInfo}
+                          role="button"
+                          aria-label={`Informações sobre compra ${compra.id}`}
+                        />
+                      </Link>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className={styles.noRecords}>
+                    Nenhuma compra encontrada
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {currentCompras.length > 0 && (
+              <tfoot>
+              <tr className={styles.totalRow}>
+                <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
+                  TOTAL 
+                </td>
+                  <td colSpan={2} className={styles.totalValue}>
+                    {somaAtual.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </td>
+              </tr>
+            </tfoot>
+            )}
+          </table>
           </div>
           <div className={`${styles.pagination} ${currentCompras.length ? '' : styles.hidden}`}>
             <button

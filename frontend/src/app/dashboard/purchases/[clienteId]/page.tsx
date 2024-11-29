@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // Novo hook para rotas dinâmicas
+import { useParams } from "next/navigation"; // Utilizando useParams
 import styles from "../styles.module.scss";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next";
@@ -20,42 +20,45 @@ export interface Compra {
 }
 
 export default function ClientPurchases() {
-  const { clienteId } = useParams(); // Obtém o clienteId da rota
+  const { clienteId } = useParams(); // Pega o clienteId da URL
   const [compras, setCompras] = useState<Compra[]>([]); // Estado para armazenar as compras
   const [loading, setLoading] = useState(true); // Estado de carregamento
-
-  const [clienteNome, setClienteNome] = useState<string | null>(null);
+  const [clienteNome, setClienteNome] = useState<string | null>(null); // Nome do cliente
 
   useEffect(() => {
-    async function fetchPurchases() {
-        try {
-            const token = getCookie("token");
-            const response = await api.get(`/clients/purchases/${clienteId}/compras`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setCompras(response.data.compras);
-            // Assume que o nome do cliente está na primeira compra
-            if (response.data.compras.length > 0) {
-                setClienteNome(response.data.compras[0].cliente.nome);
-            }
-        } catch (error) {
-            console.error("Erro ao buscar compras:", error);
-        } finally {
-            setLoading(false);
-        }
+    async function fetchData() {
+      if (!clienteId) return; // Garante que o clienteId exista
+
+      const token = getCookie("token");
+
+      try {
+        // Busca as compras do cliente
+        const responseCompras = await api.get(`/clients/purchases/${clienteId}/compras`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCompras(responseCompras.data.compras); // Atualiza o estado com as compras
+
+        // Busca o nome do cliente, independente das compras
+        const responseCliente = await api.get(`/clients/${clienteId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Nome do cliente:", responseCliente.data.nome); // Verifique no console se o nome está correto
+        setClienteNome(responseCliente.data.nome); // Atualiza o estado com o nome do cliente
+      } catch (error) {
+        console.error("Erro ao buscar compras ou cliente:", error);
+      } finally {
+        setLoading(false); // Finaliza o carregamento
+      }
     }
 
-    if (clienteId) {
-        fetchPurchases();
-    }
-  }, [clienteId]);
-
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
-
+    fetchData(); // Chama a função para buscar os dados
+  }, [clienteId]); // Executa sempre que o clienteId mudar
+  
   return (
     <main className={styles.contentArea}>
       <TableCompras compras={compras} clienteNome={clienteNome} loading={loading} />

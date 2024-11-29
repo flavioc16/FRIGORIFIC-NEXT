@@ -1,6 +1,7 @@
 
-
 .tableContainer {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     max-height: 500px; // Altura máxima da tabela
     overflow-y: auto; // Rolagem vertical quando necessário
     background-color: var(--lilas-900);
@@ -12,7 +13,6 @@
     background-color: var(--lilas-900);
     padding: 1rem;
 }
-
 
 .header {
     margin-bottom: 1rem;
@@ -146,87 +146,102 @@
     
 }
 
-
-
 .comprasTable {
     width: 100%;
     border-radius: 8px;
     background-color: var(--lilas-900);
-    position: relative;
     border-collapse: collapse;
-
-    .noHoverEffect {
-        /* Remove the hover effect */
-        &:hover {
-          background-color: inherit;; /* or another value to disable the hover effect */
-        }
-      }
-
+  
     th, td {
-        border: 0.8px solid var(--cinza-800);
-        padding: 4px; // Reduz o padding para tornar as células mais finas
-        font-size: 0.90rem; // Reduz o tamanho da fonte
-        min-width: 80px; // Ajusta a largura mínima das células
-        max-width: 150px; // Ajusta a largura máxima das células
-        overflow: hidden;
-        text-overflow: ellipsis; // Adiciona reticências para texto que ultrapassa o tamanho da célula
-        white-space: nowrap;
-        vertical-align: middle; // Alinha verticalmente no meio
-        color: var(--gray-100); // Define a cor do texto (incluindo as reticências)
+      border: 0.8px solid var(--cinza-800);
+      padding: 4px;
+      font-size: 0.90rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+      color: var(--gray-100);
     }
-
+  
     th {
-        background-color: var(--roxo-700); // Ajusta a cor de fundo dos cabeçalhos
-        color: var(--white);
-        font-weight: bold;
-        padding: 10px; // Aumenta o padding para maior altura
-        min-height: 100px; // Define uma altura mínima para os cabeçalhos
+      background-color: var(--roxo-700);
+      color: var(--white);
+      font-weight: bold;
+      padding: 10px;
+      text-align: left;
     }
-
-    td {
-        text-align: start;
+  
+    /* Coluna Data */
+    th:nth-child(1), td:nth-child(1) {
+      width: 10%;
+      text-align: center;
     }
-
-    td:last-child {
-        text-align: center;
+  
+    /* Coluna Descrição */
+    th:nth-child(2), td:nth-child(2) {
+      width: 55%;
     }
-   
-
-    tr {
-        color: var(--gray-100);
+  
+    /* Coluna Total */
+    th:nth-child(3), td:nth-child(3) {
+      width: 15%;
+      
     }
-
+  
+    /* Coluna Ação */
+    th:nth-child(4), td:nth-child(4) {
+      width: 15%;
+      text-align: center;
+    }
+  
     tr:nth-child(even) {
-        background-color: var(--lilas-900);
+      background-color: var(--lilas-900);
     }
-
+  
     tr:hover {
-        background-color: var(--roxo-700);
+      background-color: var(--roxo-700);
     }
 
+    tr:has(.noRecords):hover {
+        background-color: initial; // ou outro valor para remover o efeito
+    }
+  
     .iconPlus, .iconInfo {
-        gap: 4px; /* Ajusta o espaço entre os ícones */
-        padding: 2px; // Ajusta o padding dentro da célula da ação
-        font-size: 0.625rem; // Ajusta o tamanho da fonte dos ícones de ação
-        font-size: 0.75rem; /* Ajuste o tamanho dos ícones */
-        color: var(--cinza-700); /* Ajuste a cor dos ícones conforme necessário */
-        transition: color 0.3s ease, transform 0.3s ease; /* Adiciona transições suaves */
+      gap: 4px;
+      padding: 2px;
+      font-size: 0.75rem;
+      color: var(--cinza-700);
+      transition: color 0.3s ease, transform 0.3s ease;
     }
-
+  
     .iconPlus:hover, .iconInfo:hover {
-        color: var(--white); /* Altere a cor ao passar o mouse */
-        transform: scale(1.1); /* Aumenta o ícone ligeiramente ao passar o mouse */
+      color: var(--white);
+      transform: scale(1.1);
     }
+ 
+    .totalValue {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .totalLabel {
+        text-align: left;
+        padding: 10px;
+    }
+
+    tr.totalRow:hover {
+        background-color: initial; /* Ou outro valor para remover o efeito de hover */
+    }
+      
+
 }
-
-
+  
 .ellipsis {
     margin-top: 10px;
     color: var(--gray-100); // Ajuste a cor conforme necessário
     font-size: 1rem; // Ajuste o tamanho da fonte se necessário
     font-weight: bold; // Ajuste o peso da fonte se necessário
 }
-
 
 .ppage {
     margin-left: 9px;
@@ -306,41 +321,25 @@
     }
 }
 
-
-.loadingLineContainer {
+.loadingSpinner {
     display: flex;
-    flex-direction: column; /* Alinha as linhas verticalmente */
-    
-    background-color: var(--lilas-900); /* Fundo da área de carregamento */
-  }
-  
-  .loadingLine {
-    background-color: var(--cinza-800); /* Cor base da linha */
-    position: relative; /* Necessário para o posicionamento do brilho */
-    overflow: hidden; /* Oculta partes fora da linha */
-    margin: 10px 0; /* Espaço entre as linhas */
-  }
-  
-  .loadingLine::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%; /* Começa fora da tela */
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    animation: loadingGlow 1.5s infinite; /* Animação de brilho */
-  }
-  
-  @keyframes loadingGlow {
-    0% {
-      left: -100%; /* Começa fora da linha */
+    justify-content: center;
+    align-items: center;
+    height: 70vh; // Tamanho do spinner para centralizá-lo verticalmente
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--red-900);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
-    50% {
-      left: 100%; /* Termina fora do outro lado da linha */
-    }
-    100% {
-      left: -100%; /* Reinicia a animação */
-    }
-  }
+}
   

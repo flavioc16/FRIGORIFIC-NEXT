@@ -48,9 +48,10 @@ interface TableClientsProps {
 export function TableClients({ clients, loading }: TableClientsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [clientsPerPage] = useState(10);
+  const [clientsPerPage, setClientsPerPage] = useState(10);
   const inputRef = useRef<HTMLInputElement>(null);
   const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
+
 
   const [showModal, setShowModal] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
@@ -73,6 +74,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   //useOutsideClick(infoOptionsRef, () => setInfoVisible(null));
 
+  const [showPopover, setShowPopover] = useState(true); // Controle de visibilidade
+
   const popoverContent = (
     <Popover id="popover-basic" className={styles.Popover}>
       <Popover.Header as="h3" className={styles.PopoverHeader}>
@@ -83,6 +86,15 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       </Popover.Body>
     </Popover>
   );
+
+  useEffect(() => {
+    setShowPopover(true); // Garante que o popover estará visível ao carregar
+  }, []);
+
+  const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setClientsPerPage(Number(event.target.value));
+    setCurrentPage(1);
+  };
 
   const handleOpenCreateModal  = () => {
     setIsEdit(false); // Modo de cadastro
@@ -121,7 +133,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     setClientId('');
   };
   
-
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -137,6 +148,12 @@ export function TableClients({ clients, loading }: TableClientsProps) {
         return;
       }
   
+      // Verifica se a senha foi fornecida no modo cadastro
+      if (!isEdit && !password) {
+        toast.error("A senha é obrigatória para cadastrar um novo cliente.");
+        return;
+      }
+  
       // Cria o objeto clientData a partir dos estados
       const clientData = {
         nome,
@@ -146,22 +163,22 @@ export function TableClients({ clients, loading }: TableClientsProps) {
         telefone,
         ...(isEdit 
           ? { 
-              user: { // Estrutura para edição
+              user: { 
                 username,
-                password, // Incluindo senha para atualização (se necessário)
+                password, // Incluindo senha apenas se for fornecida no modo edição
               },
-              id // Inclui o ID na edição
+              id, // Inclui o ID na edição
             }
           : { 
-              username, // Estrutura para cadastro
-              password  // Incluindo senha para cadastro
+              username, 
+              password, // Sempre incluir no cadastro
             }
         ),
       };
-      
+  
       if (isEdit) {
         if (!id) {
-          throw new Error("ID do cliente não fornecida.");
+          throw new Error("ID do cliente não fornecido.");
         }
   
         const response = await api.put(`/clients`, clientData, {
@@ -170,20 +187,18 @@ export function TableClients({ clients, loading }: TableClientsProps) {
           },
         });
   
-         const updatedClientName = response.data.nome || "Cliente";
-        
+        const updatedClientName = response.data.nome || "Cliente";
         toast.success(`Cliente ${updatedClientName} editado com sucesso.`);
         console.log("Cliente editado com sucesso:", response.data);
-
+  
       } else {
         const response = await api.post("/clients", clientData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         const newClientName = response.data.cliente?.nome || "Novo cliente";
-        
         toast.success(`Cliente ${newClientName} cadastrado com sucesso.`);
         console.log("Cliente cadastrado com sucesso:", response.data.nome);
       }
@@ -209,7 +224,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       }
     }
   };
-
+  
   const handleConfirmDelete = async () => { 
     try {
       const token = getCookie('token'); // Obtém o token de autenticação
@@ -246,8 +261,41 @@ export function TableClients({ clients, loading }: TableClientsProps) {
     }
   };
 
+  // Função para capitalizar a primeira letra de cada palavra
+  const capitalizeWords = (value: string): string => {
+    return value
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
-
+  // Função para mascarar telefone
+  const maskPhone = (value: string): string => {
+    // Remove todos os caracteres não numéricos
+    value = value.replace(/\D/g, '');
+  
+    // Limita o valor a 11 caracteres (DD + 9 + XXXX + XXXX)
+    if (value.length > 11) value = value.slice(0, 11);
+  
+    // Aplica a máscara conforme o número de dígitos
+    if (value.length === 0) {
+      return ''; // Se não houver nada digitado, retorna vazio
+    } else if (value.length <= 2) {
+      return `(${value}`; // Apenas os dois primeiros dígitos
+    } else if (value.length <= 3) {
+      return `(${value.slice(0, 2)}) ${value.slice(2)}`; // (XX) X
+    } else if (value.length <= 6) {
+      return `(${value.slice(0, 2)}) ${value.slice(2, 3)}-${value.slice(3)}`; // (XX) 9-XXX
+    } else if (value.length <= 7) {
+      return `(${value.slice(0, 2)}) ${value.slice(2, 3)}-${value.slice(3, 7)}`; // (XX) 9-XXXX
+    } else if (value.length <= 9) {
+      return `(${value.slice(0, 2)}) ${value.slice(2, 3)}-${value.slice(3, 7)}-${value.slice(7)}`; // (XX) 9-XXXX-XXX
+    } else {
+      // Depois de digitar o 9º dígito, aplica a formatação completa
+      return `(${value.slice(0, 2)}) ${value.slice(2, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
+    }
+  };
+  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isMenuInputFocused) {
@@ -347,13 +395,33 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 marginRight: '-4px', // Ajusta o espaçamento do ícone
                 marginBottom:'3px'
               }}
-              popover={popoverContent} // Passa o conteúdo do Popover
+              popover={popoverContent}
+              
+               // Passa o conteúdo do Popover
             />
+            <div className={styles.resultsPerPage}>
+                <label htmlFor="resultsPerPage">Exibir  :</label>
+                <select
+                  id="resultsPerPage"
+                  value={clientsPerPage}
+                  onChange={handleClientsPerPageChange}
+                  className={styles.customSelect}
+                  aria-label="Número de clientes por página"
+                >
+                  <option value={10}>10</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <label htmlFor="resultsPerPage" className={styles.ppage}>
+                  por página
+                </label>
+            </div>
               <div className={styles.searchContainer}>
                 <input
                   type="text"
                   placeholder="Buscar Cliente"
                   value={searchTerm}
+                  autoFocus
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.filterInput}
                   ref={inputRef}
@@ -368,6 +436,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 )}
               </div>
             </div>
+            
           </div>
           <div className={styles.tableContainer}>
             <table className={styles.clientsTable}>
@@ -407,6 +476,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                           <UserPen
                             className={styles.iconUser}
                             role="button"
+                            
                             aria-label={`Editar ${client.nome}`}
                             onClick={() => handleOpenEditModal(client)} 
                           />
@@ -499,25 +569,11 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     required
                     placeholder="Nome do cliente"
                     value={nome}
-                    onChange={(e) => setNome(e.target.value)}
+                    onChange={(e) => setNome(capitalizeWords(e.target.value))}
                     autoFocus
                     className={styles.customFormControl}
                   />
                 </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="clientEndereco" className={styles.customFormLabel}>Endereço</label>
-                  <input
-                    id="clientEndereco"
-                    type="text"
-                    required
-                    placeholder="Endereço do cliente"
-                    value={endereco}
-                    onChange={(e) => setEndereco(e.target.value)}
-                    className={styles.customFormControl}
-                  />
-                </div>
-
                 <div className={styles.formGroup}>
                   <label htmlFor="clientReferencia" className={styles.customFormLabel}>Referência</label>
                   <input
@@ -526,24 +582,33 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     type="text"
                     required
                     value={referencia}
-                    onChange={(e) => setReferencia(e.target.value)}
+                    onChange={(e) => setReferencia(capitalizeWords(e.target.value))}
                     className={styles.customFormControl}
                   />
                 </div>
-
+                <div className={styles.formGroup}>
+                  <label htmlFor="clientEndereco" className={styles.customFormLabel}>Endereço</label>
+                  <input
+                    id="clientEndereco"
+                    type="text"
+                    required
+                    placeholder="Endereço do cliente"
+                    value={endereco}
+                    onChange={(e) => setEndereco(capitalizeWords(e.target.value))}
+                    className={styles.customFormControl}
+                  />
+                </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="clientEmail" className={styles.customFormLabel}>Email</label>
                   <input
                     id="clientEmail"
                     type="email"
-                    required
                     placeholder="Email do cliente"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles.customFormControl}
                   />
                 </div>
-
                 <div className={styles.formGroup}>
                   <label htmlFor="clientTelefone" className={styles.customFormLabel}>Telefone</label>
                   <input
@@ -552,24 +617,31 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     required
                     placeholder="Telefone do cliente"
                     value={telefone}
-                    onChange={(e) => setTelefone(e.target.value)}
+                    onChange={(e) => {
+                      const input = e.target as HTMLInputElement;
+                      // Formata o valor enquanto o usuário digita
+                      const formattedValue = maskPhone(input.value);
+                      setTelefone(formattedValue);  // Atualiza o estado com o valor formatado
+                    }}
+                    onBlur={(e) => {
+                      // Aplica a máscara quando o campo perde o foco, sem afetar o comportamento ao digitar
+                      setTelefone(maskPhone(e.target.value));
+                    }}
                     className={styles.customFormControl}
                   />
                 </div>
-
                 <div className={styles.formGroup}>
-                  <label htmlFor="clientUsername" className={styles.customFormLabel}>Usuario</label>
-                  <input
-                    id="clientUsername"
-                    type="text"
-                    placeholder="Nome de usuário do cliente"
-                    value={username}
-                    required
-                    onChange={(e) => setUsername(e.target.value)}
-                    className={styles.customFormControl}
-                  />
+                    <label htmlFor="clientUsername" className={styles.customFormLabel}>Usuario</label>
+                    <input
+                      id="clientUsername"
+                      type="text"
+                      placeholder="Nome de usuário do cliente"
+                      value={username}
+                      required
+                      onChange={(e) => setUsername(e.target.value)}
+                      className={styles.customFormControl}
+                    />
                 </div>
-
                 <div className={styles.formGroup}>
                   <label htmlFor="clientPassword" className={styles.customFormLabel}>Senha</label>
                   <input
@@ -577,12 +649,10 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     type="password"
                     placeholder="Senha do cliente"
                     value={password}
-                    
                     onChange={(e) => setPassword(e.target.value)}
                     className={styles.customFormControl}
                   />
                 </div>
-
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>
                     {isEdit ? 'Salvar' : 'Cadastrar'}
@@ -592,8 +662,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   </button>
                 </div>
               </form>
-            </div>
-          
+          </div>
           </Modal>
           
           {/* Modal personalizado */}
