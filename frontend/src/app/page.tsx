@@ -1,17 +1,13 @@
-'use client';
-
+"use client"
 import { useRouter } from 'next/navigation';
-import { FormEvent, useRef, useState } from 'react';
+import { FormEvent, useRef, useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import styles from './page.module.scss';
 
-
 import Image from 'next/image';
 import Link from 'next/link';
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { BeatLoader } from 'react-spinners';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
 
@@ -20,8 +16,19 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('rememberedUsername');
+    const savedPassword = localStorage.getItem('rememberedPassword');
+    if (savedUsername && savedPassword) {
+      setUsername(savedUsername);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
@@ -35,45 +42,30 @@ export default function Login() {
 
       const { token, role } = response.data;
 
-      const expires = new Date();
-      expires.setMonth(expires.getMonth() + 1);
+      if (rememberMe) {
+        localStorage.setItem('rememberedUsername', username);
+        localStorage.setItem('rememberedPassword', password);
+      } else {
+        localStorage.removeItem('rememberedUsername');
+        localStorage.removeItem('rememberedPassword');
+      }
 
-      const isProduction = process.env.NODE_ENV === 'production';
-      const cookieOptions = [
-        `expires=${expires.toUTCString()}`,
-        'path=/',
-        isProduction ? 'Secure' : '',
-        isProduction ? 'HttpOnly' : '',
-      ]
-        .filter(Boolean)
-        .join('; ');
-
-      document.cookie = `token=${token}; ${cookieOptions}`;
+      document.cookie = `token=${token}; path=/; secure`;
 
       localStorage.removeItem('selectedMenuItem');
 
       if (role === 'ADMIN') {
-        // Adiciona o item no localStorage
         localStorage.setItem('selectedMenuItem', '/');
         router.push('/dashboard');
-        
       } else if (role === 'USER') {
         toast.info('Realize o login no nosso APP.');
       } else {
-        console.log('Função não reconhecida, adicionando item ao localStorage');
-      
-        // Adiciona o item no localStorage
         localStorage.setItem('selectedMenuItem', '/');
-      
-        // Aguarda um pequeno delay antes de redirecionar
         setTimeout(() => {
           router.push('/');
         }, 5000);
       }
-      
-      
     } catch (error) {
-      setIsLoading(false);
       console.error('Erro ao realizar login:', error);
       toast.error('Erro ao realizar login. Verifique suas credenciais.');
     } finally {
@@ -81,11 +73,8 @@ export default function Login() {
     }
   }
 
-  // Função para alternar a visualização da senha e posicionar o cursor no final do input
   function toggleShowPassword() {
     setShowPassword(!showPassword);
-
-    // Aguarda a renderização antes de focar no campo e mover o cursor para o final
     setTimeout(() => {
       if (passwordInputRef.current) {
         passwordInputRef.current.focus();
@@ -96,12 +85,8 @@ export default function Login() {
 
   return (
     <>
-      <div
-        className={`${styles.containerCenter} ${
-          isLoading ? styles.loading : ''
-        }`}
-      >
-       <Image
+      <div className={`${styles.containerCenter} ${isLoading ? styles.loading : ''}`}>
+        <Image
           src="/LOGOVERTICAL.png"
           alt="Logo Frigorifico"
           width={443}
@@ -110,7 +95,6 @@ export default function Login() {
           priority={true}
           unoptimized={true}
         />
-
 
         <section className={styles.login}>
           <form onSubmit={handleLogin} className={styles.form}>
@@ -140,27 +124,30 @@ export default function Login() {
                 ref={passwordInputRef}
               />
               {password === '' ? (
-                <Lock
-                  className={styles.icon}
-                  onClick={() => passwordInputRef.current?.focus()}
-                />
+                <Lock className={styles.icon} onClick={() => passwordInputRef.current?.focus()} />
               ) : showPassword ? (
-                <Eye
-                  className={styles.icon}
-                  onClick={toggleShowPassword}
-                />
+                <Eye className={styles.icon} onClick={toggleShowPassword} />
               ) : (
-                <EyeOff
-                  className={styles.icon}
-                  onClick={toggleShowPassword}
-                />
+                <EyeOff className={styles.icon} onClick={toggleShowPassword} />
               )}
+            </div>
+
+            <div className={styles.rememberMeContainer}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
+                <div className={styles.rememberMeText}>
+                  Lembrar-me
+                </div>
+              </label>
             </div>
 
             <button type="submit" disabled={isLoading}>
               {isLoading ? <BeatLoader color="#fff" size={6} /> : 'Entrar'}
             </button>
-            
           </form>
 
           <Link href="/signup" className={styles.text}>

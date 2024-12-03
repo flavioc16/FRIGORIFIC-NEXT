@@ -21,8 +21,6 @@ class GetComprasPorIdService {
       },
     });
 
-    console.log("Buscando compras não pagas para clienteId:", clienteId);
-
     // Calcular o valor total das compras restantes
     const somaTotalCompras = comprasRestantes.reduce(
       (acc, compra) => acc + compra.totalCompra,

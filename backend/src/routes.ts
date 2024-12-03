@@ -21,6 +21,7 @@ import { GetAllComprasController } from './controllers/admin/compra/GetComprasCo
 import { CreateCompraController } from './controllers/admin/compra/CreateCompraController';
 import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByIdController';
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
+import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
 
 import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 
@@ -46,16 +47,16 @@ router.put('/clients', isAuthenticated, authorizeRole('ADMIN'), new UpdateClient
 router.get('/clients', isAuthenticated, authorizeRole('ADMIN'), new GetAllClientesController().handle);
 router.get('/clients/:clienteId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
-
 router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
 
 
 //  Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);
-router.put('/compra/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateCompraController().handle);
+router.put('/compras', isAuthenticated, authorizeRole('ADMIN'), new UpdateCompraController().handle);
 router.get('/compras', isAuthenticated, authorizeRole('ADMIN'), new GetAllComprasController().handle);
 router.get('/compras/total-do-dia', isAuthenticated, authorizeRole('ADMIN'), new GetTotalComprasDoDiaController().handle);
 router.get('/compras/:compraId', isAuthenticated, authorizeRole('ADMIN'), new GetCompraByIdController().handle);
+router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCompraController().handle);
 
 //  Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);

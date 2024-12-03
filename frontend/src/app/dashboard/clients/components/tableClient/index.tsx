@@ -35,10 +35,6 @@ export interface Client {
   user?: User;
 }
 
-interface ClientDelete {
-  name: string;
-  id: string;
-}
 
 interface TableClientsProps {
   clients: Client[];
@@ -295,6 +291,10 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       return `(${value.slice(0, 2)}) ${value.slice(2, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
     }
   };
+
+  useEffect(() => {
+    setCurrentPage(1); // Reseta para a primeira página quando o termo de busca muda
+  }, [searchTerm]);
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

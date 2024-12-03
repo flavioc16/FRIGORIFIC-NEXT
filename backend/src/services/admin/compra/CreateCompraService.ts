@@ -1,4 +1,4 @@
-import prismaClient from '../../../prisma'; // Certifique-se que este caminho está correto
+import prismaClient from '../../../prisma'; // Certifique-se de que este caminho está correto
 
 interface CompraRequest {
   descricaoCompra: string;
@@ -7,7 +7,7 @@ interface CompraRequest {
   statusCompra: number;
   clienteId: string;
   userId: string;
-  dataDaCompra?: string; // Torne opcional
+  dataDaCompra?: string; // Opcional
 }
 
 class CreateCompraService {
@@ -20,22 +20,19 @@ class CreateCompraService {
     userId,
     dataDaCompra,
   }: CompraRequest) {
-    const currentDate = new Date().toISOString().split('T')[0];
-    const isDifferentDate =
-      dataDaCompra && dataDaCompra.split('T')[0] !== currentDate;
+    // Use a data atual ou a fornecida
+    const currentDate = new Date();
+    let parsedDate = dataDaCompra ? new Date(dataDaCompra) : currentDate;
 
-    let parsedDate: Date | null = null;
+    // Certifique-se de que parsedDate tenha o mesmo horário em UTC que a data atual
+    parsedDate.setUTCHours(
+      currentDate.getUTCHours(),
+      currentDate.getUTCMinutes(),
+      currentDate.getUTCSeconds(),
+      currentDate.getUTCMilliseconds()
+    );
 
-    if (dataDaCompra) {
-      // Cria um objeto Date com a data fornecida
-      parsedDate = new Date(dataDaCompra);
-      
-      // Define as horas, minutos, segundos e milissegundos para as horas atuais
-      const now = new Date(); // Pega a data e hora atuais
-      parsedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
-    }
-    
-
+    // Crie a compra definindo ambos os campos com parsedDate
     const compra = await prismaClient.compra.create({
       data: {
         descricaoCompra,
@@ -44,16 +41,10 @@ class CreateCompraService {
         statusCompra,
         cliente: { connect: { id: clienteId } },
         user: { connect: { id: userId } },
-        dataDaCompra: parsedDate ?? new Date(),
+        dataDaCompra: parsedDate,  // Salva como UTC
+        created_at: parsedDate,    // Salva como UTC
       },
     });
-
-    if (isDifferentDate) {
-      await prismaClient.compra.update({
-        where: { id: compra.id },
-        data: { created_at: parsedDate ?? new Date() },
-      });
-    }
 
     return compra;
   }

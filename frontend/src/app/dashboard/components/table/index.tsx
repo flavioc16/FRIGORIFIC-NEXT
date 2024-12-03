@@ -1,22 +1,19 @@
 "use client"; // Garantindo que o código seja executado no cliente 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, Info, ShoppingBasket } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, ShoppingBasket } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
-import { getCookie } from 'cookies-next';
 
-
+import  CreatePurchaseModal  from '../modal';
 
 import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
-
-import axios from 'axios';
-import { api } from '@/services/api';
+import { ToastContainer } from 'react-toastify';
 
 import Link from 'next/link';
-import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import useF2Redirect from "@/app/hooks/useF2Redirect";  // Importando o hook
+import { Compra } from '../../purchases/table';
 
 export interface Client {
   id: string;
@@ -41,75 +38,23 @@ export function Table ({ clients, loading }: TableClientsProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage, setClientsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);  // Estado para o modal
-  const { isMenuInputFocused, setIsMenuInputFocused } = useFocus();
-  const inputRef = useRef<HTMLInputElement>(null); // Define o tipo da ref
-
+  const { isMenuInputFocused } = useFocus();
   const [mouseMoved, setMouseMoved] = useState(false);
-
   const [showModalCreateCompra, setShowModalCreateCompra] = useState(false);
-
   const [dataCompra, setDataCompra] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
   const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
   const [rawValue, setRawValue] = useState<number>(0);
-  const [tipoCompra, setTipoCompra] = useState('');
-  
-
+  const [tipoCompra, setTipoCompra] = useState<string | null>('');  
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-
-  useEffect(() => {
-    if (showModalCreateCompra) {
-      const today = new Date();
-      setDataCompra(today.toISOString().split('T')[0]);
-    }
-  }, [showModalCreateCompra]);
+  const [created_at, setCreatedAt] = useState('');
+  const [isEdit, setIsEdit] = useState(false); // Novo estado para controlar se é edição
+  const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
   useEffect(() => {
     setTotalCompra("0,00");
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value;
-  
-    // Remove tudo que não for número
-    const numericValue = value.replace(/[^\d]/g, "");
-  
-    // Converte o valor para número bruto (dividido por 100 para considerar casas decimais)
-    const rawNumber = parseFloat(numericValue) / 100;
-  
-    // Atualiza o estado bruto
-    setRawValue(isNaN(rawNumber) ? 0 : rawNumber);
-  
-    // Formata o valor para exibição imediata
-    const formattedValue = isNaN(rawNumber)
-      ? "0,00"
-      : rawNumber.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-  
-    setTotalCompra(formattedValue); // Atualiza o valor formatado no input
-  };
-  
-  const handleBlur = () => {
-    // Reaplica a formatação ao perder o foco
-    const formattedValue = rawValue.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    setTotalCompra(formattedValue); // Garante que o valor exibido é formatado corretamente
-  };
-
-  
-
-   // Função para capitalizar a primeira letra de cada palavra
-  const capitalizeWords = (value: string): string => {
-    return value
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-  
   const handleOpenModalCreateCompra  = (client: Client) => {
     setDescricaoCompra('');
     setTotalCompra("0,00");
@@ -124,69 +69,6 @@ export function Table ({ clients, loading }: TableClientsProps) {
     setIsModalOpen(false)
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    
-    const token = getCookie("token");
-    
-    if (!token) {
-        toast.error("Token de autenticação não encontrado. Faça login novamente.");
-        return;
-    }
-  
-    if (!selectedClient?.id) {
-        toast.error("Nenhum cliente selecionado. Por favor, selecione um cliente.");
-        return;
-    }
-
-    if (totalCompra === "0,00" || isNaN(parseFloat(totalCompra.replace('.', '').replace(',', '.')))) {
-        toast.error("Digite um valor válido para a compra");
-        inputRef.current?.focus(); // Define o foco no input
-        return;
-    }
-
-    try {
-        // Monta o objeto de dados da compra a partir dos estados dos inputs
-        const compraData = {
-            dataDaCompra: dataCompra || "", // Garante que seja uma string
-            descricaoCompra: descricaoCompra || "", // Garante que seja uma string
-            totalCompra: totalCompra 
-                ? parseFloat(totalCompra.replace('.', '').replace(',', '.')) 
-                : 0, // Trata undefined e converte corretamente o formato pt-BR
-            tipoCompra: tipoCompra ? parseInt(tipoCompra, 10) : 0, // Trata undefined e converte
-            statusCompra: 0, // Status padrão
-            clienteId: selectedClient.id, // Já verificado como válido
-        };
-  
-        // Envia os dados para a API
-        const response = await api.post("/compras", compraData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-  
-        const newCompraDescription = selectedClient.nome || "Cliente";
-        toast.success(`Compra de ${newCompraDescription} cadastrada com sucesso.`);
-        console.log("Compra cadastrada com sucesso:", response.data);
-  
-        // Reseta os campos do formulário após o envio
-        setDescricaoCompra('');
-        setTotalCompra("0,00");
-        setTipoCompra('');
-        setSearchTerm('');
-        //handleCloseModalCreateCompra(); // Fecha o modal após a ação
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            const errorMessage = error.response?.data?.error || "Erro ao cadastrar compra.";
-            toast.error(errorMessage);
-            console.error("Erro ao processar compra:", error.response?.data);
-        } else {
-            toast.error("Erro desconhecido.");
-            console.error("Erro desconhecido:", error);
-      }
-    }
-  };
-  
   const applyFocus = () => {
     if (!isMenuInputFocused && searchInputRef.current && !mouseMoved) {
       searchInputRef.current.focus();
@@ -229,7 +111,6 @@ export function Table ({ clients, loading }: TableClientsProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMenuInputFocused, isModalOpen]); // Dependência de isModalOpen
   
-
   const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setClientsPerPage(Number(event.target.value));
     setCurrentPage(1);
@@ -245,11 +126,15 @@ export function Table ({ clients, loading }: TableClientsProps) {
 
   const handleSearchClear = () => setSearchTerm('');
 
+  useEffect(() => {
+    setCurrentPage(1); // Reseta para a primeira página quando o termo de busca muda
+  }, [searchTerm]);
+
   const filteredClients = useMemo(() => {
     return clients.filter((client) =>
-        // Verifica valores de nível superior do cliente
-        Object.values(client).some(value => 
-            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())) 
+      Object.values(client).some((value) =>
+        typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     );
   }, [clients, searchTerm]);
 
@@ -370,8 +255,8 @@ export function Table ({ clients, loading }: TableClientsProps) {
               <thead>
                 <tr>
                   <th>Nome</th>
-                  <th>Endereço</th>
                   <th>Referência</th>
+                  <th>Endereço</th>
                   <th>Telefone</th>
                   <th>Ação</th>
                 </tr>
@@ -381,11 +266,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
                   currentClients.map((client) => (
                     <tr key={client.id}>
                       <td>{client.nome}</td>
-                      <td>{client.endereco || ''}</td>
                       <td>{client.referencia || ''}</td>
+                      <td>{client.endereco || ''}</td>
                       <td>{client.telefone}</td>
                       <td className={styles.actionIcons}>
-                        
                       <OverlayTrigger
                         trigger={['hover', 'focus']}
                         placement="top"
@@ -419,7 +303,6 @@ export function Table ({ clients, loading }: TableClientsProps) {
                             aria-label={`Informações sobre ${client.nome}`} />
                         </Link>
                       </OverlayTrigger>
-
                       </td>
                     </tr>
                   ))
@@ -472,91 +355,25 @@ export function Table ({ clients, loading }: TableClientsProps) {
               <ChevronRight />
             </button>
 
-
-             {/* Modal personalizado */}
-            <Modal
-              show={showModalCreateCompra}
-              onHide={handleCloseModalCreateCompra}
-              className={styles.customModal}
-              size="lg"
-              backdrop={false}
-              keyboard={true}
-            >
-              <div className={styles.customModalHeader}>
-              <h2> {selectedClient?.nome}</h2>
-              
-                <button onClick={handleCloseModalCreateCompra} className={styles.closeButton}>
-                  <X size={24} color="var(--white)" />
-                </button>
-              </div>
-              <div className={styles.customModalBody}>
-              <form onSubmit={handleSubmit}>
-              <div className={styles.formGroup}>
-                <label htmlFor="dataCompra" className={styles.customFormLabel}>Data da compra</label>
-                <input
-                  id="dataCompra"
-                  type="date"
-                  required
-                  value={dataCompra}
-                  onChange={(e) => setDataCompra(e.target.value)}
-                  className={styles.customFormControl}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
-                <input
-                  id="descricaoCompra"
-                  type="text"
-                  required
-                  placeholder="Descrição"
-                  value={descricaoCompra}
-                  onChange={(e) => setDescricaoCompra(capitalizeWords(e.target.value))}
-                  autoFocus
-                  className={styles.customFormControl}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="totalCompra" className={styles.customFormLabel}>Total</label>
-                <input
-                  id="totalCompra"
-                  type="text"
-                  value={totalCompra}  // Valor formatado para exibição
-                  onBlur={handleBlur}
-                  onChange={handleChange}  // Atualiza o valor durante a digitação
-                  className={styles.customFormControl}
-                  placeholder="Valor"
-                  ref={inputRef} // Atribui a ref ao input
-                  required
-                />
-              </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="tipoCompra" className={styles.customFormLabel}>Tipo de Serviço</label>
-                  <select
-                    id="tipoCompra"
-                    required
-                    value={tipoCompra}
-                    onChange={(e) => setTipoCompra(e.target.value)}
-                    className={styles.customFormControl}
-                  >
-                    <option value="0">Compra</option>
-                    <option value="1">Restante</option>
-                  </select>
-                </div>
-
-                <div className={styles.buttonContainer}>
-                  <button type="submit" className={styles.customBtnPrimary}>
-                  Cadastrar
-                  </button>
-                  <button type="button" onClick={handleCloseModalCreateCompra} className={styles.customBtnSecondary}>
-                    Cancelar
-                  </button>
-                </div>
-              </form>
-              </div>
-            </Modal>
+            <CreatePurchaseModal
+              isEdit={isEdit}  
+              show={showModalCreateCompra} 
+              onClose={handleCloseModalCreateCompra} 
+              selectedClient={selectedClient}
+              selectedCompra={selectedCompra}
+              descricaoCompra={descricaoCompra}
+              totalCompra={totalCompra}
+              tipoCompra={tipoCompra}
+              setCreatedAt={setCreatedAt}
+              setDescricaoCompra={setDescricaoCompra}
+              setTotalCompra={setTotalCompra}
+              setTipoCompra={setTipoCompra}
+              dataCompra={dataCompra}
+              created_at={created_at}
+              rawValue={rawValue}
+              setDataCompra={setDataCompra}
+              setRawValue={setRawValue}
+            />
           </div>
           <ToastContainer />
         </>

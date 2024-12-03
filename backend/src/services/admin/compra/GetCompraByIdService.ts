@@ -1,10 +1,10 @@
 import prismaClient from "../../../prisma";
 
 class GetCompraByIdService {
-    async execute(compraId: string) {
+    async execute(id: string) {
         const compra = await prismaClient.compra.findUnique({
             where: { 
-                id: compraId
+                id: id
             },
             include: {
                 cliente: true, // Inclui detalhes do cliente   

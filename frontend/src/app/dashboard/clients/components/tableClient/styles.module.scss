@@ -506,29 +506,29 @@
     
 /* styles.module.scss */
 .Popover {
-    background-color: #2d333b; // Fundo escuro para o Popover
-    color: #c9d1d9; // Cor do texto clara
-    border: 1px solid #30363d; // Borda levemente mais clara
-  
-    .popover-arrow {
-      &:before {
-        border-width: 6px;
-        border-style: solid;
-        border-color: #2d333b transparent transparent transparent !important; // Cor da seta
-      }
+  background-color: #2d333b; // Fundo escuro para o Popover
+  color: #c9d1d9; // Cor do texto clara
+  border: 1px solid #30363d; // Borda levemente mais clara
+
+  .popover-arrow {
+    &:before {
+      border-width: 6px;
+      border-style: solid;
+      border-color: #2d333b transparent transparent transparent !important; // Cor da seta
     }
   }
+}
   
-  .PopoverHeader {
-    background-color: #21262d; // Fundo escuro do cabeçalho do Popover
-    color: #c9d1d9; // Cor do texto clara
-    border-bottom: 1px solid #30363d; // Borda inferior do cabeçalho
-    
-  }
+.PopoverHeader {
+  background-color: #21262d; // Fundo escuro do cabeçalho do Popover
+  color: #c9d1d9; // Cor do texto clara
+  border-bottom: 1px solid #30363d; // Borda inferior do cabeçalho
   
-  .PopoverBody {
-    color: #c9d1d9; // Cor do texto clara
-  }
+}
+  
+.PopoverBody {
+  color: #c9d1d9; // Cor do texto clara
+}
   
   
 
