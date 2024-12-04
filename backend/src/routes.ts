@@ -56,7 +56,9 @@ router.put('/compras', isAuthenticated, authorizeRole('ADMIN'), new UpdateCompra
 router.get('/compras', isAuthenticated, authorizeRole('ADMIN'), new GetAllComprasController().handle);
 router.get('/compras/total-do-dia', isAuthenticated, authorizeRole('ADMIN'), new GetTotalComprasDoDiaController().handle);
 router.get('/compras/:compraId', isAuthenticated, authorizeRole('ADMIN'), new GetCompraByIdController().handle);
+
 router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCompraController().handle);
+
 
 //  Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);

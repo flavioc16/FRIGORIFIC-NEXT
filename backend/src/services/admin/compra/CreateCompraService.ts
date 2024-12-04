@@ -5,6 +5,7 @@ interface CompraRequest {
   totalCompra: number;
   tipoCompra: number;
   statusCompra: number;
+  valorInicialCompra: number;
   clienteId: string;
   userId: string;
   dataDaCompra?: string; // Opcional
@@ -14,6 +15,7 @@ class CreateCompraService {
   async execute({
     descricaoCompra,
     totalCompra,
+    valorInicialCompra,
     tipoCompra,
     statusCompra,
     clienteId,
@@ -37,6 +39,7 @@ class CreateCompraService {
       data: {
         descricaoCompra,
         totalCompra,
+        valorInicialCompra,
         tipoCompra,
         statusCompra,
         cliente: { connect: { id: clienteId } },

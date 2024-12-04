@@ -56,24 +56,26 @@ model Cliente {
 
 
 model Compra {
-  id             String    @id @default(uuid())
-  descricaoCompra String   @db.VarChar(500)
-  totalCompra    Float
-  tipoCompra     Int
-  statusCompra   Int
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-  dataDaCompra   DateTime?
+  id                 String    @id @default(uuid())
+  descricaoCompra    String    @db.VarChar(500)
+  totalCompra        Float
+  valorInicialCompra Float     
+  tipoCompra         Int
+  statusCompra       Int
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  dataDaCompra       DateTime?
 
-  userId         String
-  clienteId      String
-  pagamentoId    String?
-  user           User      @relation(fields: [userId], references: [id])
-  cliente        Cliente   @relation(fields: [clienteId], references: [id])
-  pagamento      Pagamento? @relation(fields: [pagamentoId], references: [id])
-  
+  userId             String
+  clienteId          String
+  pagamentoId        String?
+  user               User      @relation(fields: [userId], references: [id])
+  cliente            Cliente   @relation(fields: [clienteId], references: [id])
+  pagamento          Pagamento? @relation(fields: [pagamentoId], references: [id])
+
   @@map("compras")
 }
+
 
 model Pagamento {
   id             String    @id @default(uuid())

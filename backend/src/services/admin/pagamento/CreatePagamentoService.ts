@@ -3,39 +3,65 @@ import prismaClient from "../../../prisma";
 interface PagamentoRequest {
   valorPagamento: number;
   clienteId: string;
-  userId: string;
+  userId: string; // Adicionando o userId como parte da requisição
 }
 
 class CreatePagamentoService {
   async execute({ valorPagamento, clienteId, userId }: PagamentoRequest) {
-    // Busca de compras do cliente com tipoCompra 0 (compras originais)
-    const compras = await prismaClient.compra.findMany({
-      where: { clienteId, tipoCompra: 0, statusCompra: 0 }
+
+    // Verificar se cliente existe
+    const clienteExiste = await prismaClient.cliente.findUnique({
+      where: { id: clienteId }
     });
 
-    // Calcula o total das compras usando o campo totalCompra
-    const totalCompras = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
-    console.log('Total das Compras:', totalCompras);
+    if (!clienteExiste) throw new Error("Cliente não encontrado");
 
-    // Verifica se o valor do pagamento está entre 0 e o total das compras
+    // Verificar se usuário existe
+    const userExiste = await prismaClient.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!userExiste) throw new Error("Usuário não encontrado");
+    
+    // Busca todas as compras do cliente com statusCompra 0 (não pagas), ordenadas por data
+    const compras = await prismaClient.compra.findMany({
+      where: { clienteId, statusCompra: 0 },
+      orderBy: { created_at: "asc" }
+    });
+
+    // Calcula o total das compras pendentes
+    const totalCompras = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
+    console.log("Total das Compras Pendentes:", totalCompras);
+
+    // Verifica se o valor do pagamento é válido
     if (valorPagamento <= 0 || valorPagamento > totalCompras) {
       throw new Error("Valor do pagamento inválido");
     }
 
-    // Atualiza o status das compras existentes para '1' (Pago) 
-    const updateResult = await prismaClient.compra.updateMany({
-      where: {
-        clienteId,
-        tipoCompra: 0, // Considerando que 0 é o tipo de compra original
-        statusCompra: 0 // Considerando que 0 é o status de não pago
-      },
-      data: {
-        statusCompra: 1 // Atualiza para '1' (Pago)
-      }
-    });
-    console.log('Resultado da Atualização das Compras:', updateResult);
+    let valorRestante = valorPagamento;
 
-    // Criação de pagamento
+    // Itera sobre as compras e reduz o valor de cada uma até esgotar o valor do pagamento
+    for (const compra of compras) {
+      if (valorRestante <= 0) break;
+
+      // Se o valor restante for maior ou igual ao valor da compra, marca a compra como paga
+      if (valorRestante >= compra.totalCompra) {
+        await prismaClient.compra.update({
+          where: { id: compra.id },
+          data: { statusCompra: 1 } // Marca a compra como paga
+        });
+        valorRestante -= compra.totalCompra;
+      } else {
+        // Caso o valor restante seja menor, reduz a compra pela quantidade paga
+        await prismaClient.compra.update({
+          where: { id: compra.id },
+          data: { totalCompra: compra.totalCompra - valorRestante } // Atualiza o valor restante
+        });
+        valorRestante = 0; // O pagamento foi totalmente utilizado
+      }
+    }
+
+    // Cria o registro de pagamento com o user conectado
     const pagamento = await prismaClient.pagamento.create({
       data: {
         valorPagamento,
@@ -44,23 +70,9 @@ class CreatePagamentoService {
       }
     });
 
-    // Criação de uma nova compra com a descrição de valor restante, se necessário
-    if (valorPagamento < totalCompras) {
-      const novoValorRestante = totalCompras - valorPagamento;
-      await prismaClient.compra.create({
-        data: {
-          descricaoCompra: "Valor Restante",
-          totalCompra: novoValorRestante,
-          tipoCompra: 0, // Considera que 1 é o tipo de valor restante
-          statusCompra: 0, // Considera que 0 é o status de não pago
-          cliente: { connect: { id: clienteId } },
-          user: { connect: { id: userId } }
-        }
-      });
-    }
-
     return pagamento;
   }
 }
+
 
 export { CreatePagamentoService };

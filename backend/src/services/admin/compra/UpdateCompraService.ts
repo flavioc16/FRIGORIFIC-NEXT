@@ -6,6 +6,7 @@ interface CompraRequest {
   dataDaCompra?: string;
   created_at?: string;
   totalCompra?: number;
+  valorInicialCompra?: number;
   tipoCompra?: number;
   statusCompra?: number;
 }

@@ -129,6 +129,7 @@ export default function CreatePurchaseModal({
         id: selectedCompra?.id,  // Envia a id da compra (no modo edição)
         descricaoCompra,
         totalCompra: parseFloat(totalCompra.replace(/\./g, "").replace(",", ".")),
+        valorInicialCompra: parseFloat(totalCompra.replace(/\./g, "").replace(",", ".")),
         tipoCompra: tipoCompraValor,
         statusCompra: 0,
         created_at: created_at, // Certifique-se de enviar a data no formato ISO 8601
@@ -217,7 +218,7 @@ export default function CreatePurchaseModal({
         onHide={onClose}
         className={styles.customModal}
         size="lg"
-        backdrop={false}
+        backdrop={true}
         keyboard={!checkbox}
       >
         <div className={styles.customModalHeader}>
@@ -283,18 +284,19 @@ export default function CreatePurchaseModal({
             </div>
             <div className={styles.buttonContainer}>
               <div className={styles.rememberMeContainer}>
+              {!isEdit && (
                 <label>
                   <input
                     type="checkbox"
                     checked={checkbox}
-                    onChange={handleCheckboxChange} // Aqui é onde usamos a função
+                    onChange={handleCheckboxChange}
                   />
                   <div className={styles.rememberMeText}>
                     Adicionar outra compra
                   </div>
                 </label>
+              )}
               </div>
-              
               <div className={styles.buttonGroup}>
                 <button type="submit" className={styles.customBtnPrimary}>
                   {isEdit ? "Editar" : "Cadastrar"}

@@ -3,9 +3,9 @@ import { Search, X, ChevronLeft, ChevronRight, Info, FilePenLine, Trash, Plus } 
 import styles from './styles.module.scss';
 
 import Link from 'next/link';
-import { Modal, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import ButtonAdd from '@/app/dashboard/components/buttonAdd';
-import stylesModal from './stylesModal.module.scss'
+
 import { getCookie } from 'cookies-next';
 
 import { toast, ToastContainer } from 'react-toastify';
@@ -13,7 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { api } from '@/services/api';
 import axios from 'axios';
-import CreatePurchaseModal from '../../components/modal';
+import CreatePurchaseModal from '../../components/modalEfetuarCompra';
+import DeleteModal from '../../components/modalDelete';
 
 export interface Compra {
   id: string;
@@ -68,6 +69,11 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
   const [tipoCompra, setTipoCompra] = useState<string | null>('');  
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
+
+
+
+ 
+
 
   useEffect(() => {
     if (cliente) {
@@ -168,6 +174,8 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
       }
     }
   };
+
+  const modalTitle = "Deseja realmente excluir esta compra?"; // Título dinâmico
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -470,30 +478,13 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
             </button>
           </div>
 
-          {/* Modal personalizado */}
-          <Modal
-            show={showModalDelete}
-            onHide={handleCloseModalDelete}
-            className={stylesModal.customModal}
-            size="sm"
-          >
-            <div className={stylesModal.customModalHeader}>
-              <h2>Deseja realmente excluir esta compra ?</h2>
-              <button onClick={handleCloseModalDelete} className={stylesModal.closeButton}>
-                <X size={24} color="var(--white)" /> {/* Ícone de fechar */}
-              </button>
-            </div>
-            <div className={stylesModal.customModalBody}>
-              <div className={stylesModal.buttonContainer}>
-                <button onClick={handleConfirmDelete} className={stylesModal.customBtnPrimary}>
-                  Excluir
-                </button>
-                <button onClick={handleCloseModalDelete} className={stylesModal.customBtnSecondary}>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </Modal>
+          {/* Modal delete */}
+          <DeleteModal
+            showModalDelete={showModalDelete}
+            handleCloseModalDelete={handleCloseModalDelete}
+            handleConfirmDelete={handleConfirmDelete}
+            modalTitle={modalTitle} // Passando o título dinâmico como prop
+          />
 
           <CreatePurchaseModal
               show={showModal}

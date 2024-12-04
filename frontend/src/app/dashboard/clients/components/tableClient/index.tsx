@@ -10,6 +10,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Tooltip, OverlayTrigger, Popover } from 'react-bootstrap';
 import { getCookie } from 'cookies-next';
+import DeleteModal from '@/app/dashboard/components/modalDelete';
 
 
 export interface User {
@@ -64,6 +65,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const [isEdit, setIsEdit] = useState(false); // Novo estado para controlar se é edição
 
+  const modalTitle = "Deseja realmente excluir este cliente?";
 
   //const [infoVisible, setInfoVisible] = useState<string | null>(null);
   //const infoOptionsRef = useRef<HTMLDivElement>(null);
@@ -135,7 +137,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+    
+    toast.dismiss();
+
     try {
       const token = getCookie("token");
   
@@ -222,6 +226,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   };
   
   const handleConfirmDelete = async () => { 
+
+    toast.dismiss();
+    
     try {
       const token = getCookie('token'); // Obtém o token de autenticação
   
@@ -666,30 +673,12 @@ export function TableClients({ clients, loading }: TableClientsProps) {
           </Modal>
           
           {/* Modal personalizado */}
-          <Modal
-            show={showModalDelete}
-            onHide={handleCloseModalDelete}
-            className={stylesModal.customModal}
-            size="sm"
-          >
-            <div className={stylesModal.customModalHeader}>
-              <h2>Deseja realmente excluir o cliente {clientName}?</h2>
-              <button onClick={handleCloseModalDelete} className={stylesModal.closeButton}>
-                <X size={24} color="var(--white)" /> {/* Ícone de fechar */}
-              </button>
-            </div>
-            <div className={stylesModal.customModalBody}>
-              <div className={stylesModal.buttonContainer}>
-                <button onClick={handleConfirmDelete} className={stylesModal.customBtnPrimary}>
-                  Excluir
-                </button>
-                <button onClick={handleCloseModalDelete} className={stylesModal.customBtnSecondary}>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </Modal>
-
+          <DeleteModal
+            showModalDelete={showModalDelete}
+            handleCloseModalDelete={handleCloseModalDelete}
+            handleConfirmDelete={handleConfirmDelete}
+            modalTitle={modalTitle} // Passando o título dinâmico como prop
+          />
           <ToastContainer />
         </>
       )}

@@ -4,7 +4,8 @@ import { Search, X, ChevronLeft, ChevronRight, Plus, ShoppingBasket } from 'luci
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 
-import  CreatePurchaseModal  from '../modal';
+import  CreatePurchaseModal  from '../modalEfetuarCompra';
+import PaymentModal from '../modalEfetuarPagamento';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -41,6 +42,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
   const { isMenuInputFocused } = useFocus();
   const [mouseMoved, setMouseMoved] = useState(false);
   const [showModalCreateCompra, setShowModalCreateCompra] = useState(false);
+  const [showModalEfetuarPagamento, setShowModalEfetuarPagamento] = useState(false);
   const [dataCompra, setDataCompra] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
   const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
