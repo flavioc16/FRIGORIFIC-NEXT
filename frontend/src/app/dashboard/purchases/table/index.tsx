@@ -61,7 +61,7 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
   const [id, setCompraId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [dataCompra, setDataCompra] = useState('');
+  const [dataDaCompra, setDataDaCompra] = useState('');
   const [created_at, setCreatedAt] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
   const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
@@ -71,22 +71,22 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
 
-
- 
-
-
   useEffect(() => {
     if (cliente) {
       setSelectedClient(cliente);
     }
   }, [cliente]);
 
-  const handleOpenCreatePurshasesModal  = () => {
+  const handleOpenCreatePurshasesModal = () => {
     setIsEdit(false); // Modo de cadastro
     setShowModal(true);
     setDescricaoCompra('');
     setTotalCompra("0,00");
     setTipoCompra('');
+  
+    // Defina dataDaCompra como a data atual no caso de cadastro
+    const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    setDataDaCompra(currentDate);
   };
 
   const handleOpenEditPurchaseModal = (compra: Compra) => {
@@ -94,7 +94,7 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
   
     // Agora você pode usar esse estado para preencher o formulário do modal
     setIsEdit(true);
-    setDataCompra(compra.dataDaCompra || ""); // Garante um valor padrão
+    setDataDaCompra(compra.dataDaCompra || ""); // Garante um valor padrão
     setCreatedAt(compra.created_at);
     setDescricaoCompra(compra.descricaoCompra || "");
     setRawValue(compra.totalCompra || 0);
@@ -108,8 +108,6 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
     setShowModal(true);
   };
   
-  
-
   const handleCloseCreatePurshasesModal =  () => {
     setIsEdit(false); // Modo de cadastro
     setShowModal(false);
@@ -354,7 +352,7 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
               {currentCompras.length > 0 ? (
                 currentCompras.map((compra) => (
                   <tr key={compra.id}>
-                    <td>{adjustDate(compra.created_at ?? '')}</td>
+                    <td>{adjustDate(compra.dataDaCompra ?? '')}</td>
                     <td>{compra.descricaoCompra}</td>
                     <td>
                       {compra.totalCompra.toLocaleString('pt-BR', {
@@ -500,9 +498,9 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
               setDescricaoCompra={setDescricaoCompra}
               setTotalCompra={setTotalCompra}
               setTipoCompra={setTipoCompra}
-              dataCompra={dataCompra}
+              dataDaCompra={dataDaCompra}
               rawValue={rawValue}
-              setDataCompra={setDataCompra}
+              setDataCompra={setDataDaCompra}
               setRawValue={setRawValue}
             />
 

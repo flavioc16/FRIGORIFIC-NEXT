@@ -43,7 +43,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
   const [mouseMoved, setMouseMoved] = useState(false);
   const [showModalCreateCompra, setShowModalCreateCompra] = useState(false);
   const [showModalEfetuarPagamento, setShowModalEfetuarPagamento] = useState(false);
-  const [dataCompra, setDataCompra] = useState('');
+  const [dataDaCompra, setDataDaCompra] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
   const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
   const [rawValue, setRawValue] = useState<number>(0);
@@ -64,6 +64,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
     setIsModalOpen(true)
     setSelectedClient(client);
     setShowModalCreateCompra(true);
+
+    // Defina dataDaCompra como a data atual no caso de cadastro
+    const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    setDataDaCompra(currentDate);
   };
 
   const handleCloseModalCreateCompra = () => {
@@ -370,10 +374,10 @@ export function Table ({ clients, loading }: TableClientsProps) {
               setDescricaoCompra={setDescricaoCompra}
               setTotalCompra={setTotalCompra}
               setTipoCompra={setTipoCompra}
-              dataCompra={dataCompra}
+              dataDaCompra={dataDaCompra}
               created_at={created_at}
               rawValue={rawValue}
-              setDataCompra={setDataCompra}
+              setDataCompra={setDataDaCompra}
               setRawValue={setRawValue}
             />
           </div>

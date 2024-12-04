@@ -18,6 +18,7 @@ class UpdateCompraService {
     totalCompra,
     tipoCompra,
     statusCompra,
+    valorInicialCompra,
     dataDaCompra,
     created_at,
   }: CompraRequest) {
@@ -35,9 +36,15 @@ class UpdateCompraService {
       where: { id },
       data: {
         descricaoCompra: descricaoCompra ?? compraExistente.descricaoCompra,
-        dataDaCompra: dataDaCompra ? new Date(dataDaCompra + 'T00:00:00Z') : compraExistente.dataDaCompra,
+        
+        // Se dataDaCompra for fornecida, usamos ela diretamente sem modificar.
+        dataDaCompra: dataDaCompra 
+          ? new Date(dataDaCompra) // Garantimos que a data é criada corretamente como Date
+          : compraExistente.dataDaCompra, // Se não for fornecida, mantém a data existente
+        
         created_at: created_at ? new Date(created_at) : compraExistente.created_at,
         totalCompra: totalCompra ?? compraExistente.totalCompra,
+        valorInicialCompra: valorInicialCompra ?? compraExistente.valorInicialCompra,
         tipoCompra: tipoCompra ?? compraExistente.tipoCompra,
         statusCompra: statusCompra ?? compraExistente.statusCompra,
       },

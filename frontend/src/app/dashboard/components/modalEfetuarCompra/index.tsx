@@ -13,7 +13,7 @@ interface CreatePurchaseModalProps {
   onClose: () => void;
   selectedClient: { id: string; nome: string } | null;
   selectedCompra: Compra | null; // Permitir que seja null
-  dataCompra: string;
+  dataDaCompra: string;
   created_at: string;
   rawValue: number;
   descricaoCompra: string | undefined;
@@ -32,77 +32,54 @@ export default function CreatePurchaseModal({
   isEdit,
   onClose,
   selectedClient,
-  dataCompra,
+  dataDaCompra,
   selectedCompra,
-  created_at,
   rawValue,
   descricaoCompra,
   totalCompra,
   tipoCompra,
   setDataCompra,
-  setCreatedAt,
   setRawValue,
   setDescricaoCompra,
   setTotalCompra,
   setTipoCompra,
 }: CreatePurchaseModalProps) {
-
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const descricaoInputRef = useRef<HTMLInputElement | null>(null);
 
   const [checkbox, setCheckbox] = useState(false);
 
-  const descricaoInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (isEdit && dataDaCompra) {
+      const formattedDate = new Date(dataDaCompra).toISOString().split('T')[0];
+      setDataCompra(formattedDate);  // Atualizando o estado ao abrir o modal em modo de edição
+    }
+  }, [isEdit, dataDaCompra, setDataCompra]);
+   
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckbox(e.target.checked);
     descricaoInputRef.current?.focus();
   };
 
-  useEffect(() => {
-    if (checkbox) {
-      descricaoInputRef.current?.focus(); // Foca no input quando checkbox está true
-    }
-  }, [checkbox]); 
-  
-
-  useEffect(() => {
-    if (show) {
-        let formattedDate = "";
-
-        if (isEdit && created_at) {
-            const date = new Date(created_at);
-            // Garantir que a data seja no formato 'yyyy-MM-dd'
-            formattedDate = date.toISOString().split('T')[0]; // Isso vai garantir o formato correto
-        } else {
-            const today = new Date();
-            formattedDate = today.toISOString().split('T')[0]; // Isso vai garantir o formato correto
-        }
-
-        setCreatedAt((prevDate) => {
-            if (prevDate !== formattedDate) {
-                return formattedDate; // Atualiza apenas se for diferente para evitar loop
-            }
-            return prevDate; // Não atualiza se já estiver no formato correto
-        });
-    }
-}, [show, isEdit, setCreatedAt]);
-  
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+
+    
+
     toast.dismiss();
 
     if (isEdit && !selectedCompra?.id) {
       toast.error("Nenhuma compra selecionada.");
       return;
     }
-    
+
     if (parseFloat(totalCompra.replace(",", ".")) === 0) {
       toast.error("Digite um valor válido para a compra.");
       inputRef.current?.focus();
       return;
     }
-  
+
     const token = getCookie("token");
     if (!token) {
       toast.error("Token de autenticação não encontrado. Faça login novamente.");
@@ -112,31 +89,21 @@ export default function CreatePurchaseModal({
       toast.error("Nenhum cliente selecionado.");
       return;
     }
-    if (!selectedCompra?.id && isEdit) {  // Verifica se a compra está selecionada no modo de edição
-      toast.error("Nenhuma compra selecionada.");
-      return;
-    }
-    if (totalCompra === "0,00") {
-      toast.error("Digite um valor válido para a compra.");
-      inputRef.current?.focus();
-      return;
-    }
-  
+
     try {
       const tipoCompraValor = tipoCompra ? parseInt(tipoCompra, 10) : 0;
-  
+
       const compraData = {
-        id: selectedCompra?.id,  // Envia a id da compra (no modo edição)
+        id: selectedCompra?.id, // Envia a id da compra (no modo edição)
         descricaoCompra,
         totalCompra: parseFloat(totalCompra.replace(/\./g, "").replace(",", ".")),
         valorInicialCompra: parseFloat(totalCompra.replace(/\./g, "").replace(",", ".")),
         tipoCompra: tipoCompraValor,
         statusCompra: 0,
-        created_at: created_at, // Certifique-se de enviar a data no formato ISO 8601
-        dataDaCompra: created_at, // Ou outra data conforme necessário
+        dataDaCompra: dataDaCompra, // Ou outra data conforme necessário
         clienteId: selectedClient.id,
       };
-  
+
       if (isEdit) {
         // Chamada para atualização
         await api.put(`/compras`, compraData, {
@@ -154,61 +121,54 @@ export default function CreatePurchaseModal({
       if (!checkbox) {
         onClose(); // Fecha o modal se o checkbox não estiver marcado
       } else {
-        // Foca no input Descrição
+        
+    
         descricaoInputRef.current?.focus();
-      
-        // Apenas se não estiver no modo de edição, zera os campos
+        
+
         if (!isEdit) {
           setDescricaoCompra("");
           setTotalCompra("0,00");
           setTipoCompra("0");
-          setCreatedAt(new Date().toISOString().split('T')[0]);
+          
         }
       }
-      
     } catch (error) {
-      console.error(error);  // Para inspecionar o erro real da requisição
+      console.error(error);
       toast.error(isEdit ? "Erro ao atualizar compra." : "Erro ao cadastrar compra.");
     }
   };
-  
+
   const capitalizeWords = (value: string): string => {
     return value
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
-  
-    // Remove tudo que não for número
+
     const numericValue = value.replace(/[^\d]/g, "");
-  
-    // Converte o valor para número bruto (dividido por 100 para considerar casas decimais)
     const rawNumber = parseFloat(numericValue) / 100;
-  
-    // Atualiza o estado bruto
     setRawValue(isNaN(rawNumber) ? 0 : rawNumber);
-  
-    // Formata o valor para exibição imediata
+
     const formattedValue = isNaN(rawNumber)
       ? "0,00"
       : rawNumber.toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
-  
-    setTotalCompra(formattedValue); // Atualiza o valor formatado no input
+
+    setTotalCompra(formattedValue);
   };
 
   const handleBlur = () => {
-    // Reaplica a formatação ao perder o foco
     const formattedValue = rawValue.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    setTotalCompra(formattedValue); // Garante que o valor exibido é formatado corretamente
+    setTotalCompra(formattedValue);
   };
 
   return (
@@ -223,23 +183,22 @@ export default function CreatePurchaseModal({
       >
         <div className={styles.customModalHeader}>
           <h2> {selectedClient?.nome}</h2>
-            <button onClick={onClose} className={styles.closeButton}>
-              <X size={24} color="var(--white)" />
-            </button>
+          <button onClick={onClose} className={styles.closeButton}>
+            <X size={24} color="var(--white)" />
+          </button>
         </div>
         <div className={styles.customModalBody}>
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
-              <label htmlFor="dataCompra" className={styles.customFormLabel}>Data da compra</label>
+              <label htmlFor="dataCompra" className={styles.customFormLabel}> Data da compra </label>
               <input
                 id="dataCompra"
                 type="date"
                 required
-                value={created_at || ""}
-                onChange={(e) => setCreatedAt(e.target.value)} // Atualiza `created_at`
+                value={dataDaCompra}  // O valor vem das props
+                onChange={(e) => setDataCompra(e.target.value)}  // Atualiza o valor da prop dataDaCompra
                 className={styles.customFormControl}
               />
-
             </div>
             <div className={styles.formGroup}>
               <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
