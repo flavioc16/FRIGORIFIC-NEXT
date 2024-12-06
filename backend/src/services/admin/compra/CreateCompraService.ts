@@ -34,6 +34,12 @@ class CreateCompraService {
       currentDate.getUTCMilliseconds()
     );
 
+    // Calcule a data de vencimento (30 dias após a data da compra, por exemplo)
+    const vencimentoDate = new Date(parsedDate);
+    vencimentoDate.setDate(parsedDate.getDate() + 30); // Adiciona 30 dias
+
+    vencimentoDate.setUTCHours(0, 0, 0, 0);
+
     // Crie a compra definindo ambos os campos com parsedDate
     const compra = await prismaClient.compra.create({
       data: {
@@ -46,6 +52,7 @@ class CreateCompraService {
         user: { connect: { id: userId } },
         dataDaCompra: parsedDate,  // Salva como UTC
         created_at: parsedDate,    // Salva como UTC
+        dataVencimento: vencimentoDate, // Preenche a data de vencimento
       },
     });
 

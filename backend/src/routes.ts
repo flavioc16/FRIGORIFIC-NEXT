@@ -23,9 +23,9 @@ import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByI
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
 import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
 
-import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 
-// Admin Pagamento Controllers
+// Outros Controllers
+import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 import { CreatePagamentoController } from './controllers/admin/pagamento/CreatePagamentoController';
 
 // Middlewares
@@ -49,22 +49,15 @@ router.get('/clients/:clienteId', isAuthenticated, authorizeRole('ADMIN'), new G
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
 router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
 
-
-//  Admin Routes Compras
+// Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);
 router.put('/compras', isAuthenticated, authorizeRole('ADMIN'), new UpdateCompraController().handle);
 router.get('/compras', isAuthenticated, authorizeRole('ADMIN'), new GetAllComprasController().handle);
 router.get('/compras/total-do-dia', isAuthenticated, authorizeRole('ADMIN'), new GetTotalComprasDoDiaController().handle);
 router.get('/compras/:compraId', isAuthenticated, authorizeRole('ADMIN'), new GetCompraByIdController().handle);
-
 router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCompraController().handle);
 
-
-//  Admin Routes Pagamentos
+// Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);
-
-// Client Routes
-//router.get('/comprasuserloged', isAuthenticated, authorizeRole('USER'), new GetComprasController().handle);
-
 
 export { router };

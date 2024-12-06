@@ -1,0 +1,69 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+// Adicione a palavra-chave "export" antes da função
+export async function aplicarJuros() {
+    try {
+      const comprasVencidas = await prisma.compra.findMany({
+        where: {
+          dataVencimento: {
+            lte: new Date(), // Compras com vencimento menor ou igual à data atual
+          },
+          statusCompra: 0, // Status pendente
+        },
+      });
+  
+      let totalJurosAplicados = 0;
+  
+      for (const compra of comprasVencidas) {
+        // Verificar se já existem juros aplicados para esta compra
+        const jurosExistentes = await prisma.juros.findFirst({
+          where: {
+            compraId: compra.id,
+          },
+          orderBy: {
+            created_at: 'desc', // Pega o juros mais recente
+          },
+        });
+  
+        const umMesAtras = new Date();
+        umMesAtras.setMonth(umMesAtras.getMonth() - 1); // Data de um mês atrás
+  
+        // Se não houver juros aplicados ou os juros foram aplicados há mais de 30 dias
+        // Ou seja, se os juros foram aplicados e já passou um mês, aplique novamente
+        if (!jurosExistentes || new Date(jurosExistentes.created_at) < umMesAtras) {
+          const valorJuros = compra.totalCompra * 0.05; // 5% de juros
+          const novoTotal = compra.totalCompra + valorJuros;
+  
+          // Atualiza o total da compra
+          await prisma.compra.update({
+            where: { id: compra.id },
+            data: { totalCompra: novoTotal },
+          });
+  
+          // Cria um registro de juros
+          await prisma.juros.create({
+            data: {
+              valor: valorJuros,
+              descricao: `Juros aplicados por atraso na compra: ${compra.descricaoCompra}`,
+              compraId: compra.id,
+              clienteId: compra.clienteId,
+            },
+          });
+  
+          totalJurosAplicados += valorJuros;
+        } else {
+          console.log(`Juros já aplicados recentemente para a compra ${compra.id}`);
+        }
+      }
+  
+      console.log(`${comprasVencidas.length} compras processadas. Juros aplicados: R$${totalJurosAplicados.toFixed(2)}`);
+    } catch (error) {
+      console.error('Erro ao aplicar juros:', error);
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+  
+  

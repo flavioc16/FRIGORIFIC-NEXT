@@ -70,8 +70,6 @@ export default function ClientPurchases() {
     fetchData(); // Chama a função para buscar os dados
   }, [clienteId]); // Executa sempre que o clienteId mudar
 
-  
-
   return (
     <main className={styles.contentArea}>
       <TableCompras

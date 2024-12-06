@@ -67,6 +67,7 @@ model Compra {
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
   dataDaCompra       DateTime?
+  dataVencimento     DateTime? // Novo campo para a data de vencimento
 
   userId             String
   clienteId          String
@@ -79,8 +80,6 @@ model Compra {
 
   @@map("compras")
 }
-
-
 
 model Pagamento {
   id             String    @id @default(uuid())

@@ -465,6 +465,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente}: Tab
                   </td>
                 </tr>
               </tfoot>
+
             )}
           </table>
           </div>
