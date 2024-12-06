@@ -68,7 +68,7 @@ export default function ClientPurchases() {
     }
 
     fetchData(); // Chama a função para buscar os dados
-  }, [clienteId, compras]); // Executa sempre que o clienteId mudar
+  }, [clienteId]); // Executa sempre que o clienteId mudar
 
   
 

@@ -39,20 +39,22 @@ enum Role {
 model Cliente {
   id         String    @id @default(uuid())
   nome       String
-  endereco   String @default("Não informado")
-  referencia String @default("Não informado")
+  endereco   String    @default("Não informado")
+  referencia String    @default("Não informado")
   email      String
   telefone   String
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 
   userId     String
-  user       User      @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
   compras    Compra[]
   pagamentos Pagamento[]
+  juros      Juros[]    // Relacionamento com Juros (lado inverso)
 
   @@map("clientes")
 }
+
 
 
 model Compra {
@@ -69,12 +71,15 @@ model Compra {
   userId             String
   clienteId          String
   pagamentoId        String?
-  user               User      @relation(fields: [userId], references: [id])
-  cliente            Cliente   @relation(fields: [clienteId], references: [id])
+
+  user               User       @relation(fields: [userId], references: [id])
+  cliente            Cliente    @relation(fields: [clienteId], references: [id])
   pagamento          Pagamento? @relation(fields: [pagamentoId], references: [id])
+  juros              Juros[]    // Relacionamento com Juros (lado inverso)
 
   @@map("compras")
 }
+
 
 
 model Pagamento {
@@ -90,6 +95,21 @@ model Pagamento {
 
   @@map("pagamentos")
   
+}
+
+model Juros {
+  id           String    @id @default(uuid())
+  valor        Float
+  descricao    String    @db.VarChar(255)
+  created_at   DateTime  @default(now())
+
+  compraId     String
+  clienteId    String
+
+  compra       Compra    @relation(fields: [compraId], references: [id]) // Relação direta
+  cliente      Cliente   @relation(fields: [clienteId], references: [id])
+
+  @@map("juros")
 }
 
 
