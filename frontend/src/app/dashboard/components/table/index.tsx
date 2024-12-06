@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
 
 import  CreatePurchaseModal  from '../modalEfetuarCompra';
-import PaymentModal from '../modalEfetuarPagamento';
+
 
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -42,7 +42,7 @@ export function Table ({ clients, loading }: TableClientsProps) {
   const { isMenuInputFocused } = useFocus();
   const [mouseMoved, setMouseMoved] = useState(false);
   const [showModalCreateCompra, setShowModalCreateCompra] = useState(false);
-  const [showModalEfetuarPagamento, setShowModalEfetuarPagamento] = useState(false);
+  
   const [dataDaCompra, setDataDaCompra] = useState('');
   const [descricaoCompra, setDescricaoCompra] = useState<string | undefined>();
   const [totalCompra, setTotalCompra] = useState<string>("0,00"); // Inicializa vazio
@@ -56,6 +56,17 @@ export function Table ({ clients, loading }: TableClientsProps) {
   useEffect(() => {
     setTotalCompra("0,00");
   }, []);
+
+  const applyFocus = () => {
+    if (!isMenuInputFocused && searchInputRef.current && !mouseMoved) {
+      searchInputRef.current.focus();
+    }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => applyFocus());
+    return () => clearInterval(intervalId);
+  }, [isMenuInputFocused, mouseMoved]);
 
   const handleOpenModalCreateCompra  = (client: Client) => {
     setDescricaoCompra('');
@@ -74,21 +85,6 @@ export function Table ({ clients, loading }: TableClientsProps) {
     setShowModalCreateCompra(false);
     setIsModalOpen(false)
   };
-
-  const applyFocus = () => {
-    if (!isMenuInputFocused && searchInputRef.current && !mouseMoved) {
-      searchInputRef.current.focus();
-    }
-  };
-
-  useEffect(() => {
-    applyFocus();
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => applyFocus());
-    return () => clearInterval(intervalId);
-  }, [isMenuInputFocused, mouseMoved]);
 
   useEffect(() => {
     const handleUserInteraction = () => {

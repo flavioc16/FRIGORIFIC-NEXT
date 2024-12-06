@@ -148,58 +148,58 @@
 
 .comprasTable {
     width: 100%;
+    table-layout: fixed; /* Faz com que as larguras sejam fixas */
     border-radius: 8px;
     background-color: var(--lilas-900);
     border-collapse: collapse;
   
     th, td {
-      border: 0.8px solid var(--cinza-800);
-      padding: 4px;
-      font-size: 0.90rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      vertical-align: middle;
-      color: var(--gray-100);
+        border: 0.8px solid var(--cinza-800);
+        padding: 4px;
+        font-size: 0.90rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+        color: var(--gray-100);
     }
   
     th {
-      background-color: var(--roxo-700);
-      color: var(--white);
-      font-weight: bold;
-      padding: 10px;
-      text-align: left;
+        background-color: var(--roxo-700);
+        color: var(--white);
+        font-weight: bold;
+        padding: 10px;
+        text-align: left;
     }
   
     /* Coluna Data */
     th:nth-child(1), td:nth-child(1) {
-      width: 10%;
-      text-align: center;
+        width: 15%; /* Menor proporção */
+        text-align: center;
     }
-  
+    
     /* Coluna Descrição */
     th:nth-child(2), td:nth-child(2) {
-      width: 55%;
+        width: 55%; /* Maior proporção */
     }
-  
+    
     /* Coluna Total */
     th:nth-child(3), td:nth-child(3) {
-      width: 15%;
-      
+        width: 15%; /* Menor proporção */
     }
-  
+    
     /* Coluna Ação */
     th:nth-child(4), td:nth-child(4) {
-      width: 15%;
-      text-align: center;
+        width: 15%; /* Menor proporção */
+        text-align: center;
     }
   
     tr:nth-child(even) {
-      background-color: var(--lilas-900);
+        background-color: var(--lilas-900);
     }
   
     tr:hover {
-      background-color: var(--roxo-700);
+        background-color: var(--roxo-700);
     }
 
     tr:has(.noRecords):hover {
@@ -279,68 +279,92 @@
     display: table-cell; // Garante que a célula se comporte como uma célula de tabela
 }
 
+.container {
+    display: flex;
+    justify-content: space-between;  // Para distribuir os itens (botões e paginação)
+    align-items: center;  // Alinha verticalmente os itens ao centro
+    width: 100%;  // Garantir que ocupe toda a largura
+    gap: 1rem;  // Adiciona espaçamento entre os itens
+    margin-top: 1rem;
+}
+  
+.buttonsContainer {
+    display: flex;  // Alinha os botões na horizontal
+    gap: 0.5rem;  // Espaçamento entre os botões
+    align-items: center;  // Alinha verticalmente os botões
+}
+  
 .pagination {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end;  // Garante que a paginação fique na extrema direita
     align-items: center;
-    margin-top: 1rem;
-    margin-right: 1px;
-
-    // Esconde a paginação se não houver resultados
+    margin: 0;  // Remover qualquer margem extra
+    padding: 0; // Garantir que o padding não cause desalinhamento
+  
     &.hidden {
-        display: none;
+      display: none;
     }
-
+  
     button {
-        background-color: var(--lilas-800);
-        color: var(--white);
-        border: 1px solid var(--cinza-800);
-        border-radius: 4px;
-        padding: 0.5rem;
-        cursor: pointer;
-        font-size: 0.75rem; // Tamanho menor para o texto do botão
-        transition: background-color 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:disabled {
-            background-color: var(--cinza-600);
-            cursor: not-allowed;
-        }
-
-        &:hover:not(:disabled) {
-            background-color: var(--lilas-700);
-        }
-
-        svg {
-            width: 30px; // Ajuste o tamanho dos ícones de navegação
-            height: 15px; // Ajuste o tamanho dos ícones de navegação
-        }
+      background-color: var(--lilas-800);
+      color: var(--white);
+      border: 1px solid var(--cinza-800);
+      border-radius: 4px;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      &:disabled {
+        background-color: var(--cinza-600);
+        cursor: not-allowed;
+      }
+  
+      &:hover:not(:disabled) {
+        background-color: var(--lilas-700);
+      }
+  
+      svg {
+        width: 30px;
+        height: 15px;
+      }
     }
-
+  
     .pageNumber {
-        background-color: var(--lilas-800);
-        color: var(--white);
-        border: 1px solid var(--cinza-800);
-        border-radius: 4px;
-        padding: 0.5rem 1rem;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: background-color 0.3s ease;
-        margin: 0 0.25rem;
-
-        &.active {
-            background-color: var(--lilas-700);
-            border-color: var(--lilas-700);
-            font-weight: bold;
-        }
-
-        &:hover {
-            background-color: var(--lilas-700);
-        }
+      background-color: var(--lilas-800);
+      color: var(--white);
+      border: 1px solid var(--cinza-800);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: background-color 0.3s ease;
+      margin: 0 0.25rem;
+  
+      &.active {
+        background-color: var(--lilas-700);
+        border-color: var(--lilas-700);
+        font-weight: bold;
+      }
+  
+      &:hover {
+        background-color: var(--lilas-700);
+      }
     }
+  }
+
+.customBtnPrimary {
+    background-color: green;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
 }
+  
 
 .loadingSpinner {
     display: flex;
@@ -364,24 +388,24 @@
     border: 1px solid #30363d; // Borda levemente mais clara
   
     .popover-arrow {
-      &:before {
-        border-width: 6px;
-        border-style: solid;
-        border-color: #2d333b transparent transparent transparent !important; // Cor da seta
-      }
+        &:before {
+            border-width: 6px;
+            border-style: solid;
+            border-color: #2d333b transparent transparent transparent !important; // Cor da seta
+        }
     }
-  }
+}
     
-  .PopoverHeader {
+.PopoverHeader {
     background-color: #21262d; // Fundo escuro do cabeçalho do Popover
     color: #c9d1d9; // Cor do texto clara
     border-bottom: 1px solid #30363d; // Borda inferior do cabeçalho
     
-  }
+}
     
-  .PopoverBody {
+.PopoverBody {
     color: #c9d1d9; // Cor do texto clara
-  }
+}
 
 @keyframes spin {
     to {

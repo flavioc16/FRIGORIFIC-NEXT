@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Info, FilePenLine, Trash, Plus } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Info, FilePenLine, Trash, Plus,  DollarSign } from 'lucide-react';
 import styles from './styles.module.scss';
+import stylesModal from './stylesModal.module.scss';
 
 import Link from 'next/link';
 import { OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
@@ -15,6 +16,7 @@ import { api } from '@/services/api';
 import axios from 'axios';
 import CreatePurchaseModal from '../../components/modalEfetuarCompra';
 import DeleteModal from '../../components/modalDelete';
+import PaymentModal from '../../purchases/modalEfetuarPagamento';
 
 export interface Compra {
   id: string;
@@ -44,13 +46,14 @@ export interface Client {
 }
 
 
-export interface TableComprasProps {
+interface TableComprasProps {
   compras: Compra[];
-  cliente: Client | null; // Agora o cliente pode ser um objeto ou null
+  cliente: Client | null;
   loading: boolean;
+  somaTotalCompras: number; // Adicione esta prop
 }
 
-export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
+export function TableCompras({ compras, somaTotalCompras, loading, cliente}: TableComprasProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [comprasPerPage, setComprasPerPage] = useState(10);
@@ -70,6 +73,7 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
+  const [showModalPayment, setShowModalPayment] = useState(false);
 
   useEffect(() => {
     if (cliente) {
@@ -87,6 +91,10 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
     // Defina dataDaCompra como a data atual no caso de cadastro
     const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
     setDataDaCompra(currentDate);
+  };
+
+  const handleOpenCreatePaymentModal = () => {
+    setShowModalPayment(true)
   };
 
   const handleOpenEditPurchaseModal = (compra: Compra) => {
@@ -123,6 +131,10 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
       </Popover.Body>
     </Popover>
   );
+
+  const handleCloseModalPayment = () => {
+    setShowModalPayment(false);
+  };
 
   const handleOpenModalDelete = (id: string) => {
     setCompraId(id);
@@ -211,8 +223,8 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
       const searchLower = searchTerm.toLowerCase();
   
       // Utilize a função unificada para formatar a data
-      const formattedDate = formatDate(compra.created_at);
-  
+      const formattedDate = compra.dataDaCompra ? formatDate(compra.dataDaCompra) : "Data não disponível";
+
       const formatCurrency = (value: number): string => {
         return value
           .toFixed(2)
@@ -271,7 +283,7 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
 
     return pagination;
   };
-
+  
   return (
     <div className={styles.tableWrapper}>
       {loading ? (
@@ -427,54 +439,88 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
             </tbody>
             {currentCompras.length > 0 && (
               <tfoot>
-              <tr className={styles.totalRow}>
-                <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
-                  TOTAL 
-                </td>
-                  <td colSpan={2} className={styles.totalValue}>
+                <tr className={styles.totalRow}>
+                  {/* Primeira célula: texto alinhado à esquerda */}
+                  <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
+                    TOTAL
+                  </td>
+
+                  {/* Segunda célula: valor centralizado */}
+                  <td 
+                    colSpan={1} 
+                    className={styles.totalValue} 
+                    style={{ textAlign: 'left', paddingLeft: '4px' }} 
+                  >
                     {somaAtual.toLocaleString('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
                     })}
                   </td>
-              </tr>
-            </tfoot>
+                  {/* Terceira célula: manter o alinhamento padrão */}
+                  <td style={{ textAlign: 'center' }}>
+                    {somaTotalCompras.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </td>
+                </tr>
+              </tfoot>
             )}
           </table>
           </div>
-          <div className={`${styles.pagination} ${currentCompras.length ? '' : styles.hidden}`}>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              aria-label="Página anterior"
-            >
-              <ChevronLeft />
-            </button>
-            {generatePagination().map((page, index) =>
-              typeof page === 'number' ? (
-                <span
-                  key={index}
-                  className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ''}`}
-                  onClick={() => handlePageChange(page)}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                  role="button"
+          <div className={styles.container}>
+            <div className={styles.buttonsContainer}>
+              <Link href="/dashboard">
+                <button className={stylesModal.customBtnSecondary}>
+                  Cancelar
+                </button>
+              </Link>
+              {currentCompras.length > 0 && (
+                <button 
+                  onClick={handleOpenCreatePaymentModal} 
+                  className={styles.customBtnPrimary}
                 >
-                  {page}
-                </span>
-              ) : (
-                <span key={index} className={styles.ellipsis} aria-hidden="true">
-                  {page}
-                </span>
-              )
-            )}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              aria-label="Próxima página"
-            >
-              <ChevronRight />
-            </button>
+                  Pagamento
+                </button>
+              )}
+            </div>
+            {/* Paginação do lado direito */}
+            <div className={`${styles.pagination} ${currentCompras.length ? '' : styles.hidden}`}>
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Página anterior"
+              >
+                <ChevronLeft />
+              </button>
+              {generatePagination().map((page, index) =>
+                typeof page === 'number' ? (
+                  <span
+                    key={index}
+                    className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ''}`}
+                    onClick={() => handlePageChange(page)}
+                    aria-current={currentPage === page ? 'page' : undefined}
+                    role="button"
+                  >
+                    {page}
+                  </span>
+                ) : (
+                  <span key={index} className={styles.ellipsis} aria-hidden="true">
+                    {page}
+                  </span>
+                )
+              )}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Próxima página"
+              >
+                <ChevronRight />
+              </button>
+            </div>
           </div>
+
+
 
           {/* Modal delete */}
           <DeleteModal
@@ -485,24 +531,31 @@ export function TableCompras({ compras, loading, cliente}: TableComprasProps) {
           />
 
           <CreatePurchaseModal
-              show={showModal}
-              isEdit={isEdit} 
-              onClose={handleCloseCreatePurshasesModal} 
-              selectedClient={selectedClient}
-              selectedCompra={selectedCompra}
-              descricaoCompra={descricaoCompra}
-              totalCompra={totalCompra}
-              created_at={created_at}
-              tipoCompra={tipoCompra}
-              setCreatedAt={setCreatedAt}
-              setDescricaoCompra={setDescricaoCompra}
-              setTotalCompra={setTotalCompra}
-              setTipoCompra={setTipoCompra}
-              dataDaCompra={dataDaCompra}
-              rawValue={rawValue}
-              setDataCompra={setDataDaCompra}
-              setRawValue={setRawValue}
-            />
+            show={showModal}
+            isEdit={isEdit} 
+            onClose={handleCloseCreatePurshasesModal} 
+            selectedClient={selectedClient}
+            selectedCompra={selectedCompra}
+            descricaoCompra={descricaoCompra}
+            totalCompra={totalCompra}
+            created_at={created_at}
+            tipoCompra={tipoCompra}
+            setCreatedAt={setCreatedAt}
+            setDescricaoCompra={setDescricaoCompra}
+            setTotalCompra={setTotalCompra}
+            setTipoCompra={setTipoCompra}
+            dataDaCompra={dataDaCompra}
+            rawValue={rawValue}
+            setDataCompra={setDataDaCompra}
+            setRawValue={setRawValue}
+          />
+
+          <PaymentModal
+            showModalPayment={showModalPayment}
+            handleCloseModalPayment={handleCloseModalPayment}
+            totalValue={somaTotalCompras}
+            clientId={cliente?.id || ""}
+          />
 
           <ToastContainer />
         </>

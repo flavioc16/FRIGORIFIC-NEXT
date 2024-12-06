@@ -35,6 +35,7 @@ export default function ClientPurchases() {
   const [compras, setCompras] = useState<Compra[]>([]); // Estado para armazenar as compras
   const [loading, setLoading] = useState(true); // Estado de carregamento
   const [cliente, setCliente] = useState<Client | null>(null); // Estado para armazenar o cliente
+  const [somaTotalCompras, setSomaTotalCompras] = useState<number>(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -50,7 +51,7 @@ export default function ClientPurchases() {
           },
         });
         setCompras(responseCompras.data.compras); // Atualiza o estado com as compras
-
+        setSomaTotalCompras(responseCompras.data.somaTotalCompras); // Atualiza somaTotalCompras
         // Busca o cliente inteiro, incluindo nome, referência e outros dados
         const responseCliente = await api.get(`/clients/${clienteId}`, {
           headers: {
@@ -75,6 +76,7 @@ export default function ClientPurchases() {
     <main className={styles.contentArea}>
       <TableCompras
         compras={compras}
+        somaTotalCompras={somaTotalCompras} // Passa a soma total como prop
         cliente={cliente} // Passa o cliente inteiro para o componente TableCompras
         loading={loading}
       />

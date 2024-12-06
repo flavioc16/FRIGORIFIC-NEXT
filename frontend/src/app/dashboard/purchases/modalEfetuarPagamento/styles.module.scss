@@ -460,13 +460,6 @@ select.customFormControl {
     filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%);
     cursor: pointer;
 }
-
-.buttonContainer {
-    display: flex; /* Usando flexbox */
-    justify-content: space-between; /* Espaço máximo entre os itens */
-    align-items: center; /* Alinha os itens no centro verticalmente */
-    width: 100%; /* Garante que o container ocupe toda a largura */
-}
   
 .rememberMeContainer {
     display: flex;

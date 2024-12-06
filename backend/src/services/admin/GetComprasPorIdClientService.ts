@@ -17,7 +17,7 @@ class GetComprasPorIdService {
         user: false,
       },
       orderBy: {
-        created_at: 'asc', // Ordena pelas compras pela data de compra (de forma crescente)
+        dataDaCompra: 'asc', // Ordena pelas compras pela data de compra (de forma crescente)
       },
     });
 
