@@ -10,8 +10,8 @@ import { commitAutomatico } from './jobs/autoCommit';
 import { criarBackupSQL } from './jobs/criarBackupSQL';
 
 aplicarJuros();
-commitAutomatico();
 criarBackupSQL();
+commitAutomatico();
 
 cron.schedule('0 0 * * *', async () => {
   console.log('Executando script de juros...');
