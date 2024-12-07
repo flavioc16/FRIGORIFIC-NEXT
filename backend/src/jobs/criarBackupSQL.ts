@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 export async function criarBackupSQL() {
   try {
-    console.log('Iniciando backup completo do banco de dados em formato SQL...');
 
     // Lista de tabelas no banco de dados
     const modelos = ['user', 'cliente', 'compra', 'pagamento', 'juros'];
@@ -14,7 +13,6 @@ export async function criarBackupSQL() {
 
     // Itera sobre os modelos e extrai os dados de cada um
     for (const modelo of modelos) {
-      console.log(`Exportando dados da tabela: ${modelo}`);
       const registros = await prisma[modelo].findMany();
 
       if (registros.length > 0) {
@@ -47,7 +45,7 @@ export async function criarBackupSQL() {
 
     // Salva os comandos SQL no arquivo
     fs.writeFileSync(caminhoArquivo, sqlDump);
-    console.log(`Backup completo criado com sucesso: ${caminhoArquivo}`);
+    
   } catch (error) {
     console.error('Erro ao criar backup completo:', error);
   } finally {
