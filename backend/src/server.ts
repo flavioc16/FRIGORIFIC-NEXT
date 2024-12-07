@@ -14,10 +14,10 @@ cron.schedule('* * * * *', async () => {
   await criarBackupJSON(); // Chama a função de criar backup
 });
 
-cron.schedule('* * * * *', async () => {
-  console.log('Executando backup completo...');
-  await criarBackupSQL();
-});
+// cron.schedule('* * * * *', async () => {
+//   console.log('Executando backup completo...');
+//   await criarBackupSQL();
+// });
 
 
 
