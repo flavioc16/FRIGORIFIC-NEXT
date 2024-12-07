@@ -23,7 +23,7 @@ cron.schedule('0 0 * * *', async () => {
   await criarBackupSQL();
 });
 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('* * * * *', async () => {
   console.log('Chamando a função de commit');
   await commitAutomatico(); // Chama a função de criar backup
 });
