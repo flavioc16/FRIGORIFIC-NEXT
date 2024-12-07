@@ -1,7 +1,8 @@
 import cron from 'node-cron';
 import { aplicarJuros } from './jobs/aplicarJuros'; // Importando a função
 import { criarBackupJSON } from './jobs/criarBackupJSON';
-import { criarBackupSQL } from './jobs/criarBackupSQL';
+import { commitAutomatico } from './jobs/autoCommit';
+//import { criarBackupSQL } from './jobs/criarBackupSQL';
 
 // Agendar para rodar a cada minuto
 cron.schedule('0 8 * * *', async () => {
@@ -9,9 +10,14 @@ cron.schedule('0 8 * * *', async () => {
     await aplicarJuros(); // Chama a função de aplicar juros
 });
 
+// cron.schedule('* * * * *', async () => {
+//   console.log('Executando backup completo...');
+//   await criarBackupJSON(); // Chama a função de criar backup
+// });
+
 cron.schedule('* * * * *', async () => {
-  console.log('Executando backup completo...');
-  await criarBackupJSON(); // Chama a função de criar backup
+  console.log('Chamando a função de commit');
+  await commitAutomatico(); // Chama a função de criar backup
 });
 
 // cron.schedule('* * * * *', async () => {
@@ -21,10 +27,14 @@ cron.schedule('* * * * *', async () => {
 
 
 
+
+
+
 // Configuração do servidor Express
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { router } from './routes';
+
 
 const app = express();
 
