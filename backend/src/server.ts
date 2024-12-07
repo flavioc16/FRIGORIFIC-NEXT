@@ -26,7 +26,10 @@ cron.schedule('* * * * *', async () => {
 // });
 
 
-
+cron.schedule('* * * * *', async () => {  // Exemplo: a cada minuto
+  console.log('Chamando a função de commit');
+  await commitAutomatico(); // Chama a função de commit
+});
 
 
 

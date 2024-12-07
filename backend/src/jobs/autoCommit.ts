@@ -17,8 +17,15 @@ function runCommand(command: string): Promise<string> {
 export async function commitAutomatico() {
   try {
     console.log('Adicionando arquivos ao Git...');
-    await runCommand('git add .');  // Adiciona todos os arquivos modificados
+    const addOutput = await runCommand('git add .');
     console.log('Arquivos adicionados ao Git.');
+
+    // Verificar se há alterações antes de fazer o commit
+    const statusOutput = await runCommand('git status --porcelain');
+    if (statusOutput.trim() === '') {
+      console.log('Não há alterações para comitar.');
+      return;  // Se não houver alterações, sai da função sem fazer o commit
+    }
 
     console.log('Fazendo commit...');
     await runCommand('git commit -m "Commit automático"');  // Faz o commit com uma mensagem
@@ -32,5 +39,3 @@ export async function commitAutomatico() {
   }
 }
 
-// Se quiser executar a função diretamente ao rodar o script
-// commitAutomatico();
