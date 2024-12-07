@@ -55,6 +55,8 @@ export async function aplicarJuros() {
           totalJurosAplicados += valorJuros;
         }
       }
+      
+      console.log(`${comprasVencidas.length} compras processadas. Juros aplicados: R$${totalJurosAplicados.toFixed(2)}`);
     } catch (error) {
       console.error('Erro ao aplicar juros:', error);
     } finally {

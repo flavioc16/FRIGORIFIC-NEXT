@@ -1,0 +1,14 @@
+{
+  "name": "frigorifico",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/flavioc16/FRIGORIFIC-NEXT.git",
+  "author": "Flavio Castro <flavio2008sousa@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node startDev.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
