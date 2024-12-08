@@ -16,9 +16,9 @@ function runCommand(command: string): Promise<string> {
 // Função principal para fazer commit e push
 export async function commitAutomatico() {
   try {
-    console.log('Adicionando arquivos ao Git...');
+   
     const addOutput = await runCommand('git add .');
-    console.log('Arquivos adicionados ao Git.');
+    console.log(addOutput);
 
     // Verificar se há alterações antes de fazer o commit
     const statusOutput = await runCommand('git status --porcelain');
@@ -26,12 +26,8 @@ export async function commitAutomatico() {
       console.log('Não há alterações para comitar.');
       return;  // Se não houver alterações, sai da função sem fazer o commit
     }
-
-    console.log('Fazendo commit...');
-    await runCommand('git commit -m "Commit automático"');  // Faz o commit com uma mensagem
-    console.log('Commit realizado.');
-
-    console.log('Enviando para o GitHub...');
+    await runCommand('git commit -m "Commit automático para backup"');  // Faz o commit com uma mensagem
+   
     await runCommand('git push origin main');  // Envia para o repositório remoto no GitHub
     console.log('Arquivos enviados para o GitHub!');
   } catch (error) {
