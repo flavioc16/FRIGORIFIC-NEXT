@@ -1,8 +1,5 @@
 @echo off
 
-:: Iniciar o Visual Studio Code no diretório C:\frigorifico
-start "" /b cmd /c "cd /d C:\frigorifico && code ."
-
 :: Iniciar o backend em uma nova janela oculta
 start "" /b cmd /c "cd /d C:\frigorifico\backend && yarn dev"
 
