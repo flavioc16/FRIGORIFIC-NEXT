@@ -16,16 +16,22 @@ export async function criarBackupSQL() {
     // Define o diretório de backups
     const diretorioBackup = path.join(__dirname, 'backups');
 
-    // Verifica se já existe um arquivo de backup para a data atual
-    if (fs.existsSync(diretorioBackup)) {
-      const arquivos = fs.readdirSync(diretorioBackup);
-      const jaExisteBackup = arquivos.some((arquivo) => arquivo.includes(dataAtual));
+    // Define o nome e o caminho do arquivo de backup
+    const nomeArquivo = `backup-sql-${dataAtual}.sql`;
+    const caminhoArquivo = path.join(diretorioBackup, nomeArquivo);
 
-      if (jaExisteBackup) {
-        console.log(`Já existe um backup para a data ${dataAtual}. Nenhuma ação foi tomada.`);
-        return;
-      }
+    // Verifica se o diretório de backups existe, se não, cria
+    if (!fs.existsSync(diretorioBackup)) {
+      fs.mkdirSync(diretorioBackup, { recursive: true });
     }
+
+    // Verifica se já existe um arquivo de backup para a data atual
+    if (fs.existsSync(caminhoArquivo)) {
+      // Apaga o arquivo de backup existente
+      fs.unlinkSync(caminhoArquivo);
+      console.log(`Backup anterior para a data ${dataAtual} foi apagado.`);
+    }
+
     // Itera sobre os modelos e extrai os dados de cada um
     for (const modelo of modelos) {
       const registros = await prisma[modelo].findMany();
@@ -49,16 +55,7 @@ export async function criarBackupSQL() {
       }
     }
 
-    // Define o nome e o caminho do arquivo de backup
-    const nomeArquivo = `backup-sql-${dataAtual}.sql`;
-    const caminhoArquivo = path.join(diretorioBackup, nomeArquivo);
-
-    // Cria o diretório de backups se ele não existir
-    if (!fs.existsSync(diretorioBackup)) {
-      fs.mkdirSync(diretorioBackup, { recursive: true });
-    }
-
-    // Salva os comandos SQL no arquivo
+    // Salva os comandos SQL no arquivo de backup
     fs.writeFileSync(caminhoArquivo, sqlDump);
     console.log(`Backup criado com sucesso: ${caminhoArquivo}`);
   } catch (error) {
