@@ -26,7 +26,7 @@ cron.schedule('28 11 * * *', async () => {
 });
 
 // Função de commit (agendado para todos os dias, por exemplo)
-cron.schedule('28 11 * * *', async () => {
+cron.schedule('30 11 * * *', async () => {
   console.log('Chamando a função de commit');
   await commitAutomatico(); // Chama a função de commit
 });
