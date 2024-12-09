@@ -11,6 +11,7 @@ interface PaymentModalProps {
   handleCloseModalPayment: () => void;
   clientId: string; // ID do cliente recebida via prop
   totalValue: number; // Valor total das compras do cliente
+  updateCompras: () => void;
 }
 
 export default function PaymentModal({
@@ -18,6 +19,7 @@ export default function PaymentModal({
   handleCloseModalPayment,
   clientId,
   totalValue,
+  updateCompras
 }: PaymentModalProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [valueInputForPayment, setValueInputForPayment] = useState("0,00"); // Valor formatado
@@ -138,6 +140,7 @@ export default function PaymentModal({
       await api.post("/pagamentos", paymentData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      updateCompras();
       toast.success(`Pagamento de ${valueInputForPayment} registrado com sucesso.`);
       setValueInputForPayment("0,00")
       handleCloseModalPayment(); // Fecha o modal após o sucesso

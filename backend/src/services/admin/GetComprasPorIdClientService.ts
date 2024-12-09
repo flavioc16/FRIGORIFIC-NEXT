@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 
 class GetComprasPorIdService {
   async execute(clienteId: string) {
-    // Buscar apenas compras com status 0 (não pagas ou restante)
+    // Buscar apenas compras com status 0 (não pagas ou restantes)
     const comprasRestantes = await prismaClient.compra.findMany({
       where: {
         clienteId: clienteId,
@@ -16,9 +16,14 @@ class GetComprasPorIdService {
         },
         user: false,
       },
-      orderBy: {
-        dataDaCompra: 'asc', // Ordena pelas compras pela data de compra (de forma crescente)
-      },
+      orderBy: [
+        {
+          created_at: 'asc', // Ordena pelas compras pela data de criação (cadastro)
+        },
+        {
+          dataDaCompra: 'asc', // Se a data de compra for diferente, usa a ordem por data da compra
+        },
+      ],
     });
 
     // Calcular o valor total das compras restantes

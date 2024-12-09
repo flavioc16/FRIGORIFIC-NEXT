@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import styles from "../styles.module.scss";
@@ -31,52 +31,71 @@ export interface Client {
 }
 
 export default function ClientPurchases() {
-  const { clienteId } = useParams(); // Pega o clienteId da URL
-  const [compras, setCompras] = useState<Compra[]>([]); // Estado para armazenar as compras
-  const [loading, setLoading] = useState(true); // Estado de carregamento
-  const [cliente, setCliente] = useState<Client | null>(null); // Estado para armazenar o cliente
+  const { clienteId } = useParams();
+  const [compras, setCompras] = useState<Compra[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cliente, setCliente] = useState<Client | null>(null);
   const [somaTotalCompras, setSomaTotalCompras] = useState<number>(0);
 
-  useEffect(() => {
-    async function fetchData() {
-      if (!clienteId) return; // Garante que o clienteId exista
+  // Função para buscar os dados iniciais
+  const fetchData = async () => {
+    if (!clienteId) return;
 
-      const token = getCookie("token");
+    const token = getCookie("token");
 
-      try {
-        // Busca as compras do cliente
-        const responseCompras = await api.get(`/clients/purchases/${clienteId}/compras`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCompras(responseCompras.data.compras); // Atualiza o estado com as compras
-        setSomaTotalCompras(responseCompras.data.somaTotalCompras); // Atualiza somaTotalCompras
-        // Busca o cliente inteiro, incluindo nome, referência e outros dados
-        const responseCliente = await api.get(`/clients/${clienteId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    try {
+      // Busca as compras
+      const responseCompras = await api.get(`/clients/purchases/${clienteId}/compras`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCompras(responseCompras.data.compras);
+      setSomaTotalCompras(responseCompras.data.somaTotalCompras);
 
-        setCliente(responseCliente.data); // Atualiza o estado com todos os dados do cliente
-      } catch (error) {
-        console.error("Erro ao buscar compras ou cliente:", error);
-      } finally {
-        setLoading(false); // Finaliza o carregamento
-      }
+      // Busca os dados do cliente
+      const responseCliente = await api.get(`/clients/${clienteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCliente(responseCliente.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchData(); // Chama a função para buscar os dados
-  }, [clienteId]); // Executa sempre que o clienteId mudar
+  // Função para atualizar apenas as compras
+  const updateCompras = async () => {
+    const token = getCookie("token");
+
+    try {
+      const responseCompras = await api.get(`/clients/purchases/${clienteId}/compras`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCompras(responseCompras.data.compras);
+      setSomaTotalCompras(responseCompras.data.somaTotalCompras);
+    } catch (error) {
+      console.error("Erro ao atualizar compras:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [clienteId]);
 
   return (
     <main className={styles.contentArea}>
       <TableCompras
         compras={compras}
-        somaTotalCompras={somaTotalCompras} // Passa a soma total como prop
-        cliente={cliente} // Passa o cliente inteiro para o componente TableCompras
+        somaTotalCompras={somaTotalCompras}
+        cliente={cliente}
         loading={loading}
+        updateCompras={updateCompras} // Passa a função como prop
       />
     </main>
   );

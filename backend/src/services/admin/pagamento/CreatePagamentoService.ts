@@ -31,7 +31,6 @@ class CreatePagamentoService {
 
     // Calcula o total das compras pendentes
     const totalCompras = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
-    console.log("Total das Compras Pendentes:", totalCompras);
 
     // Verifica se o valor do pagamento é válido
     if (valorPagamento <= 0 || valorPagamento > totalCompras) {

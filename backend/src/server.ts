@@ -11,7 +11,7 @@ import { criarBackupSQL } from './jobs/criarBackupSQL';
 
 aplicarJuros();
 criarBackupSQL();
-commitAutomatico();
+//commitAutomatico();
 
 // Função de juros
 cron.schedule('0 0 * * *', async () => {
@@ -20,13 +20,13 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Função de backup SQL
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('0 12 * * *', async () => {
   console.log('Executando backup completo...');
   await criarBackupSQL();
 });
 
 // Função de commit (agendado para todos os dias, por exemplo)
-cron.schedule('0 3 * * *', async () => {  // Agendado para 3:00 AM todos os dias
+cron.schedule('0 12 * * *', async () => {  // Agendado para 3:00 AM todos os dias
   console.log('Chamando a função de commit');
   await commitAutomatico(); // Chama a função de commit
 });

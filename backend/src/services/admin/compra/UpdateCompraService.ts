@@ -20,7 +20,6 @@ class UpdateCompraService {
     statusCompra,
     valorInicialCompra,
     dataDaCompra,
-    created_at,
   }: CompraRequest) {
     // Verifica se a compra existe
     const compraExistente = await prismaClient.compra.findUnique({
@@ -41,8 +40,6 @@ class UpdateCompraService {
         dataDaCompra: dataDaCompra 
           ? new Date(dataDaCompra) // Garantimos que a data é criada corretamente como Date
           : compraExistente.dataDaCompra, // Se não for fornecida, mantém a data existente
-        
-        created_at: created_at ? new Date(created_at) : compraExistente.created_at,
         totalCompra: totalCompra ?? compraExistente.totalCompra,
         valorInicialCompra: valorInicialCompra ?? compraExistente.valorInicialCompra,
         tipoCompra: tipoCompra ?? compraExistente.tipoCompra,

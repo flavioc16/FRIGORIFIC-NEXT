@@ -51,9 +51,10 @@ interface TableComprasProps {
   cliente: Client | null;
   loading: boolean;
   somaTotalCompras: number; // Adicione esta prop
+  updateCompras: () => void;
 }
 
-export function TableCompras({ compras, somaTotalCompras, loading, cliente}: TableComprasProps) {
+export function TableCompras({ compras, somaTotalCompras, loading, cliente, updateCompras}: TableComprasProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [comprasPerPage, setComprasPerPage] = useState(10);
@@ -74,6 +75,8 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente}: Tab
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
   const [showModalPayment, setShowModalPayment] = useState(false);
+
+  
 
   useEffect(() => {
     if (cliente) {
@@ -167,7 +170,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente}: Tab
           id: id, // Envia o ID da compra no corpo da requisição
         },
       });
-  
+      updateCompras();
       toast.success(`Compra excluída com sucesso.`);
       console.log('Compra excluída com sucesso:', response.data);
   
@@ -549,6 +552,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente}: Tab
             rawValue={rawValue}
             setDataCompra={setDataDaCompra}
             setRawValue={setRawValue}
+            updateCompras={updateCompras} // Passa a função para o modal
           />
 
           <PaymentModal
@@ -556,6 +560,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente}: Tab
             handleCloseModalPayment={handleCloseModalPayment}
             totalValue={somaTotalCompras}
             clientId={cliente?.id || ""}
+            updateCompras={updateCompras} 
           />
 
           <ToastContainer />

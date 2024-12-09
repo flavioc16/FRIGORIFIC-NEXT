@@ -25,6 +25,7 @@ interface CreatePurchaseModalProps {
   setDescricaoCompra: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTotalCompra: React.Dispatch<React.SetStateAction<string>>;
   setTipoCompra: React.Dispatch<React.SetStateAction<string | null>>;  // Permitir null
+  updateCompras: () => void;
 }
 
 export default function CreatePurchaseModal({
@@ -43,6 +44,7 @@ export default function CreatePurchaseModal({
   setDescricaoCompra,
   setTotalCompra,
   setTipoCompra,
+  updateCompras 
 }: CreatePurchaseModalProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const descricaoInputRef = useRef<HTMLInputElement | null>(null);
@@ -109,12 +111,14 @@ export default function CreatePurchaseModal({
         await api.put(`/compras`, compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        updateCompras();
         toast.success(`Compra de ${selectedClient.nome} atualizada com sucesso.`);
       } else {
         // Chamada para criação
         await api.post("/compras", compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        updateCompras();
         toast.success(`Compra de ${selectedClient.nome} cadastrada com sucesso.`);
       }
 
