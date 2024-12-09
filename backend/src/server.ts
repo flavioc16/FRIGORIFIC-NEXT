@@ -20,13 +20,14 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Função de backup SQL
-cron.schedule('28 11 * * *', async () => {
+cron.schedule('50 11 * * *', async () => {
   console.log('Executando backup completo...');
   await criarBackupSQL();
 });
 
+
 // Função de commit (agendado para todos os dias, por exemplo)
-cron.schedule('30 11 * * *', async () => {
+cron.schedule('55 11 * * *', async () => {
   console.log('Chamando a função de commit');
   await commitAutomatico(); // Chama a função de commit
 });
@@ -37,7 +38,7 @@ cron.schedule('0 16 * * *', async () => {
 });
 
 // Função de commit (agendado para todos os dias, por exemplo)
-cron.schedule('0 16 * * *', async () => {  // Agendado para 3:00 AM todos os dias
+cron.schedule('5 16 * * *', async () => {  // Agendado para 3:00 AM todos os dias
   console.log('Chamando a função de commit');
   await commitAutomatico(); // Chama a função de commit
 });
