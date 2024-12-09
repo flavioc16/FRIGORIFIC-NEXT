@@ -26,7 +26,7 @@ export async function aplicarJuros() {
             created_at: 'desc', // Pega o juros mais recente
           },
         });
-  
+        
         const umMesAtras = new Date();
         umMesAtras.setMonth(umMesAtras.getMonth() - 1); // Data de um mês atrás
   
@@ -62,6 +62,4 @@ export async function aplicarJuros() {
     } finally {
       await prisma.$disconnect();
     }
-  }
-  
-  
+}
