@@ -35,7 +35,6 @@ enum Role {
   ADMIN
 }
 
-
 model Cliente {
   id         String    @id @default(uuid())
   nome       String
@@ -55,7 +54,17 @@ model Cliente {
   @@map("clientes")
 }
 
+model Produto {
+  id          String   @id @default(uuid()) // Identificador único
+  nome        String   // Nome do produto
+  descricao   String   // Descrição do produto
+  precoAVista Float    // Preço à vista do produto
+  precoAPrazo Float    // Preço a prazo do produto
+  created_at  DateTime @default(now()) // Data de criação do produto
+  updated_at  DateTime @updatedAt // Data de atualização do produto
 
+  @@map("produtos") // Mapeamento da tabela
+}
 
 model Compra {
   id                 String    @id @default(uuid())
@@ -75,11 +84,12 @@ model Compra {
 
   user               User       @relation(fields: [userId], references: [id])
   cliente            Cliente    @relation(fields: [clienteId], references: [id])
-  pagamento          Pagamento? @relation(fields: [pagamentoId], references: [id])
+  pagamentos         Pagamento[] @relation("CompraPagamentos") // Um para muitos
   juros              Juros[]    // Relacionamento com Juros (lado inverso)
 
   @@map("compras")
 }
+
 
 model Pagamento {
   id             String    @id @default(uuid())
@@ -89,7 +99,9 @@ model Pagamento {
   userId         String
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
-  compras        Compra[]
+
+  compraId       String?
+  compra         Compra?    @relation(fields: [compraId], references: [id], name: "CompraPagamentos")
   user           User      @relation(fields: [userId], references: [id])
 
   @@map("pagamentos")
@@ -101,7 +113,6 @@ model Juros {
   valor        Float
   descricao    String    @db.VarChar(255)
   created_at   DateTime  @default(now())
-
   compraId     String
   clienteId    String
 

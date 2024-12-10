@@ -15,6 +15,14 @@ import { GetClienteByIdController } from './controllers/admin/client/GetClienteB
 import { UpdateClienteController } from './controllers/admin/client/UpdateClienteController';
 import { DeleteClienteController } from './controllers/admin/client/DeleteClienteController';
 
+//Product Controllers
+import { CreateProdutoController } from './controllers/admin/produto/CreateProdutoController';
+import { UpdateProdutoController } from './controllers/admin/produto/UpdateProdutoController';
+import { GetAllProdutosController } from './controllers/admin/produto/GetAllProdutosController';
+import { GetProdutoByIdController } from './controllers/admin/produto/GetProdutoByIdController';
+import { DeleteProdutoController } from './controllers/admin/produto/DeleteProdutoController';
+import { GetTotalProdutosController } from './controllers/admin/produto/GetTotalProdutoController';
+
 // Admin Compra Controllers
 import { GetTotalComprasDoDiaController } from './controllers/admin/compra/GetTotalComprasDoDiaController';
 import { GetAllComprasController } from './controllers/admin/compra/GetComprasController';
@@ -22,6 +30,8 @@ import { CreateCompraController } from './controllers/admin/compra/CreateCompraC
 import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByIdController';
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
 import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
+
+
 
 
 // Outros Controllers
@@ -48,6 +58,14 @@ router.get('/clients', isAuthenticated, authorizeRole('ADMIN'), new GetAllClient
 router.get('/clients/:clienteId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
 router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
+
+// Criar um novo produto
+router.post('/produtos', isAuthenticated, authorizeRole('ADMIN'), new CreateProdutoController().handle);
+router.put('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateProdutoController().handle);
+router.get('/produtos', isAuthenticated, authorizeRole('ADMIN'), new GetAllProdutosController().handle);
+router.get('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new GetProdutoByIdController().handle);
+router.get('/produtos/total', isAuthenticated, authorizeRole('ADMIN'), new GetTotalProdutosController().handle);
+router.delete('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new DeleteProdutoController().handle);
 
 // Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);

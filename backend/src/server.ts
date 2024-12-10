@@ -9,8 +9,8 @@ import { criarBackupJSON } from './jobs/criarBackupJSON';
 import { commitAutomatico } from './jobs/autoCommit';
 import { criarBackupSQL } from './jobs/criarBackupSQL';
 
-//aplicarJuros();
-//criarBackupSQL();
+aplicarJuros();
+criarBackupSQL();
 //commitAutomatico();
 
 // Função de juros

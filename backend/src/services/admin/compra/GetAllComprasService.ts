@@ -9,9 +9,17 @@ class GetAllComprasService {
                 tipoCompra: 0, // 0 representa compras não pagas
                 statusCompra: 0 // 0 representa status não pago
             },
-            include: {
-                cliente: false,
-                user: false
+            select: {
+                id: true,
+                descricaoCompra: true,
+                totalCompra: true,
+                valorInicialCompra: true,
+                tipoCompra: true,
+                statusCompra: true,
+                created_at: true,
+                updated_at: true,
+                dataDaCompra: true,
+                dataVencimento: false,
             }
         });
 

@@ -39,27 +39,6 @@ class CreatePagamentoService {
 
     let valorRestante = valorPagamento;
 
-    // Itera sobre as compras e reduz o valor de cada uma até esgotar o valor do pagamento
-    for (const compra of compras) {
-      if (valorRestante <= 0) break;
-
-      // Se o valor restante for maior ou igual ao valor da compra, marca a compra como paga
-      if (valorRestante >= compra.totalCompra) {
-        await prismaClient.compra.update({
-          where: { id: compra.id },
-          data: { statusCompra: 1 } // Marca a compra como paga
-        });
-        valorRestante -= compra.totalCompra;
-      } else {
-        // Caso o valor restante seja menor, reduz a compra pela quantidade paga
-        await prismaClient.compra.update({
-          where: { id: compra.id },
-          data: { totalCompra: compra.totalCompra - valorRestante } // Atualiza o valor restante
-        });
-        valorRestante = 0; // O pagamento foi totalmente utilizado
-      }
-    }
-
     // Cria o registro de pagamento com o user conectado
     const pagamento = await prismaClient.pagamento.create({
       data: {
@@ -69,9 +48,35 @@ class CreatePagamentoService {
       }
     });
 
+    // Itera sobre as compras e reduz o valor de cada uma até esgotar o valor do pagamento
+    for (const compra of compras) {
+      if (valorRestante <= 0) break;
+
+      // Se o valor restante for maior ou igual ao valor da compra, marca a compra como paga
+      if (valorRestante >= compra.totalCompra) {
+        await prismaClient.compra.update({
+          where: { id: compra.id },
+          data: { 
+            statusCompra: 1, // Marca a compra como paga
+            pagamentoId: pagamento.id // Atualiza o pagamentoId com o pagamento criado
+          }
+        });
+        valorRestante -= compra.totalCompra;
+      } else {
+        // Caso o valor restante seja menor, reduz a compra pela quantidade paga
+        await prismaClient.compra.update({
+          where: { id: compra.id },
+          data: { 
+            totalCompra: compra.totalCompra - valorRestante, // Atualiza o valor restante
+            pagamentoId: pagamento.id // Atualiza o pagamentoId com o pagamento criado
+          }
+        });
+        valorRestante = 0; // O pagamento foi totalmente utilizado
+      }
+    }
+
     return pagamento;
   }
 }
-
 
 export { CreatePagamentoService };
