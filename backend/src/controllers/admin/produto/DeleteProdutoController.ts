@@ -3,7 +3,7 @@ import { DeleteProdutoService } from '../../../services/admin/produto/DeleteProd
 
 class DeleteProdutoController {
   async handle(req: Request, res: Response) {
-    const { id } = req.params; // Pegue o ID do produto a partir dos parâmetros da requisição
+    const { id } = req.body; // Pegue o ID do produto a partir dos parâmetros da requisição
 
     const deleteProdutoService = new DeleteProdutoService();
 

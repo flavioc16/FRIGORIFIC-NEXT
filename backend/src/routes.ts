@@ -65,7 +65,7 @@ router.put('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateP
 router.get('/produtos', isAuthenticated, authorizeRole('ADMIN'), new GetAllProdutosController().handle);
 router.get('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new GetProdutoByIdController().handle);
 router.get('/produtos/total', isAuthenticated, authorizeRole('ADMIN'), new GetTotalProdutosController().handle);
-router.delete('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new DeleteProdutoController().handle);
+router.delete('/produtos', isAuthenticated, authorizeRole('ADMIN'), new DeleteProdutoController().handle);
 
 // Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);
