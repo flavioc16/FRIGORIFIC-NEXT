@@ -76,8 +76,6 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
 
   const [showModalPayment, setShowModalPayment] = useState(false);
 
-  
-
   useEffect(() => {
     if (cliente) {
       setSelectedClient(cliente);
@@ -85,6 +83,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
   }, [cliente]);
 
   const handleOpenCreatePurshasesModal = () => {
+    updateCompras();
     setIsEdit(false); // Modo de cadastro
     setShowModal(true);
     setDescricaoCompra('');
@@ -94,15 +93,17 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
     // Defina dataDaCompra como a data atual no caso de cadastro
     const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
     setDataDaCompra(currentDate);
+    
   };
 
   const handleOpenCreatePaymentModal = () => {
     setShowModalPayment(true)
+    updateCompras();
   };
 
   const handleOpenEditPurchaseModal = (compra: Compra) => {
+    updateCompras();
     setSelectedCompra(compra);  // Atualiza o estado da compra selecionada
-  
     // Agora você pode usar esse estado para preencher o formulário do modal
     setIsEdit(true);
     setDataDaCompra(compra.dataDaCompra || ""); // Garante um valor padrão
@@ -117,11 +118,13 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
     );
     setTipoCompra(compra.tipoCompra?.toString() || null); // Converte para string ou null
     setShowModal(true);
+    
   };
   
   const handleCloseCreatePurshasesModal =  () => {
     setIsEdit(false); // Modo de cadastro
     setShowModal(false);
+    updateCompras();
   };
 
   const popoverContent = (
@@ -137,16 +140,20 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
 
   const handleCloseModalPayment = () => {
     setShowModalPayment(false);
+    updateCompras();
   };
 
   const handleOpenModalDelete = (id: string) => {
+    updateCompras();
     setCompraId(id);
     setShowModalDelete(true);
   };
 
   const handleCloseModalDelete = () => {
+    updateCompras();
     setShowModalDelete(false);
     setCompraId('');
+    
   };
   
   const handleConfirmDelete = async () => {
@@ -170,6 +177,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
           id: id, // Envia o ID da compra no corpo da requisição
         },
       });
+
       updateCompras();
       toast.success(`Compra excluída com sucesso.`);
       console.log('Compra excluída com sucesso:', response.data);
@@ -311,7 +319,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                     marginRight: '-4px', // Ajusta o espaçamento do ícone
                     marginBottom:'3px'
                   }}
-                  popover={popoverContent}
+                  //popover={popoverContent}
                   
                   // Passa o conteúdo do Popover
                 />

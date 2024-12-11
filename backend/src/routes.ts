@@ -61,7 +61,7 @@ router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRo
 
 // Criar um novo produto
 router.post('/produtos', isAuthenticated, authorizeRole('ADMIN'), new CreateProdutoController().handle);
-router.put('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateProdutoController().handle);
+router.put('/produtos', isAuthenticated, authorizeRole('ADMIN'), new UpdateProdutoController().handle);
 router.get('/produtos', isAuthenticated, authorizeRole('ADMIN'), new GetAllProdutosController().handle);
 router.get('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new GetProdutoByIdController().handle);
 router.get('/produtos/total', isAuthenticated, authorizeRole('ADMIN'), new GetTotalProdutosController().handle);

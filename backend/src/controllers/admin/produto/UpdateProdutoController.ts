@@ -3,8 +3,7 @@ import { UpdateProdutoService } from '../../../services/admin/produto/UpdateProd
 
 class UpdateProdutoController {
   async handle(req: Request, res: Response) {
-    const { id } = req.params; // Pegue o ID do produto a partir dos parâmetros da requisição
-    const { nome, descricao, precoAVista, precoAPrazo } = req.body; // Pegue os dados que vão ser atualizados
+    const { nome, descricao, precoAVista, precoAPrazo, id } = req.body; // Pegue os dados que vão ser atualizados
 
     const updateProdutoService = new UpdateProdutoService();
 

@@ -25,7 +25,7 @@ interface CreatePurchaseModalProps {
   setDescricaoCompra: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTotalCompra: React.Dispatch<React.SetStateAction<string>>;
   setTipoCompra: React.Dispatch<React.SetStateAction<string | null>>;  // Permitir null
-  updateCompras: () => void;
+  updateCompras?: () => void;
 }
 
 export default function CreatePurchaseModal({
@@ -67,8 +67,7 @@ export default function CreatePurchaseModal({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    
-
+  
     toast.dismiss();
 
     if (isEdit && !selectedCompra?.id) {
@@ -105,20 +104,22 @@ export default function CreatePurchaseModal({
         dataDaCompra: dataDaCompra, // Ou outra data conforme necessário
         clienteId: selectedClient.id,
       };
-
+      if(updateCompras){
+        updateCompras();
+      }
       if (isEdit) {
         // Chamada para atualização
         await api.put(`/compras`, compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        updateCompras();
+       
         toast.success(`Compra de ${selectedClient.nome} atualizada com sucesso.`);
       } else {
         // Chamada para criação
         await api.post("/compras", compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        updateCompras();
+        
         toast.success(`Compra de ${selectedClient.nome} cadastrada com sucesso.`);
       }
 

@@ -402,7 +402,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 marginRight: '-4px', // Ajusta o espaçamento do ícone
                 marginBottom:'3px'
               }}
-              popover={popoverContent}
+              //popover={popoverContent}
               
                // Passa o conteúdo do Popover
             />
