@@ -647,6 +647,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                       required
                       onChange={(e) => setUsername(e.target.value)}
                       className={styles.customFormControl}
+                      autoComplete="new-username"
                     />
                 </div>
                 <div className={styles.formGroup}>
@@ -658,6 +659,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className={styles.customFormControl}
+                    autoComplete="new-password"
                   />
                 </div>
                 <div className={styles.buttonContainer}>

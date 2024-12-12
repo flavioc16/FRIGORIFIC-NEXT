@@ -256,7 +256,7 @@ export default function CreatePurchaseModal({
                     onChange={handleCheckboxChange}
                   />
                   <div className={styles.rememberMeText}>
-                    Adicionar outra compra
+                    Adicionar mais compras
                   </div>
                 </label>
               )}

@@ -46,6 +46,13 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
   const [formattedPrecoAVista, setFormattedPrecoAVista] = useState<string>('0,00');
   const [formattedPrecoAPrazo, setFormattedPrecoAPrazo] = useState<string>('0,00');
 
+  const [checkbox, setCheckbox] = useState(false);
+
+  const nomeProdutoRef = useRef<HTMLInputElement | null>(null);
+  const descricaoProdutoRef = useRef<HTMLTextAreaElement | null>(null);
+  const precoAVistaProdutoRef = useRef<HTMLInputElement | null>(null);
+  const precoAPrazoProdutoRef = useRef<HTMLInputElement | null>(null);
+
   
   const [id, setProdutoId] = useState<string | null>(null);
 
@@ -78,13 +85,13 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
     });
   };
 
-   // Função chamada ao abrir o modal para editar um produto
-   const handleOpenEditModal = (produto: Produto) => {
+  const handleOpenEditModal = (produto: Produto) => {
     setProdutoId(produto.id);
     setIsEdit(true);
     setNome(produto.nome);
     setDescricao(produto.descricao);
     setPrecoAVista(produto.precoAVista);
+    setPrecoAPrazo(produto.precoAPrazo)
     setShowModal(true);
 
     // Formatar o valor de preço à vista para exibição
@@ -154,17 +161,39 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+  
     toast.dismiss();
-
+  
     try {
+      // Validação dos campos obrigatórios
+      if (nome === "") {
+        toast.error("O campo 'Nome' é obrigatório.");
+        nomeProdutoRef.current?.focus();
+        return;
+      }
+      if (!descricao) {
+        toast.error("O campo 'Descrição' é obrigatório.");
+        descricaoProdutoRef.current?.focus();
+        return;
+      }
+      if (precoAVista <= 0) {
+        toast.error("O campo 'Preço à vista' deve ser maior que zero.");
+        precoAVistaProdutoRef.current?.focus();
+        return;
+      }
+      if (precoAPrazo <= 0) {
+        toast.error("O campo 'Preço a prazo' deve ser maior que zero.");
+        precoAPrazoProdutoRef.current?.focus();
+        return;
+      }
+  
       const token = getCookie("token");
-
+  
       if (!token) {
         toast.error("Token de autenticação não encontrado. Faça login novamente.");
         return;
       }
-
+  
       const productData = {
         nome,
         descricao,
@@ -172,21 +201,20 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
         precoAPrazo,
         id: isEdit ? id : undefined, // Inclui o ID apenas no modo edição
       };
-
+  
       console.log(productData);
-      
-
+  
       if (isEdit) {
         if (!id) {
           throw new Error("ID do produto não fornecido.");
         }
-
+  
         const response = await api.put(`/produtos`, productData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         toast.success(`Produto ${response.data.nome} editado com sucesso.`);
         console.log("Produto editado com sucesso:", response.data);
       } else {
@@ -195,18 +223,25 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         toast.success(`Produto ${response.data.nome} cadastrado com sucesso.`);
         console.log("Produto cadastrado com sucesso:", response.data.nome);
       }
-
+  
       // Reseta o formulário
       setNome('');
       setDescricao('');
       setPrecoAVista(0);
       setPrecoAPrazo(0);
-
-      handleCloseModal();
+      setFormattedPrecoAVista('0,00')
+      setFormattedPrecoAPrazo('0,00')
+      
+      nomeProdutoRef.current?.focus();
+  
+      // Verifica o estado do checkbox antes de fechar o modal
+      if (!checkbox) {
+        handleCloseModal();
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -219,6 +254,8 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
       }
     }
   };
+  
+  
   
   const handleConfirmDelete = async () => {
     toast.dismiss();
@@ -282,6 +319,13 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
   }, [isMenuInputFocused]);
 
   const handleSearchClear = () => setSearchTerm('');
+
+  
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckbox(e.target.checked);
+    nomeProdutoRef.current?.focus();
+  };
 
   const filteredProducts = useMemo(() => {
     return produtos.filter((produto) =>
@@ -521,6 +565,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
             onHide={handleCloseModal}
             className={styles.customModal}
             size="lg"
+            keyboard={!checkbox}
           >
             <div className={styles.customModalHeader}>
               <h2>{isEdit ? 'Editar Produto' : 'Cadastrar Produto'}</h2>
@@ -535,6 +580,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                   <input
                     id="produtoNome"
                     type="text"
+                    ref={nomeProdutoRef}
                     required
                     placeholder="Nome do produto"
                     value={nome}
@@ -548,8 +594,10 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                   <textarea
                     id="produtoDescricao"
                     required
+                    rows={3}
                     placeholder="Descrição do produto"
                     value={descricao}
+                    ref={descricaoProdutoRef}
                     onChange={(e) => setDescricao(capitalizeWords(e.target.value))}
                     className={styles.customFormControl}
                   />
@@ -559,6 +607,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                   <input
                     id="produtoPrecoAVista"
                     type="text"
+                    ref={precoAVistaProdutoRef}
                     value={formattedPrecoAVista}
                     onChange={handlePrecoAVistaChange}
                     placeholder="Preço à Vista"
@@ -572,6 +621,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                     id="produtoPrecoAPrazo"
                     type="text"
                     value={formattedPrecoAPrazo}
+                    ref={precoAPrazoProdutoRef}
                     onChange={handlePrecoAPrazoChange}
                     placeholder="Preço a Prazo"
                     required
@@ -579,13 +629,30 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                   />
                 </div>
                 <div className={styles.buttonContainer}>
-                  <button type="submit" className={styles.customBtnPrimary}>
-                    {isEdit ? 'Salvar' : 'Cadastrar'}
-                  </button>
-                  <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
-                    Cancelar
-                  </button>
+                  <div className={styles.rememberMeContainer}>
+                    {!isEdit && (
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={checkbox}
+                          onChange={handleCheckboxChange}
+                        />
+                        <div className={styles.rememberMeText}>
+                          Adicionar mais produtos
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                  <div className={styles.buttonGroup}>
+                    <button type="submit" className={styles.customBtnPrimary}>
+                      {isEdit ? 'Salvar' : 'Cadastrar'}
+                    </button>
+                    <button type="button" onClick={handleCloseModal} className={styles.customBtnSecondary}>
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
+
               </form>
             </div>
           </Modal>
