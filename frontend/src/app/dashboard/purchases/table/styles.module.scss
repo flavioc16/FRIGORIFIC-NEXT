@@ -254,7 +254,17 @@
           transform: scale(1.2);
         }
     }
+}
 
+.serviceIndicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-bottom: 2px;
+    margin-right: 18px; /* Ajuste a distância da bolinha em relação à data */
+    margin-left: -25px; /* Move a bolinha mais para a esquerda */
+    background-color: #3c86ee; /* Escolha uma cor */
+    border-radius: 50%;
 }
   
 .ellipsis {

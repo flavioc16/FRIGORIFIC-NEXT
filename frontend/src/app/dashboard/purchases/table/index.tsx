@@ -375,7 +375,12 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
               {currentCompras.length > 0 ? (
                 currentCompras.map((compra) => (
                   <tr key={compra.id}>
-                    <td>{adjustDate(compra.dataDaCompra ?? '')}</td>
+                    <td>
+                      {compra.tipoCompra === 1 && (
+                        <span className={styles.serviceIndicator}></span>
+                      )}
+                      {adjustDate(compra.dataDaCompra ?? '')}
+                    </td>
                     <td>{compra.descricaoCompra}</td>
                     <td>
                       {compra.totalCompra.toLocaleString('pt-BR', {

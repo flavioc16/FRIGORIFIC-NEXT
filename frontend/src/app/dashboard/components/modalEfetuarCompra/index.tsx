@@ -48,8 +48,60 @@ export default function CreatePurchaseModal({
 }: CreatePurchaseModalProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const descricaoInputRef = useRef<HTMLInputElement | null>(null);
-
   const [checkbox, setCheckbox] = useState(false);
+
+  const [produtos, setProdutos] = useState<any[]>([]);
+  const [filteredProdutos, setFilteredProdutos] = useState<any[]>([]);
+ 
+  const fetchProdutos = async () => {
+    try {
+      const token = getCookie("token");
+      const response = await api.get("/produtos", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setProdutos(response.data); // Atualiza a lista completa de produtos
+      setFilteredProdutos(response.data.slice(0, 5)); // Exibe os primeiros 5 produtos inicialmente
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+    }
+  };
+
+  // Chama a função fetchProdutos assim que o modal for aberto
+  useEffect(() => {
+    fetchProdutos(); // Chama a função de buscar produtos assim que o modal for carregado
+  }, []); // O array vazio [] faz com que a função seja chamada apenas uma vez quando o modal for aberto
+
+  useEffect(() => {
+    if (tipoCompra === "0") {
+      fetchProdutos(); // Chama novamente a função para garantir que os produtos são carregados para "Compra"
+    }
+  }, [tipoCompra]);
+
+  const handleDescricaoCompraChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDescricaoCompra(value); // Atualiza o valor do estado para refletir a mudança no campo de texto
+  
+    if (value.length === 0) {
+      // Se o campo de descrição estiver vazio, mostramos os primeiros 5 produtos
+      setFilteredProdutos(produtos.slice(0, 5)); // Exibe apenas os primeiros 5 produtos
+    } else {
+      // Filtra produtos com base no texto digitado
+      const filtered = produtos.filter((produto) =>
+        produto.nome.toLowerCase().includes(value.toLowerCase())
+      );
+  
+      const maxSuggestions = 5; // Limite para mostrar apenas 5 sugestões
+      setFilteredProdutos(filtered.slice(0, maxSuggestions)); // Atualiza a lista de produtos filtrados com o limite
+    }
+  };
+
+  const clearInput = () => {
+    setDescricaoCompra('');
+    descricaoInputRef.current?.focus(); // Foca no input após limpar
+  };
+  
 
   useEffect(() => {
     if (isEdit && dataDaCompra) {
@@ -57,7 +109,6 @@ export default function CreatePurchaseModal({
       setDataCompra(formattedDate);  // Atualizando o estado ao abrir o modal em modo de edição
     }
   }, [isEdit, dataDaCompra, setDataCompra]);
-   
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckbox(e.target.checked);
@@ -66,21 +117,28 @@ export default function CreatePurchaseModal({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
   
     toast.dismiss();
-
+  
     if (isEdit && !selectedCompra?.id) {
       toast.error("Nenhuma compra selecionada.");
       return;
     }
 
+    if (!descricaoCompra || descricaoCompra.trim() === "") {
+      toast.error("Digite uma descrição para a compra.");
+      descricaoInputRef.current?.focus();
+      return; // Impede a continuação da submissão
+    }
+
+    console.log(descricaoCompra);
+  
     if (parseFloat(totalCompra.replace(",", ".")) === 0) {
       toast.error("Digite um valor válido para a compra.");
       inputRef.current?.focus();
       return;
     }
-
+  
     const token = getCookie("token");
     if (!token) {
       toast.error("Token de autenticação não encontrado. Faça login novamente.");
@@ -90,10 +148,10 @@ export default function CreatePurchaseModal({
       toast.error("Nenhum cliente selecionado.");
       return;
     }
-
+  
     try {
       const tipoCompraValor = tipoCompra ? parseInt(tipoCompra, 10) : 0;
-
+  
       const compraData = {
         id: selectedCompra?.id, // Envia a id da compra (no modo edição)
         descricaoCompra,
@@ -104,39 +162,30 @@ export default function CreatePurchaseModal({
         dataDaCompra: dataDaCompra, // Ou outra data conforme necessário
         clienteId: selectedClient.id,
       };
-      if(updateCompras){
+  
+      if (updateCompras) {
         updateCompras();
       }
+  
       if (isEdit) {
         // Chamada para atualização
         await api.put(`/compras`, compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-       
         toast.success(`Compra de ${selectedClient.nome} atualizada com sucesso.`);
       } else {
         // Chamada para criação
         await api.post("/compras", compraData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        
         toast.success(`Compra de ${selectedClient.nome} cadastrada com sucesso.`);
       }
-
+  
+      // Resetar estados e foco após sucesso
       if (!checkbox) {
         onClose(); // Fecha o modal se o checkbox não estiver marcado
       } else {
-        
-    
-        descricaoInputRef.current?.focus();
-        
-
-        if (!isEdit) {
-          setDescricaoCompra("");
-          setTotalCompra("0,00");
-          setTipoCompra("0");
-          
-        }
+        resetForm();
       }
     } catch (error) {
       console.error(error);
@@ -144,11 +193,23 @@ export default function CreatePurchaseModal({
     }
   };
 
+  // Função para resetar os campos do formulário
+  const resetForm = () => {
+    descricaoInputRef.current?.focus();
+    setDescricaoCompra("");
+    setTotalCompra("0,00");
+    setTipoCompra("0");
+  };
+  
   const capitalizeWords = (value: string): string => {
     return value
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  };
+
+  const toLowercaseWords = (value: string): string => {
+    return value.toLowerCase();
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,20 +266,54 @@ export default function CreatePurchaseModal({
                 className={styles.customFormControl}
               />
             </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
-              <input
-                id="descricaoCompra"
-                ref={descricaoInputRef}
-                type="text"
-                required
-                placeholder="Descrição"
-                value={descricaoCompra}
-                onChange={(e) => setDescricaoCompra(capitalizeWords(e.target.value))}
-                autoFocus
-                className={styles.customFormControl}
-              />
-            </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="descricaoCompra" className={styles.customFormLabel}>Descrição</label>
+                <div className={styles.inputContainer}>
+                  <input
+                    id="descricaoCompra"
+                    type="text"
+                    required
+                    ref={descricaoInputRef}
+                    placeholder="Descrição"
+                    value={capitalizeWords(descricaoCompra ?? '')}
+                    onChange={handleDescricaoCompraChange}
+                    autoFocus
+                    className={styles.customFormControl}
+                    list="produtos"
+                    autoComplete="off"
+                  />
+                </div>
+        
+                {descricaoCompra && (
+                  <div className={styles.valueContainer}>
+                    <span className={styles.value}>
+                      {toLowercaseWords(descricaoCompra ?? '')}
+                    </span>
+                    <span
+                      className={styles.clearIcon}
+                      onClick={clearInput}
+                    >
+                      &#10006;
+                    </span>
+                  </div>
+                )}
+                <datalist id="produtos">
+                  {filteredProdutos.map((produto) => (
+                    <option
+                      key={produto.id}
+                      value={produto.nome}
+                      data-price={produto.precoAVista} // Armazena o preço como dado adicional
+                    >
+                      {produto.descricao} - R$ {(
+                        produto.precoAPrazo / 100
+                      ).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </option>
+                  ))}
+                </datalist>
+              </div>
             <div className={styles.formGroup}>
               <label htmlFor="totalCompra" className={styles.customFormLabel}>Total</label>
               <input
@@ -243,7 +338,7 @@ export default function CreatePurchaseModal({
                 className={styles.customFormControl}
               >
                 <option value="0">Compra</option>
-                <option value="1">Restante</option>
+                <option value="1">Serviço</option>
               </select>
             </div>
             <div className={styles.buttonContainer}>

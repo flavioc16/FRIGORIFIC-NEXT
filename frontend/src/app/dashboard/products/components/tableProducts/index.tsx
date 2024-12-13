@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, UserPen, Trash } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, UserPen, Trash, FilePenLine } from 'lucide-react';
 import styles from './styles.module.scss';
 import stylesModal from './stylesModal.module.scss'
 import { useFocus } from '@/app/context/FocusContext';
@@ -215,7 +215,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
           },
         });
   
-        toast.success(`Produto ${response.data.nome} editado com sucesso.`);
+        toast.success(<span>Produto <strong>{response.data.nome}</strong> editado com sucesso.</span>);
         console.log("Produto editado com sucesso:", response.data);
       } else {
         const response = await api.post("/produtos", productData, {
@@ -224,7 +224,7 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
           },
         });
   
-        toast.success(`Produto ${response.data.nome} cadastrado com sucesso.`);
+        toast.success(<span>Produto <strong>{response.data.nome}</strong> cadastrado com sucesso.</span>);
         console.log("Produto cadastrado com sucesso:", response.data.nome);
       }
   
@@ -491,7 +491,8 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
                             </Tooltip>
                           }
                         >
-                          <UserPen
+                          
+                          <FilePenLine
                             className={styles.iconUser}
                             role="button"
                             aria-label={`Editar ${product.nome}`}

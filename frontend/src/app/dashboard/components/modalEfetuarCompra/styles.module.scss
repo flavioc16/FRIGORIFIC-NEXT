@@ -436,7 +436,7 @@ select.customFormControl {
 
 .customFormControl {
     background-color: #2d2d2d;
-    color:var(--white);
+    color: var(--white); /* Define a cor do texto digitado */
     border: 1px solid #3d3d3d;
     height: 34px;
     font-size: 16px;
@@ -444,6 +444,11 @@ select.customFormControl {
     padding: 0.375rem 0.75rem;
     border-radius: 0.25rem;
     font-size: 1rem;
+
+    /* Garante que o texto seja visível em todos os estados */
+    &:focus {
+        color: var(--white);
+    }
 }
 
 .buttonContainer {
@@ -539,6 +544,55 @@ select.customFormControl {
     }
 }  
 
+
+
+
+
+.inputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+  
+.customFormControl {
+    width: 100%;
+    padding-left: 10px; /* Espaço inicial para o texto */
+    font-size: 16px;
+}
+  
+.valueContainer {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre o valor e o ícone */
+    background-color: var(--roxo-900); /* Cor de fundo cinza */
+    border-radius: 3px; /* Bordas arredondadas */
+    padding: 2px 10px; /* Espaçamento interno */
+    top: 45.8%;
+    left: 30px; /* Posição inicial */
+    transform: translateY(-50%);
+    pointer-events: none; /* Impede a interação */
+    
+}
+  
+.value {
+    font-size: 16px;
+    color: var(--white);
+}
+  
+.clearIcon {
+    cursor: pointer;
+    font-size: 12px;
+    color: #999;
+    pointer-events: auto; /* Permite interação apenas no ícone */
+}
+ 
+.clearIcon:hover {
+    color: #333; /* Altera a cor do "X" quando passar o mouse */
+}
+  
+  
 //SPINNER
 .loadingSpinner {
     display: flex;
