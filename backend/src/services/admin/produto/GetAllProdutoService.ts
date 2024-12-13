@@ -2,9 +2,11 @@ import prismaClient from "../../../prisma";
 
 class GetAllProdutosService {
   async execute() {
-    // Recupera todos os produtos do banco de dados
+    // Recupera todos os produtos do banco de dados, ordenados pelo nome
     const produtos = await prismaClient.produto.findMany({
-      // Aqui você pode adicionar mais opções de filtro, ordenação, ou paginação se necessário
+      orderBy: {
+        nome: 'asc',  // Ordena os produtos pelo campo 'nome' em ordem ascendente (A-Z)
+      },
     });
 
     return produtos;
