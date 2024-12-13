@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export async function criarBackupSQL() {
   try {
     // Lista de tabelas no banco de dados
-    const modelos = ['user', 'cliente', 'compra', 'pagamento', 'juros'];
+    const modelos = ['user', 'cliente', 'compra', 'pagamento', 'juros', 'produtos'];
     let sqlDump = '';
 
     // Obtém a data atual no formato YYYY-MM-DD

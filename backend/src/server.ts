@@ -11,7 +11,7 @@ import { criarBackupSQL } from './jobs/criarBackupSQL';
 
 aplicarJuros();
 criarBackupSQL();
-//commitAutomatico();
+commitAutomatico();
 
 // Função de juros
 cron.schedule('0 0 * * *', async () => {
