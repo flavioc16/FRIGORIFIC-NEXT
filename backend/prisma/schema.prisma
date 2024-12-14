@@ -77,6 +77,7 @@ model Compra {
   updated_at         DateTime  @updatedAt
   dataDaCompra       DateTime?
   dataVencimento     DateTime? // Novo campo para a data de vencimento
+  isVencida          Int       @default(0) // 0 para não vencida, 1 para vencida
 
   userId             String
   clienteId          String
@@ -89,6 +90,7 @@ model Compra {
 
   @@map("compras")
 }
+
 
 
 model Pagamento {

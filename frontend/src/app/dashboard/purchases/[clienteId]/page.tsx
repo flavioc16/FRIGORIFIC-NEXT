@@ -12,6 +12,7 @@ export interface Compra {
   descricaoCompra: string;
   totalCompra: number;
   tipoCompra: number;
+  isVencida: number;
   statusCompra: number;
   created_at: string;
   updated_at: string;

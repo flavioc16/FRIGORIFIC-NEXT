@@ -224,6 +224,51 @@
         transition: opacity 0.3s ease; /* Adiciona transições suaves */
     }
 
+    .vencida {
+        position: relative; /* Necessário para o ::before */
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra interna */
+        border-radius: 8px; /* Arredondamento do canto da linha */
+      }
+      
+      /* Adicionando a borda na primeira coluna apenas */
+      .vencida td:first-child {
+        position: relative; /* Necessário para garantir que a borda fique sobre a célula */
+       
+      }
+      
+      .vencida td:first-child::before {
+        content: ''; /* Cria o pseudo-elemento para a borda */
+        position: absolute; /* Posiciona o pseudo-elemento fora do fluxo de layout */
+        top: 0;
+        left: 0;
+        height: 100%; /* Preenche toda a altura da célula */
+        width: 5px; /* Largura da borda lateral */
+        background-color: #a94444; /* Cor da borda */
+        border-top-left-radius: 4px; /* Arredonda o canto superior esquerdo */
+        border-bottom-left-radius: 4px; /* Arredonda o canto inferior esquerdo */
+        z-index: 1; /* Garante que a borda fique abaixo do conteúdo */
+      }
+
+      .vencida td:last-child::after {
+        content: ''; /* Cria o pseudo-elemento para a borda */
+        position: absolute; /* Posiciona o pseudo-elemento fora do fluxo de layout */
+        top: 0;
+        right: 0;
+        height: 100%; /* Preenche toda a altura da célula */
+        width: 5px; /* Largura da borda lateral */
+        background-color: #a94444; /* Cor da borda */
+        border-top-right-radius: 4px; /* Arredonda o canto superior direito */
+        border-bottom-right-radius: 4px; /* Arredonda o canto inferior direito */
+        z-index: 1; /* Garante que a borda fique abaixo do conteúdo */
+      }
+      
+      .vencida td {
+        z-index: 2; /* Garante que o conteúdo da célula fique acima da borda */
+      }
+      
+    
+    
+
     .iconPlus:hover {
         transform: scale(1.1); /* Aumenta o ícone ligeiramente ao passar o mouse */
     }

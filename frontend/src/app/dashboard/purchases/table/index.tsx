@@ -17,6 +17,7 @@ import axios from 'axios';
 import CreatePurchaseModal from '../../components/modalEfetuarCompra';
 import DeleteModal from '../../components/modalDelete';
 import PaymentModal from '../../purchases/modalEfetuarPagamento';
+import PurchaseInfoModal from '../modalMostrarInfo';
 
 export interface Compra {
   id: string;
@@ -24,6 +25,7 @@ export interface Compra {
   dataDaCompra?: string;  // Torne-a opcional se não for sempre preenchida
   totalCompra: number;
   tipoCompra: number;
+  isVencida: number;
   statusCompra: number;
   created_at: string;
   updated_at: string;
@@ -75,6 +77,19 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
   const [showModalPayment, setShowModalPayment] = useState(false);
+
+  const [showModalInfo, setShowModalInfo] = useState(false);
+  const [selectedPurchaseId, setSelectedPurchaseId] = useState<string>("");
+
+  const openModalWithPurchaseInfo = (purchaseId: string) => {
+    setSelectedPurchaseId(purchaseId);
+    setShowModalInfo(true);
+  };
+
+  // Função para fechar o modal
+  const handleCloseModalInfo = () => {
+    setShowModalInfo(false);
+  };
 
   useEffect(() => {
     if (cliente) {
@@ -374,7 +389,10 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
             <tbody>
               {currentCompras.length > 0 ? (
                 currentCompras.map((compra) => (
-                  <tr key={compra.id}>
+                  <tr
+                    key={compra.id}
+                    className={compra.isVencida === 1 ? `${styles.vencida} ${styles.vencidaRow}` : ''} // Adicione a nova classe vencidaRow
+                  >
                     <td>
                       {compra.tipoCompra === 1 && (
                         <span className={styles.serviceIndicator}></span>
@@ -389,42 +407,41 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                       })}
                     </td>
                     <td className={styles.actionIcons}>
-                    <OverlayTrigger
-                      trigger={['hover', 'focus']}
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tooltip-info-${compra.id}`} className={styles.customTooltip}>
-                          Informações
-                        </Tooltip>
-                      }
-                    >
-                      <Link href={`/dashboard/compra/${compra.id}`}>
-                        <Info
-                          className={styles.iconInfo}
+                      <OverlayTrigger
+                        trigger={['hover', 'focus']}
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-info-${compra.id}`} className={styles.customTooltip}>
+                            Informações
+                          </Tooltip>
+                        }
+                      >
+                          <Info
+                            className={styles.iconInfo}
+                            role="button"
+                            aria-label={`Informações sobre compra ${compra.id}`}
+                            onClick={() => openModalWithPurchaseInfo(compra.id)}
+                          />
+                      </OverlayTrigger>
+
+                      <OverlayTrigger
+                        trigger={['hover', 'focus']}
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tooltip-plus-${compra.id}`} className={styles.customTooltip}>
+                            Editar compra
+                          </Tooltip>
+                        }
+                      >
+                        <FilePenLine
+                          className={styles.iconPlus}
                           role="button"
-                          aria-label={`Informações sobre compra ${compra.id}`}
+                          aria-label="Adicionar"
+                          onClick={() => handleOpenEditPurchaseModal(compra)}
                         />
-                      </Link>
-                    </OverlayTrigger>
+                      </OverlayTrigger>
 
-                    <OverlayTrigger
-                      trigger={['hover', 'focus']}
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tooltip-plus-${compra.id}`} className={styles.customTooltip}>
-                          Editar compra
-                        </Tooltip>
-                      }
-                    >
-                      <FilePenLine
-                        className={styles.iconPlus}
-                        role="button"
-                        aria-label="Adicionar"
-                        onClick={() => handleOpenEditPurchaseModal(compra)} 
-                      />
-                    </OverlayTrigger>
-
-                    <OverlayTrigger
+                      <OverlayTrigger
                         trigger={['hover', 'focus']}
                         placement="top"
                         overlay={
@@ -440,10 +457,10 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                           onClick={() => handleOpenModalDelete(compra.id)}
                         />
                       </OverlayTrigger>
-
-                      
                     </td>
                   </tr>
+
+
                 ))
               ) : (
                 <tr>
@@ -574,6 +591,12 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
             totalValue={somaTotalCompras}
             clientId={cliente?.id || ""}
             updateCompras={updateCompras} 
+          />
+
+          <PurchaseInfoModal
+            showModalInfo={showModalInfo}
+            handleCloseModalInfo={handleCloseModalInfo}
+            purchaseId={selectedPurchaseId}
           />
 
           <ToastContainer />
