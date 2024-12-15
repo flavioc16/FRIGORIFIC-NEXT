@@ -301,17 +301,23 @@
     }
 }
 
-.serviceIndicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-bottom: 2px;
-    margin-right: 18px; /* Ajuste a distância da bolinha em relação à data */
-    margin-left: -25px; /* Move a bolinha mais para a esquerda */
-    background-color: #3c86ee; /* Escolha uma cor */
-    border-radius: 50%;
+.tableCell {
+    position: relative;  /* Necessário para posicionamento correto da bolinha */
+    padding-left: 20px;   /* Ajuste a célula para garantir que o indicador tenha espaço */
+    padding-right: 10px;  /* Pode ajustar o espaço da direita, se necessário */
 }
   
+.serviceIndicator {
+    position: absolute; /* Mantém o indicador fixo dentro da célula */
+    top: 50%;            /* Centraliza verticalmente */
+    left:18px;          /* Ajuste o valor para ajustar horizontalmente */
+    transform: translateY(-50%); /* Centra verticalmente com base na altura da célula */
+    width: 8px;
+    height: 8px;
+    background-color: #3c86ee;  /* Cor da bolinha */
+    border-radius: 50%;
+}
+    
 .ellipsis {
     margin-top: 10px;
     color: var(--gray-100); // Ajuste a cor conforme necessário

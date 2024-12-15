@@ -393,12 +393,13 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                     key={compra.id}
                     className={compra.isVencida === 1 ? `${styles.vencida} ${styles.vencidaRow}` : ''} // Adicione a nova classe vencidaRow
                   >
-                    <td>
+                    <td className={styles.tableCell}>
                       {compra.tipoCompra === 1 && (
                         <span className={styles.serviceIndicator}></span>
                       )}
                       {adjustDate(compra.dataDaCompra ?? '')}
                     </td>
+
                     <td>{compra.descricaoCompra}</td>
                     <td>
                       {compra.totalCompra.toLocaleString('pt-BR', {
@@ -429,7 +430,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                         placement="top"
                         overlay={
                           <Tooltip id={`tooltip-plus-${compra.id}`} className={styles.customTooltip}>
-                            Editar compra
+                            Editar
                           </Tooltip>
                         }
                       >
@@ -446,7 +447,7 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                         placement="top"
                         overlay={
                           <Tooltip id={`tooltip-trash-${compra.id}`} className={styles.customTooltip}>
-                            Deletar 
+                            Excluir 
                           </Tooltip>
                         }
                       >

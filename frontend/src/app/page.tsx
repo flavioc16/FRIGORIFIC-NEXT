@@ -50,7 +50,7 @@ export default function Login() {
         localStorage.removeItem('rememberedPassword');
       }
 
-      document.cookie = `token=${token}; path=/; secure`;
+      document.cookie = `token=${token}; path=/`;
 
       localStorage.removeItem('selectedMenuItem');
 
