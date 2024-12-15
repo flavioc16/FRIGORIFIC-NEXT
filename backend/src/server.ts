@@ -51,7 +51,14 @@ cron.schedule('5 16 * * *', async () => {  // Agendado para 3:00 AM todos os dia
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: ['http://192.168.0.128:3000', 'http://localhost:3000'],  // Permite as origens do frontend
+  methods: 'GET, POST, PUT, DELETE',  // Métodos HTTP permitidos
+  allowedHeaders: 'Content-Type, Authorization',  // Cabeçalhos permitidos
+};
+
+app.use(cors(corsOptions));
 
 app.use(router);
 
@@ -68,6 +75,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(3333, () => {
+// Altere aqui para 0.0.0.0
+app.listen(3333, '0.0.0.0', () => {
   console.log('Servidor Online!!!');
 });
+
