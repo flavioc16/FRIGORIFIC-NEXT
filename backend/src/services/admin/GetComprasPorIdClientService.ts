@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 
 class GetComprasPorIdService {
   async execute(clienteId: string) {
-    // Buscar apenas compras com status 0 (não pagas ou restantes)
+    // Buscar compras com status 0 (não pagas ou restantes), incluindo juros e pagamentos
     const comprasRestantes = await prismaClient.compra.findMany({
       where: {
         clienteId: clienteId,
@@ -14,14 +14,15 @@ class GetComprasPorIdService {
             nome: true,
           },
         },
-        user: false,
+        juros: true,         // Inclui os dados de juros, caso existam
+        pagamentos: true,    // Inclui os dados de pagamentos, caso existam
       },
       orderBy: [
         {
-          created_at: 'asc', // Ordena pelas compras pela data de criação (cadastro)
+          created_at: 'asc', // Ordena pela data de criação (cadastro)
         },
         {
-          dataDaCompra: 'asc', // Se a data de compra for diferente, usa a ordem por data da compra
+          dataDaCompra: 'asc', // Se a data da compra for diferente, usa a ordem por data da compra
         },
       ],
     });

@@ -34,6 +34,11 @@ export async function aplicarJuros() {
         const valorJuros = compra.totalCompra * 0.05; // 5% de juros
         const novoTotal = compra.totalCompra + valorJuros;
 
+        // Formatar a data do mês atual para referência na descrição
+        const mesAtual = new Date();
+        const mesNome = mesAtual.toLocaleString('pt-BR', { month: 'long' });
+        const ano = mesAtual.getFullYear();
+
         // Atualiza o total da compra e marca como vencida
         await prisma.compra.update({
           where: { id: compra.id },
@@ -47,7 +52,7 @@ export async function aplicarJuros() {
         await prisma.juros.create({
           data: {
             valor: valorJuros,
-            descricao: `Juros aplicados por atraso na compra: ${compra.descricaoCompra}`,
+            descricao: `Juros referente ao mês de: ${mesNome} ${ano}`,
             compraId: compra.id,
             clienteId: compra.clienteId,
           },
@@ -64,4 +69,3 @@ export async function aplicarJuros() {
     await prisma.$disconnect();
   }
 }
-

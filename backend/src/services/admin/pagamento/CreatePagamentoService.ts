@@ -58,20 +58,40 @@ class CreatePagamentoService {
           where: { id: compra.id },
           data: { 
             statusCompra: 1, // Marca a compra como paga
-            pagamentoId: pagamento.id // Atualiza o pagamentoId com o pagamento criado
+            pagamentoId: pagamento.id, // Atualiza o pagamentoId com o pagamento criado
           }
         });
         valorRestante -= compra.totalCompra;
+
+        // Aqui associamos o pagamento à compra na tabela de pagamento
+        await prismaClient.pagamento.update({
+          where: { id: pagamento.id },
+          data: {
+            compra: {
+              connect: { id: compra.id } // Associando a compra ao pagamento
+            }
+          }
+        });
       } else {
         // Caso o valor restante seja menor, reduz a compra pela quantidade paga
         await prismaClient.compra.update({
           where: { id: compra.id },
           data: { 
             totalCompra: compra.totalCompra - valorRestante, // Atualiza o valor restante
-            pagamentoId: pagamento.id // Atualiza o pagamentoId com o pagamento criado
+            pagamentoId: pagamento.id, // Atualiza o pagamentoId com o pagamento criado
           }
         });
         valorRestante = 0; // O pagamento foi totalmente utilizado
+
+        // Aqui associamos o pagamento à compra na tabela de pagamento
+        await prismaClient.pagamento.update({
+          where: { id: pagamento.id },
+          data: {
+            compra: {
+              connect: { id: compra.id } // Associando a compra ao pagamento
+            }
+          }
+        });
       }
     }
 

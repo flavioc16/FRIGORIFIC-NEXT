@@ -19,7 +19,7 @@ class GetAllComprasService {
                 created_at: true,
                 updated_at: true,
                 dataDaCompra: true,
-                dataVencimento: false,
+                dataVencimento: true,
             }
         });
 
