@@ -38,7 +38,7 @@ export default function Products() {
     }
 
     fetchClients();
-  }, [produtos]);
+  }, []);
 
   // Função para atualizar produtos
   const updateProdutos = async () => {

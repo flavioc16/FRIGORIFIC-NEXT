@@ -40,7 +40,7 @@ export default function Clients() {
     }
 
     fetchClients();
-  }, [clients]);
+  }, []);
 
   return (
     <main className={styles.contentArea}>

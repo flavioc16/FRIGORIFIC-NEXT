@@ -12,16 +12,38 @@ interface PurchaseInfoModalProps {
 }
 
 interface PurchaseInfo {
-    id: string; // ID da compra
-    descricaoCompra: string; // Descrição do item comprado
-    totalCompra: number; // Valor total da compra
-    valorInicialCompra: number; // Valor inicial da compra
-    tipoCompra: number; // Tipo da compra (0 ou 1)
-    statusCompra: number; // Status da compra (ex: 0 - pendente, 1 - pago)
-    created_at: string; // Data de criação
-    updated_at: string; // Data de atualização
-    dataDaCompra: string; // Data da compra
-  }
+  id: string;
+  descricaoCompra: string;
+  totalCompra: number;
+  valorInicialCompra: number;
+  tipoCompra: number; // 0 ou 1
+  statusCompra: number; // 0: pendente, 1: pago
+  created_at: string;
+  updated_at: string;
+  dataDaCompra: string;
+  dataVencimento?: string;
+  isVencida?: number;
+  userId?: string;
+  clienteId?: string;
+  pagamentoId?: string;
+  juros?: {
+    id: string;
+    valor: number;
+    descricao: string;
+    created_at: string;
+    compraId: string;
+    clienteId: string;
+  }[];
+  pagamentos?: {
+    id: string;
+    valorPagamento: number;
+    clienteId: string;
+    userId: string;
+    created_at: string;
+    updated_at: string;
+    compraId: string;
+  }[];
+}
 
 export default function PurchaseInfoModal({
   showModalInfo,
@@ -63,7 +85,6 @@ export default function PurchaseInfoModal({
     >
       <div className={styles.customModalHeader}>
         <h2>Informações da Compra</h2>
-
         <button onClick={handleCloseModalInfo} className={styles.closeButton}>
           <X size={24} color="var(--white)" />
         </button>
@@ -71,32 +92,86 @@ export default function PurchaseInfoModal({
       <div className={styles.customModalBody}>
         {purchaseInfo ? (
           <div>
+            {/* Informações principais */}
             <div className={styles.infoRow}>
               <strong>Descrição:</strong> {purchaseInfo.descricaoCompra}
             </div>
             <div className={styles.infoRow}>
-              <strong>Data:</strong> 
-              {new Date(purchaseInfo.dataDaCompra).toLocaleString('pt-BR', {
-                weekday: 'long',  
-                year: 'numeric',  
-                month: 'long',    
-                day: 'numeric',   
-                hour: '2-digit',  
-                minute: '2-digit', 
+              <strong>Data da Compra:</strong>{" "}
+              {new Date(purchaseInfo.dataDaCompra).toLocaleString("pt-BR", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
               })}
             </div>
             <div className={styles.infoRow}>
-              <strong>Valor inicial:</strong> {purchaseInfo.valorInicialCompra.toLocaleString("pt-BR", {
+              <strong>Valor Inicial:</strong>{" "}
+              {purchaseInfo.valorInicialCompra.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
               })}
             </div>
             <div className={styles.infoRow}>
-              <strong>Valor atual:</strong> {purchaseInfo.totalCompra.toLocaleString("pt-BR", {
+              <strong>Valor Atual:</strong>{" "}
+              {purchaseInfo.totalCompra.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
               })}
             </div>
+            <div className={styles.infoRow}>
+              <strong>Data de Vencimento:</strong>{" "}
+              {purchaseInfo.dataVencimento
+                ? new Date(purchaseInfo.dataVencimento).toLocaleDateString("pt-BR")
+                : "Não informado"}
+            </div>
+            <div className={styles.infoRow}>
+              <strong>Está vencida?:</strong> {purchaseInfo.isVencida ? "Sim" : "Não"}
+            </div>
+
+            {/* Juros */}
+            {purchaseInfo.juros && purchaseInfo.juros.length > 0 && (
+              <div className={styles.section}>
+                <h3>Juros</h3>
+                {purchaseInfo.juros.map((juros, index) => (
+                  <div key={juros.id} className={styles.infoRow}>
+                    <strong>Juros #{index + 1}:</strong>{" "}
+                    {juros.valor.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                    <br />
+                    <strong>Descrição:</strong> {juros.descricao}
+                    <br />
+                    <strong>Data:</strong>{" "}
+                    {new Date(juros.created_at).toLocaleDateString("pt-BR")}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Pagamentos */}
+            {purchaseInfo.pagamentos && purchaseInfo.pagamentos.length > 0 && (
+              <div className={styles.section}>
+                <h3>Pagamentos</h3>
+                {purchaseInfo.pagamentos.map((pagamento, index) => (
+                  <div key={pagamento.id} className={styles.infoRow}>
+                    <strong>Pagamento #{index + 1}:</strong>{" "}
+                    {pagamento.valorPagamento.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                    <br />
+                    <strong>Data:</strong>{" "}
+                    {new Date(pagamento.created_at).toLocaleDateString("pt-BR")}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Botões */}
             <div className={styles.buttonContainer}>
               <div className={styles.buttonGroup}>
                 <button
@@ -108,13 +183,12 @@ export default function PurchaseInfoModal({
                 </button>
               </div>
             </div>
-            {/* Adicione mais campos conforme necessário */}
           </div>
-      
         ) : (
           <p>Carregando informações...</p>
         )}
       </div>
     </Modal>
+
   );
 }

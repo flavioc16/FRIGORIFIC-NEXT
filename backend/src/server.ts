@@ -55,7 +55,7 @@ app.use(express.json());
 const corsOptions = {
   origin: ['http://192.168.0.128:3000', 'http://localhost:3000'],  // Permite as origens do frontend
   methods: 'GET, POST, PUT, DELETE',  // Métodos HTTP permitidos
-  allowedHeaders: 'Content-Type, Authorization',  // Cabeçalhos permitidos
+  allowedHeaders: 'Content-Type, Authorization'  // Cabeçalhos permitidos
 };
 
 app.use(cors(corsOptions));

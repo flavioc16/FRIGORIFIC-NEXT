@@ -7,7 +7,6 @@ class GetCompraByIdService {
                 id: id
             },
             include: {
-                cliente: true, // Inclui detalhes do cliente   
                 juros: true,  // Inclui os juros associados à compra
                 pagamentos: true, // Inclui os pagamentos associados à compra
             }
