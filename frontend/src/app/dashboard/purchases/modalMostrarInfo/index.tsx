@@ -92,6 +92,7 @@ export default function PurchaseInfoModal({
       <div className={styles.customModalBody}>
         {purchaseInfo ? (
           <div>
+               <h2>Compra</h2>
             {/* Informações principais */}
             <div className={styles.infoRow}>
               <strong>Descrição:</strong> {purchaseInfo.descricaoCompra}
@@ -134,7 +135,7 @@ export default function PurchaseInfoModal({
             {/* Juros */}
             {purchaseInfo.juros && purchaseInfo.juros.length > 0 && (
               <div className={styles.section}>
-                <h3>Juros</h3>
+                <h2>Juros</h2>
                 {purchaseInfo.juros.map((juros, index) => (
                   <div key={juros.id} className={styles.infoRow}>
                     <strong>Juros #{index + 1}:</strong>{" "}
@@ -155,7 +156,7 @@ export default function PurchaseInfoModal({
             {/* Pagamentos */}
             {purchaseInfo.pagamentos && purchaseInfo.pagamentos.length > 0 && (
               <div className={styles.section}>
-                <h3>Pagamentos</h3>
+                <h2>Pagamentos</h2>
                 {purchaseInfo.pagamentos.map((pagamento, index) => (
                   <div key={pagamento.id} className={styles.infoRow}>
                     <strong>Pagamento #{index + 1}:</strong>{" "}

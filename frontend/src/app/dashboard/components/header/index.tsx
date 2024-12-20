@@ -12,6 +12,7 @@ import stylesModal from "./stylesModal.module.scss";
 import useF2Redirect from "@/app/hooks/useF2Redirect"; // Importando o hook
 import { useMenu } from "@/app/context/MenuContext";
 
+
 export function Header() {
   useF2Redirect(); // usando o hook para usar f2 inicio
   const { setSelected } = useMenu(); // Acessando o contexto do menu

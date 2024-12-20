@@ -562,12 +562,16 @@ select.customFormControl {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    font-family: 'Roboto', sans-serif;
-    color: #333;
+    font-family: 'Roboto', sans-serif; // ou Inter, se preferir
+    color: #fff; /* Texto principal branco */
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #1e1e1e; /* Preto suave para o container */
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Realce sutil */
+    font-family: 'Montserrat', sans-serif;
+
+    
+
   }
   
   .infoRow {
@@ -576,26 +580,40 @@ select.customFormControl {
     align-items: center;
     font-size: 16px;
     font-weight: 500;
-    color: var(--white);
-    padding: 10px 0;
-    border-bottom: 1px solid var(--cinza-800)
+    color: #d1d1d1; /* Cinza claro para o texto */
+    padding: 10px 12px;
+   
+    font-family: 'Montserrat', sans-serif;
+
+    &:hover {
+      background-color: var(--roxo-700)
+    }
+    
   }
+
+  .infoContent, .infoRow {
+    font-family: 'Poppins', sans-serif; /* Ou outra fonte */
+    
+    
+  }
+
+  
+  
   
   .infoRow strong {
     font-weight: 600;
-    color: var(--white);
+    color: #ffefef; /* Título mais claro que o valor */
   }
   
   .infoRow span {
-    color: #333;
+    color: #ccc; /* Cinza médio para diferenciar os dados */
     font-weight: 500;
   }
   
   .infoRow:last-child {
     border-bottom: none;
-    
   }
-
+  
 
 @keyframes spin {
     to {
