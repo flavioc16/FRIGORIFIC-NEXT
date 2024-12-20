@@ -37,21 +37,30 @@ export async function criarBackupSQL() {
       const registros = await prisma[modelo].findMany();
 
       if (registros.length > 0) {
-        // Gera comandos SQL para cada registro
+        // Gera comandos SQL acumulados para cada modelo
         const colunas = Object.keys(registros[0]).join(', ');
-        registros.forEach((registro) => {
-          const valores = Object.values(registro)
-            .map((valor) =>
-              typeof valor === 'string'
-                ? `'${valor.replace(/'/g, "''")}'` // Escapar aspas simples
-                : valor === null
-                ? 'NULL' // Tratar valores nulos
-                : `'${valor}'` // Tratar outros tipos
-            )
-            .join(', ');
+        const valores = registros
+          .map((registro) => {
+            const valoresLinha = Object.values(registro)
+              .map((valor) => {
+                if (valor instanceof Date) {
+                  // Formata o valor de data para 'YYYY-MM-DD HH:mm:ss'
+                  return `'${valor.toISOString().replace('T', ' ').slice(0, 19)}'`;
+                } else if (typeof valor === 'string') {
+                  return `'${valor.replace(/'/g, "''")}'`; // Escapar aspas simples
+                } else if (valor === null) {
+                  return 'NULL'; // Tratar valores nulos
+                } else {
+                  return `'${valor}'`; // Tratar outros tipos
+                }
+              })
+              .join(', ');
+            return `(${valoresLinha})`;
+          })
+          .join(',\n');
 
-          sqlDump += `INSERT INTO ${modelo} (${colunas}) VALUES (${valores});\n`;
-        });
+        // Adiciona o comando `INSERT INTO` no dump
+        sqlDump += `INSERT INTO ${modelo} (${colunas}) VALUES\n${valores};\n\n`;
       }
     }
 
