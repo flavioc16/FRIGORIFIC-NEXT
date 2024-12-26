@@ -304,7 +304,9 @@ export default function CreatePurchaseModal({
                       value={produto.nome}
                       data-price={produto.precoAVista} // Armazena o preço como dado adicional
                     >
-                      {produto.descricao} - R$ {(
+                     {produto.descricao?.trim() 
+                        ? `${produto.descricao.trim()} - ` 
+                        : ""}R$ {(
                         produto.precoAPrazo / 100
                       ).toLocaleString("pt-BR", {
                         minimumFractionDigits: 2,

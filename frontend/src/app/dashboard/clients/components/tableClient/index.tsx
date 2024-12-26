@@ -67,27 +67,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
 
   const modalTitle = "Deseja realmente excluir este cliente?";
 
-  //const [infoVisible, setInfoVisible] = useState<string | null>(null);
-  //const infoOptionsRef = useRef<HTMLDivElement>(null);
-
-  //useOutsideClick(infoOptionsRef, () => setInfoVisible(null));
-
-  const [showPopover, setShowPopover] = useState(true); // Controle de visibilidade
-
-  const popoverContent = (
-    <Popover id="popover-basic" className={styles.Popover}>
-      <Popover.Header as="h3" className={styles.PopoverHeader}>
-        Clique para cadastrar um cliente
-      </Popover.Header>
-      <Popover.Body className={styles.PopoverBody}>
-        Adicione um novo cliente ao sistema para adicionar novas compras!
-      </Popover.Body>
-    </Popover>
-  );
-
-  useEffect(() => {
-    setShowPopover(true); // Garante que o popover estará visível ao carregar
-  }, []);
 
   const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setClientsPerPage(Number(event.target.value));
@@ -402,9 +381,6 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                 marginRight: '-4px', // Ajusta o espaçamento do ícone
                 marginBottom:'3px'
               }}
-              //popover={popoverContent}
-              
-               // Passa o conteúdo do Popover
             />
             <div className={styles.resultsPerPage}>
                 <label htmlFor="resultsPerPage">Exibir  :</label>
@@ -450,8 +426,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
               <thead>
                 <tr>
                   <th>Nome</th>
-                  <th>Endereço</th>
                   <th>Referência</th>
+                  <th>Endereço</th>
                   <th>Email</th>
                   <th>Telefone</th>
                   <th>Username</th>
@@ -463,8 +439,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
                   currentClients.map((client) => (
                     <tr key={client.id}>
                       <td>{client.nome}</td>
-                      <td>{client.endereco || ''}</td>
                       <td>{client.referencia || ''}</td>
+                      <td>{client.endereco || ''}</td>
                       <td>{client.email || ''}</td>
                       <td>{client.telefone}</td>
                       <td>{client.user?.username || ''}</td>

@@ -92,7 +92,7 @@ export default function PurchaseInfoModal({
       <div className={styles.customModalBody}>
         {purchaseInfo ? (
           <div>
-               <h2>Compra</h2>
+              <h2>Compra</h2>
             {/* Informações principais */}
             <div className={styles.infoRow}>
               <strong>Descrição:</strong> {purchaseInfo.descricaoCompra}
@@ -100,6 +100,7 @@ export default function PurchaseInfoModal({
             <div className={styles.infoRow}>
               <strong>Data da Compra:</strong>{" "}
               {new Date(purchaseInfo.dataDaCompra).toLocaleString("pt-BR", {
+                timeZone: "America/Sao_Paulo", // Ajuste para o fuso horário desejado
                 weekday: "long",
                 year: "numeric",
                 month: "long",
@@ -138,16 +139,18 @@ export default function PurchaseInfoModal({
                 <h2>Juros</h2>
                 {purchaseInfo.juros.map((juros, index) => (
                   <div key={juros.id} className={styles.infoRow}>
+                    
                     <strong>Juros #{index + 1}:</strong>{" "}
+                    {new Date(juros.created_at).toLocaleDateString("pt-BR")}
+                    
+                    <br />
+                    <strong>Descrição:</strong> {juros.descricao}
+                    <br />
+                    <strong>Valor:</strong>{" "}
                     {juros.valor.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
-                    <br />
-                    <strong>Descrição:</strong> {juros.descricao}
-                    <br />
-                    <strong>Data:</strong>{" "}
-                    {new Date(juros.created_at).toLocaleDateString("pt-BR")}
                   </div>
                 ))}
               </div>
@@ -160,13 +163,12 @@ export default function PurchaseInfoModal({
                 {purchaseInfo.pagamentos.map((pagamento, index) => (
                   <div key={pagamento.id} className={styles.infoRow}>
                     <strong>Pagamento #{index + 1}:</strong>{" "}
+                    {new Date(pagamento.created_at).toLocaleDateString("pt-BR")}
+                    <strong>Valor:</strong>{" "}
                     {pagamento.valorPagamento.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
-                    <br />
-                    <strong>Data:</strong>{" "}
-                    {new Date(pagamento.created_at).toLocaleDateString("pt-BR")}
                   </div>
                 ))}
               </div>

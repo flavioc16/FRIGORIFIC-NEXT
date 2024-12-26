@@ -255,8 +255,6 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
     }
   };
   
-  
-  
   const handleConfirmDelete = async () => {
     toast.dismiss();
 
@@ -319,8 +317,6 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
   }, [isMenuInputFocused]);
 
   const handleSearchClear = () => setSearchTerm('');
-
-  
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckbox(e.target.checked);

@@ -89,6 +89,7 @@
       label {
           margin-right: 0.5rem;
           color: var(--white); // Cor do texto
+          font-size: 15px;
       }
   
       label[for="resultsPerPage"] {
@@ -162,7 +163,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       vertical-align: middle;
-      color: var(--gray-100);
+      color: var(--gray-200);
   }
 
   th {

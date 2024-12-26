@@ -90,6 +90,7 @@
         label {
             margin-right: 0.5rem;
             color: var(--white); // Cor do texto
+            font-size: 15px;
         }
     
         label[for="resultsPerPage"] {
@@ -161,7 +162,7 @@
         text-overflow: ellipsis; // Adiciona reticências para texto que ultrapassa o tamanho da célula
         white-space: nowrap;
         vertical-align: middle; // Alinha verticalmente no meio
-        color: var(--gray-100); // Define a cor do texto (incluindo as reticências)
+        color:var(--gray-200)
     }
 
     th {
@@ -202,7 +203,7 @@
         padding: 2px; // Ajusta o padding dentro da célula da ação
         font-size: 0.625rem; // Ajusta o tamanho da fonte dos ícones de ação
         font-size: 0.75rem; /* Ajuste o tamanho dos ícones */
-        color: var(--gray-100); /* Ajuste a cor dos ícones conforme necessário */
+        color: var(--gray-200); /* Ajuste a cor dos ícones conforme necessário */
         transition: opacity 0.3s ease; /* Adiciona transições suaves */
     }
 
