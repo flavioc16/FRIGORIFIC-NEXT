@@ -22,29 +22,32 @@ export default function Clients() {
   const [clients, setClients] = useState<Client[]>([]); // Tipagem dos clientes
   const [loading, setLoading] = useState(true); // Estado de carregamento
 
-  useEffect(() => {
-    async function fetchClients() {
-      try {
-        const token = getCookie("token"); // Obtém o token dos cookies
-        const response = await api.get("/clients", {
-          headers: {
-            Authorization: `Bearer ${token}`, // Inclui o token no cabeçalho da requisição
-          },
-        });
-        setClients(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar clientes:", error);
-      } finally {
-        setLoading(false); // Define loading como false quando a chamada termina
-      }
+  // Função reutilizável para buscar clientes
+  const updateClientes = async () => {
+    try {
+      const token = getCookie("token"); // Obtém o token dos cookies
+      const response = await api.get("/clients", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclui o token no cabeçalho da requisição
+        },
+      });
+      setClients(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    } finally {
+      setLoading(false); // Define loading como false quando a chamada termina
     }
+  };
 
-    fetchClients();
+  // Chamada inicial para buscar clientes
+  useEffect(() => {
+    updateClientes();
   }, []);
 
   return (
     <main className={styles.contentArea}>
-      <TableClients clients={clients} loading={loading} />
+      {/* Passando a função updateClientes como prop */}
+      <TableClients clients={clients} loading={loading} updateClientes={updateClientes} />
     </main>
   );
 }

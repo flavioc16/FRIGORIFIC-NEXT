@@ -40,9 +40,10 @@ export interface Client {
 interface TableClientsProps {
   clients: Client[];
   loading: boolean;
+  updateClientes: () => void; // Tipagem da função passada como prop
 }
 
-export function TableClients({ clients, loading }: TableClientsProps) {
+export function TableClients({ clients, loading, updateClientes }: TableClientsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage, setClientsPerPage] = useState(10);
@@ -117,10 +118,10 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
-    toast.dismiss();
-
+    toast.dismiss(); // Descartar qualquer notificação anterior
+  
     try {
-      const token = getCookie("token");
+      const token = getCookie("token"); // Obtém o token de autenticação
   
       if (!token) {
         toast.error("Token de autenticação não encontrado. Faça login novamente.");
@@ -191,6 +192,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       setUsername('');
       setPassword('');
   
+      // Chama a função de atualização de clientes após a operação bem-sucedida
+      updateClientes();
+  
       handleCloseModal(); // Fecha o modal ao terminar
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -205,9 +209,8 @@ export function TableClients({ clients, loading }: TableClientsProps) {
   };
   
   const handleConfirmDelete = async () => { 
-
-    toast.dismiss();
-    
+    toast.dismiss(); // Descartar qualquer notificação anterior
+  
     try {
       const token = getCookie('token'); // Obtém o token de autenticação
   
@@ -230,6 +233,9 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       toast.success(`Cliente ${clientName} excluído com sucesso.`);
       console.log("Cliente excluído com sucesso:", response.data);
   
+      // Chama a função para atualizar a lista de clientes após a exclusão
+      updateClientes(); 
+  
       handleCloseModalDelete(); // Fecha o modal ao terminar
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -242,7 +248,7 @@ export function TableClients({ clients, loading }: TableClientsProps) {
       }
     }
   };
-
+  
   // Função para capitalizar a primeira letra de cada palavra
   const capitalizeWords = (value: string): string => {
     return value

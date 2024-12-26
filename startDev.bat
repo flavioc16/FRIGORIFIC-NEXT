@@ -1,13 +1,13 @@
 @echo off
 
-:: Iniciar o Visual Studio Code no diretório C:\frigorifico
-start "" /b cmd /c "cd /d C:\frigorifico && code ."
+:: Iniciar o Visual Studio Code no diretório principal do projeto
+start "" /b cmd /c "cd /d C:\Users\Usuario\FRIGORIFIC-NEXT && code ."
 
 :: Iniciar o backend em uma nova janela oculta
-start "" /b cmd /c "cd /d C:\frigorifico\backend && yarn dev"
+start "" /b cmd /c "cd /d C:\Users\Usuario\FRIGORIFIC-NEXT\backend && yarn dev"
 
 :: Iniciar o frontend em uma nova janela oculta
-start "" /b cmd /c "cd /d C:\frigorifico\frontend && yarn dev"
+start "" /b cmd /c "cd /d C:\Users\Usuario\FRIGORIFIC-NEXT\frontend && yarn dev"
 
 :: Abrir o PWA no Chrome
 start "" "C:\Program Files\Google\Chrome\Application\chrome_proxy.exe" --profile-directory=Default --app-id=hbblfifohofgngfbjbiimbbcimepbdcb"
