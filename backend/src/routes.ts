@@ -31,8 +31,8 @@ import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByI
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
 import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
 
-
-
+//Relatorio
+import { GetComprasPorDatasController } from './controllers/admin/relatorio/GetComprasPorDatasController';
 
 // Outros Controllers
 import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
@@ -77,5 +77,9 @@ router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCom
 
 // Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);
+
+//Admin Routes Relatorio
+router.get('/relatorio/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorDatasController().handle);
+
 
 export { router };
