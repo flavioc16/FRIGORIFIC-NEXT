@@ -60,7 +60,7 @@ export default function Products() {
   
   return (
     <main className={styles.contentArea}>
-      <TableProducts produtos={produtos} loading={loading} />
+      <TableProducts produtos={produtos} loading={loading} updateProdutos={updateProdutos} />
     </main>
   );
 }

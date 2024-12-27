@@ -40,7 +40,7 @@ export interface Client {
 interface TableClientsProps {
   clients: Client[];
   loading: boolean;
-  updateClientes: () => void; // Tipagem da função passada como prop
+  updateClientes?: () => void; // Tipagem da função passada como prop
 }
 
 export function TableClients({ clients, loading, updateClientes }: TableClientsProps) {
@@ -192,8 +192,9 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
       setUsername('');
       setPassword('');
   
-      // Chama a função de atualização de clientes após a operação bem-sucedida
-      updateClientes();
+      if(updateClientes){
+        updateClientes();
+      } 
   
       handleCloseModal(); // Fecha o modal ao terminar
     } catch (error) {
@@ -234,7 +235,9 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
       console.log("Cliente excluído com sucesso:", response.data);
   
       // Chama a função para atualizar a lista de clientes após a exclusão
-      updateClientes(); 
+      if(updateClientes){
+        updateClientes();
+      } 
   
       handleCloseModalDelete(); // Fecha o modal ao terminar
     } catch (error) {

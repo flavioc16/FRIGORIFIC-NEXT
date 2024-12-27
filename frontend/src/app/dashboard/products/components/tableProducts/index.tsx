@@ -25,9 +25,10 @@ export interface Produto {
 interface TableProductsProps {
   produtos: Produto[]; // Lista de produtos
   loading: boolean;
+  updateProdutos: () => void; // Tipagem da função passada como prop
 }
 
-export default function TableProducts({ produtos, loading }: TableProductsProps) {
+export default function TableProducts({ produtos, loading, updateProdutos }: TableProductsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(10);
@@ -167,22 +168,22 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
     try {
       // Validação dos campos obrigatórios
       if (nome === "") {
-        toast.error("O campo 'Nome' é obrigatório.");
+        toast.error("O campo Nome é obrigatório.");
         nomeProdutoRef.current?.focus();
         return;
       }
       if (!descricao) {
-        toast.error("O campo 'Descrição' é obrigatório.");
+        toast.error("O campo Descrição é obrigatório.");
         descricaoProdutoRef.current?.focus();
         return;
       }
       if (precoAVista <= 0) {
-        toast.error("O campo 'Preço à vista' deve ser maior que zero.");
+        toast.error(<span>O valor de <strong>Preço à Vista</strong> deve ser maior que zero.</span>);
         precoAVistaProdutoRef.current?.focus();
         return;
       }
       if (precoAPrazo <= 0) {
-        toast.error("O campo 'Preço a prazo' deve ser maior que zero.");
+        toast.error(<span>O valor de <strong> Preço a Prazo</strong> deve ser maior que zero.</span>);
         precoAPrazoProdutoRef.current?.focus();
         return;
       }
@@ -237,6 +238,8 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
       setFormattedPrecoAPrazo('0,00')
       
       nomeProdutoRef.current?.focus();
+
+      updateProdutos();
   
       // Verifica o estado do checkbox antes de fechar o modal
       if (!checkbox) {
@@ -274,8 +277,10 @@ export default function TableProducts({ produtos, loading }: TableProductsProps)
         data: { id },
       });
 
-      toast.success(`Produto ${productName} excluído com sucesso.`);
+      toast.success(<span>Produto <strong>{productName}</strong> excluído com sucesso.</span>);
       console.log("Produto excluído com sucesso:", response.data);
+
+      updateProdutos();
 
       handleCloseModalDelete();
     } catch (error) {
