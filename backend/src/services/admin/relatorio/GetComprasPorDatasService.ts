@@ -46,9 +46,6 @@ class GetComprasPorDatasService {
       },
       orderBy: [
         {
-          created_at: 'asc',
-        },
-        {
           dataDaCompra: 'asc',
         },
       ],

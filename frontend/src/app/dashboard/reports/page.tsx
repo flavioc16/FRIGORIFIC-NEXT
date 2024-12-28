@@ -52,7 +52,7 @@ export interface RelatorioComprasResponse {
 
 export default function Relatorios() {
   const [compras, setCompras] = useState<Compra[]>([]); // Tipagem das compras
-  const [loading, setLoading] = useState(false); // Estado de carregamento
+  const [loading, setLoading] = useState(true); // Estado de carregamento
   const [dataInicio, setDataInicio] = useState(""); // Data de início
   const [dataFim, setDataFim] = useState(""); // Data de fim
   const [somaTotalCompras, setSomaTotalCompras] = useState(0); // Soma total das compras

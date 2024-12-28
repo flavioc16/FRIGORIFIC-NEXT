@@ -3,99 +3,89 @@ import prismaClient from "../../../prisma";
 interface PagamentoRequest {
   valorPagamento: number;
   clienteId: string;
-  userId: string; // Adicionando o userId como parte da requisição
+  userId: string;
 }
 
 class CreatePagamentoService {
   async execute({ valorPagamento, clienteId, userId }: PagamentoRequest) {
-
     // Verificar se cliente existe
     const clienteExiste = await prismaClient.cliente.findUnique({
-      where: { id: clienteId }
+      where: { id: clienteId },
     });
 
     if (!clienteExiste) throw new Error("Cliente não encontrado");
 
     // Verificar se usuário existe
     const userExiste = await prismaClient.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!userExiste) throw new Error("Usuário não encontrado");
-    
-    // Busca todas as compras do cliente com statusCompra 0 (não pagas), ordenadas por data
+
+    // Busca todas as compras pendentes do cliente, ordenadas por data
     const compras = await prismaClient.compra.findMany({
       where: { clienteId, statusCompra: 0 },
-      orderBy: { created_at: "asc" }
+      orderBy: { dataDaCompra: "asc" },
     });
 
-    // Calcula o total das compras pendentes
-    const totalCompras = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
+    if (compras.length === 0) {
+      throw new Error("Nenhuma compra pendente encontrada para este cliente.");
+    }
 
-    // Verifica se o valor do pagamento é válido
-    if (valorPagamento <= 0 || valorPagamento > totalCompras) {
-      throw new Error("Valor do pagamento inválido");
+    // Calcula o total pendente
+    const totalPendente = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
+
+    if (valorPagamento <= 0 || valorPagamento > totalPendente) {
+      throw new Error("Valor do pagamento inválido.");
     }
 
     let valorRestante = valorPagamento;
 
-    // Cria o registro de pagamento com o user conectado
-    const pagamento = await prismaClient.pagamento.create({
-      data: {
-        valorPagamento,
-        cliente: { connect: { id: clienteId } },
-        user: { connect: { id: userId } }
-      }
-    });
-
-    // Itera sobre as compras e reduz o valor de cada uma até esgotar o valor do pagamento
+    // Itera pelas compras para distribuir o valor do pagamento
     for (const compra of compras) {
       if (valorRestante <= 0) break;
 
-      // Se o valor restante for maior ou igual ao valor da compra, marca a compra como paga
+      let valorParcial;
+
       if (valorRestante >= compra.totalCompra) {
+        // Pagamento total da compra
+        valorParcial = compra.totalCompra;
+
         await prismaClient.compra.update({
           where: { id: compra.id },
-          data: { 
-            statusCompra: 1, // Marca a compra como paga
-            pagamentoId: pagamento.id, // Atualiza o pagamentoId com o pagamento criado
-          }
-        });
-        valorRestante -= compra.totalCompra;
-
-        // Aqui associamos o pagamento à compra na tabela de pagamento
-        await prismaClient.pagamento.update({
-          where: { id: pagamento.id },
           data: {
-            compra: {
-              connect: { id: compra.id } // Associando a compra ao pagamento
-            }
-          }
+            statusCompra: 1, // Marca como paga
+          },
         });
       } else {
-        // Caso o valor restante seja menor, reduz a compra pela quantidade paga
+        // Pagamento parcial da compra
+        valorParcial = valorRestante;
+
         await prismaClient.compra.update({
           where: { id: compra.id },
-          data: { 
-            totalCompra: compra.totalCompra - valorRestante, // Atualiza o valor restante
-            pagamentoId: pagamento.id, // Atualiza o pagamentoId com o pagamento criado
-          }
-        });
-        valorRestante = 0; // O pagamento foi totalmente utilizado
-
-        // Aqui associamos o pagamento à compra na tabela de pagamento
-        await prismaClient.pagamento.update({
-          where: { id: pagamento.id },
           data: {
-            compra: {
-              connect: { id: compra.id } // Associando a compra ao pagamento
-            }
-          }
+            totalCompra: compra.totalCompra - valorParcial, // Reduz o valor da compra
+          },
         });
       }
+
+      // Registra o pagamento associado à compra
+      await prismaClient.pagamento.create({
+        data: {
+          valorPagamento: valorParcial,
+          cliente: { connect: { id: clienteId } },
+          user: { connect: { id: userId } },
+          compra: { connect: { id: compra.id } }, // Associa a compra ao pagamento
+        },
+      });
+
+      // Deduz o valor parcial do valor restante
+      valorRestante -= valorParcial;
     }
 
-    return pagamento;
+    return {
+      mensagem: "Pagamento processado com sucesso.",
+    };
   }
 }
 

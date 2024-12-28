@@ -19,10 +19,7 @@ class GetComprasPorIdService {
       },
       orderBy: [
         {
-          created_at: 'asc', // Ordena pela data de criação (cadastro)
-        },
-        {
-          dataDaCompra: 'asc', // Se a data da compra for diferente, usa a ordem por data da compra
+          dataDaCompra: 'asc',
         },
       ],
     });

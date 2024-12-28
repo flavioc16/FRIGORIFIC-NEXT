@@ -251,7 +251,6 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
       }
     }
   };
-  
   // Função para capitalizar a primeira letra de cada palavra
   const capitalizeWords = (value: string): string => {
     return value
@@ -259,7 +258,6 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
-
   // Função para mascarar telefone
   const maskPhone = (value: string): string => {
     // Remove todos os caracteres não numéricos

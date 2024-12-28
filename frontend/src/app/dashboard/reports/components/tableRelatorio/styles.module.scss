@@ -91,70 +91,67 @@
     width: 100%; /* Garantir que ocupe toda a largura disponível */
   
     h1.pageTitle {
-      margin-right: 610px; /* Remover margem do título */
-      text-align: left; /* Alinhar o título à esquerda */
+        margin-right: 610px; /* Remover margem do título */
+        text-align: left; /* Alinhar o título à esquerda */
     }
   
     label {
-      margin-right: 0.5rem;
-      color: var(--white); /* Cor do texto */
-      font-size: 15px;
+        margin-right: 0.5rem;
+        color: var(--white); /* Cor do texto */
+        font-size: 15px;
     }
   
     label[for="resultsPerPage"] {
-      margin-left: 8px; /* Ajuste conforme necessário */
+        margin-left: 8px; /* Ajuste conforme necessário */
     }
   
     select {
-      background-color: var(--lilas-800); /* Cor de fundo do seletor */
-      color: var(--white); /* Cor do texto do seletor */
-      border: 1px solid var(--cinza-800); /* Borda do seletor */
-      border-radius: 4px;
-      padding: 0.5rem;
-      font-size: 0.875rem; /* Tamanho da fonte */
-      cursor: pointer;
-      outline: none;
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-  
-      /* Ajuste do ícone para a esquerda */
-      background-position: calc(100% - 20px) center; /* Movido mais para a esquerda */
-      background-repeat: no-repeat;
-      background-size: 12px; /* Tamanho do ícone */
-  
-      /* Remove a seta padrão do seletor para estilizar com mais controle */
-      &::-ms-expand {
-        display: none;
-      }
-  
-      /* Adiciona uma altura fixa e rolagem se necessário */
-      &::-webkit-scrollbar {
-        width: 8px; /* Largura da barra de rolagem */
-      }
-  
-      &::-webkit-scrollbar-thumb {
-        background-color: var(--cinza-600); /* Cor da parte deslizante da barra de rolagem */
+        background-color: var(--lilas-800); /* Cor de fundo do seletor */
+        color: var(--white); /* Cor do texto do seletor */
+        border: 1px solid var(--cinza-800); /* Borda do seletor */
         border-radius: 4px;
-      }
+        padding: 0.5rem;
+        font-size: 0.875rem; /* Tamanho da fonte */
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
   
-      &:focus {
-        border-color: var(--white); /* Cor da borda ao focar no seletor */
-        background-color: var(--lilas-700); /* Cor de fundo ao focar */
-      }
+        /* Ajuste do ícone para a esquerda */
+        background-position: calc(100% - 20px) center; /* Movido mais para a esquerda */
+        background-repeat: no-repeat;
+        background-size: 12px; /* Tamanho do ícone */
   
-      /* Altura máxima e rolagem se necessário */
-      max-height: 200px; /* Define uma altura máxima para o seletor */
-      overflow-y: auto; /* Adiciona rolagem vertical se necessário */
+        /* Remove a seta padrão do seletor para estilizar com mais controle */
+        &::-ms-expand {
+            display: none;
+        }
   
-      /* Estilo para a opção selecionada */
-      option {
-        background-color: var(--roxo-900); /* Cor de fundo das opções */
-        color: var(--white); /* Cor do texto das opções */
-      }
+        /* Adiciona uma altura fixa e rolagem se necessário */
+        &::-webkit-scrollbar {
+            width: 8px; /* Largura da barra de rolagem */
+        }
+  
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--cinza-600); /* Cor da parte deslizante da barra de rolagem */
+            border-radius: 4px;
+        }
+  
+        &:focus {
+            border-color: var(--white); /* Cor da borda ao focar no seletor */
+            background-color: var(--lilas-700); /* Cor de fundo ao focar */
+        }
+  
+        /* Altura máxima e rolagem se necessário */
+        max-height: 200px; /* Define uma altura máxima para o seletor */
+        overflow-y: auto; /* Adiciona rolagem vertical se necessário */
+  
+        /* Estilo para a opção selecionada */
+        option {
+            background-color: var(--roxo-900); /* Cor de fundo das opções */
+            color: var(--white); /* Cor do texto das opções */
+        }
     }
-  }
-  
-  
-  
+}
 
 .header {
     display: flex;
@@ -168,7 +165,6 @@
     align-items: center;
     gap: 1rem; /* Ajuste o espaço entre os elementos conforme necessário */
 }
-
 
 .searchContainer {
     display: flex;
@@ -292,12 +288,12 @@
 
     .vencida {
         position: relative; /* Necessário para o ::before */
-        background-color: rgb(238, 90, 90);
+        background-color: rgb(238, 90, 90) !important;
         border-radius: 8px; /* Arredondamento do canto da linha */
         color: black; /* Define a cor do texto como preto */
     
         &:hover {
-            background-color: rgb(212, 110, 110);
+            background-color: rgb(212, 110, 110) !important;
         }
     }
     
@@ -312,28 +308,25 @@
     }
 
     .aprovada {
-        background-color: #d4edda; /* Verde claro */
+        background-color:  #9adb9a !important;
         color: #155724; /* Texto verde escuro */
         border-radius: 8px; /* Arredondamento dos cantos */
+        
+        td { /* Estilos aplicados às células da linha */
+            color: #155724;  /* Cor do texto nas células */
+        }
       
         &:hover {
-          background-color: #c3e6cb; /* Verde um pouco mais escuro ao passar o mouse */
+            background-color: #abe0b7 !important;
         }
-      }
+    }
       
-      .aprovada td {
-        color: #155724; /* Cor do texto nas células */
-      }
-
-      .aprovada .iconInfo {
+    .aprovada .iconInfo {
         color: #155724; /* Cor do texto nas células */
         font-weight: bold; /* Deixa os ícones um pouco mais destacados */
         transition: color 0.3s ease; /* Transição suave para a mudança de cor */
     }
 
-    
-      
-    
     /* Estilo original, para as linhas que não são vencidas */
     .iconInfo {
         gap: 4px; /* Ajusta o espaço entre os ícones */
@@ -343,7 +336,6 @@
         transition: color 0.3s ease; /* Adiciona transições suaves */
     }
     
-
     .iconPlus:hover {
         transform: scale(1.1); /* Aumenta o ícone ligeiramente ao passar o mouse */
     }
@@ -377,22 +369,22 @@
 }
 
 .tableCell {
-    position: relative;  /* Necessário para posicionamento correto da bolinha */
-    padding-left: 20px;   /* Ajuste a célula para garantir que o indicador tenha espaço */
-    padding-right: 10px;  /* Pode ajustar o espaço da direita, se necessário */
+    position: relative; /* Necessário para o posicionamento correto da bolinha */
+    padding-left: 20px; /* Ajuste para garantir que o indicador tenha espaço */
+    padding-right: 10px; /* Espaço da direita */
 }
   
 .serviceIndicator {
-    position: absolute; /* Mantém o indicador fixo dentro da célula */
-    top: 50%;            /* Centraliza verticalmente */
-    left:18px;          /* Ajuste o valor para ajustar horizontalmente */
-    transform: translateY(-50%); /* Centra verticalmente com base na altura da célula */
+    position: absolute; /* Indicador fixo dentro da célula */
+    top: 50%; /* Centraliza verticalmente */
+    left: 18px; /* Ajuste horizontal */
+    transform: translateY(-50%); /* Centraliza verticalmente */
     width: 8px;
     height: 8px;
-    background-color: #3c86ee;  /* Cor da bolinha */
+    background-color: #3c86ee; /* Cor da bolinha */
     border-radius: 50%;
 }
-    
+     
 .ellipsis {
     margin-top: 10px;
     color: var(--gray-100); // Ajuste a cor conforme necessário
@@ -506,9 +498,12 @@
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
+
+    &:hover {
+        background-color: rgb(22, 139, 22);
+    }
 }
   
-
 .loadingSpinner {
     display: flex;
     justify-content: center;
