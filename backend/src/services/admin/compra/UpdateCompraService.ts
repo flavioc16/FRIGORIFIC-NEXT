@@ -9,6 +9,7 @@ interface CompraRequest {
   valorInicialCompra?: number;
   tipoCompra?: number;
   statusCompra?: number;
+  dataVencimento?: string;
 }
 
 class UpdateCompraService {
@@ -20,6 +21,7 @@ class UpdateCompraService {
     statusCompra,
     valorInicialCompra,
     dataDaCompra,
+    dataVencimento, // Esse campo será sobrescrito automaticamente se `dataDaCompra` for alterada
   }: CompraRequest) {
     // Verifica se a compra existe
     const compraExistente = await prismaClient.compra.findUnique({
@@ -30,20 +32,30 @@ class UpdateCompraService {
       throw new Error("Compra não encontrada");
     }
 
+    // Calcula nova data de vencimento, se necessário
+    let novaDataVencimento: Date | undefined = undefined;
+
+    if (dataDaCompra) {
+      const dataCompraConvertida = new Date(dataDaCompra);
+      novaDataVencimento = new Date(dataCompraConvertida);
+      novaDataVencimento.setDate(novaDataVencimento.getDate() + 30);
+    }
+
     // Atualiza a compra com os novos dados
     const compraAtualizada = await prismaClient.compra.update({
       where: { id },
       data: {
         descricaoCompra: descricaoCompra ?? compraExistente.descricaoCompra,
-        
-        // Se dataDaCompra for fornecida, usamos ela diretamente sem modificar.
         dataDaCompra: dataDaCompra 
-          ? new Date(dataDaCompra) // Garantimos que a data é criada corretamente como Date
-          : compraExistente.dataDaCompra, // Se não for fornecida, mantém a data existente
+          ? new Date(dataDaCompra) 
+          : compraExistente.dataDaCompra,
         totalCompra: totalCompra ?? compraExistente.totalCompra,
         valorInicialCompra: valorInicialCompra ?? compraExistente.valorInicialCompra,
         tipoCompra: tipoCompra ?? compraExistente.tipoCompra,
         statusCompra: statusCompra ?? compraExistente.statusCompra,
+        dataVencimento: novaDataVencimento 
+          ? novaDataVencimento 
+          : compraExistente.dataVencimento, // Mantém a existente, se não for alterada
       },
     });
 

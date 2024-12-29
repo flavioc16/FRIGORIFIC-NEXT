@@ -1,19 +1,18 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./styles.module.scss";
 import { api } from "@/services/api";
-import { getCookie } from "cookies-next"; // Função para obter cookies
+import { getCookie } from "cookies-next";
 import { TableRelatorio } from "./components/tableRelatorio";
 
-// Interfaces para a tipagem
 export interface Cliente {
   nome: string;
+  id: string;
 }
 
-export interface Juros {
-  // Caso possua campos adicionais, defina-os aqui
-}
+export interface Juros {}
 
 export interface Pagamento {
   id: string;
@@ -51,28 +50,41 @@ export interface RelatorioComprasResponse {
 }
 
 export default function Relatorios() {
-  const [compras, setCompras] = useState<Compra[]>([]); // Tipagem das compras
-  const [loading, setLoading] = useState(true); // Estado de carregamento
-  const [dataInicio, setDataInicio] = useState(""); // Data de início
-  const [dataFim, setDataFim] = useState(""); // Data de fim
-  const [somaTotalCompras, setSomaTotalCompras] = useState(0); // Soma total das compras
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // UseEffect que define as datas padrão e chama a função de busca uma única vez, quando o componente é montado
+  const [compras, setCompras] = useState<Compra[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
+  const [somaTotalCompras, setSomaTotalCompras] = useState(0);
+
   useEffect(() => {
     const hoje = new Date();
-    const dataAtualFormatada = hoje.toISOString().split("T")[0]; // Formata como YYYY-MM-DD
+    const dataAtualFormatada = hoje.toISOString().split("T")[0];
 
-    setDataInicio(dataAtualFormatada);
-    setDataFim(dataAtualFormatada);
-    fetchRelatorios(dataAtualFormatada, dataAtualFormatada); // Chama a função com as datas padrão
-  }, []); // Esse useEffect é executado apenas uma vez, quando o componente é montado.
+    const queryDataInicio = searchParams.get("dataInicio");
+    const queryDataFim = searchParams.get("dataFim");
 
-  // Função para buscar os relatórios
-  async function fetchRelatorios(dataInicio: string, dataFim: string) {
-    setLoading(true); // Ativa o estado de carregamento
+    // Usar as datas da URL ou a data atual como padrão
+    const inicio = queryDataInicio || dataAtualFormatada;
+    const fim = queryDataFim || dataAtualFormatada;
+
+    // Atualiza o estado das datas
+    setDataInicio(inicio);
+    setDataFim(fim);
+
+    // Verifica se as datas na URL são diferentes das datas do estado
+    if (inicio !== dataInicio || fim !== dataFim) {
+      fetchRelatorios(inicio, fim, false); // Não atualiza a URL ao carregar pela primeira vez
+    }
+  }, [searchParams]); // Esse useEffect deve ser disparado apenas se searchParams mudar
+
+  async function fetchRelatorios(dataInicio: string, dataFim: string, shouldUpdateUrl = true) {
+    setLoading(true);
     try {
-      const token = getCookie("token"); // Obtém o token dos cookies
-  
+      const token = getCookie("token");
+
       const response = await api.get<RelatorioComprasResponse>("/relatorio/compras", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,9 +94,14 @@ export default function Relatorios() {
           dataFim,
         },
       });
-  
+
       setCompras(response.data.compras);
       setSomaTotalCompras(response.data.somaTotalCompras);
+
+      if (shouldUpdateUrl) {
+        // Atualiza a URL apenas se necessário
+        router.push(`/dashboard/reports?dataInicio=${dataInicio}&dataFim=${dataFim}`);
+      }
     } catch (error) {
       console.error("Erro ao buscar relatório:", error);
     } finally {
@@ -97,8 +114,8 @@ export default function Relatorios() {
       <div className={styles.filterContainer}>
         <form
           onSubmit={(e) => {
-            e.preventDefault(); // Evita o reload da página
-            fetchRelatorios(dataInicio, dataFim); // Chama a função para buscar os relatórios
+            e.preventDefault();
+            fetchRelatorios(dataInicio, dataFim); // Atualiza a URL ao consultar
           }}
         >
           <div className={styles.dateInputs}>
@@ -131,13 +148,12 @@ export default function Relatorios() {
           </div>
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.searchButton}>
-              Buscar
+              Consultar
             </button>
           </div>
         </form>
       </div>
       <TableRelatorio compras={compras} somaTotalCompras={somaTotalCompras} loading={loading} />
     </main>
-
   );
 }

@@ -169,7 +169,6 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
   
         const updatedClientName = response.data.nome || "Cliente";
         toast.success(`Cliente ${updatedClientName} editado com sucesso.`);
-        console.log("Cliente editado com sucesso:", response.data);
   
       } else {
         const response = await api.post("/clients", clientData, {
@@ -180,7 +179,6 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
   
         const newClientName = response.data.cliente?.nome || "Novo cliente";
         toast.success(`Cliente ${newClientName} cadastrado com sucesso.`);
-        console.log("Cliente cadastrado com sucesso:", response.data.nome);
       }
   
       // Reseta o formulário após a ação (cadastro ou edição)

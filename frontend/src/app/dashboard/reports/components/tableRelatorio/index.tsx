@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Info} from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Info, ShoppingBasket} from 'lucide-react';
 import styles from './styles.module.scss';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Link from "next/link";
+
+import { useRouter } from 'next/router';
+
+import { useSearchParams } from 'next/navigation';
+
 
 
 import { ToastContainer } from 'react-toastify';
@@ -12,6 +18,7 @@ import PurchaseInfoModal from '@/app/dashboard/purchases/modalMostrarInfo';
 
 export interface Cliente {
     nome: string;
+    id: string;
 }
   
 export interface Juros {
@@ -63,6 +70,33 @@ export function TableRelatorio({ compras, somaTotalCompras, loading}: RelatorioC
   const [showModalInfo, setShowModalInfo] = useState(false);
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string>("");
 
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    const querySearchTerm = searchParams.get('search');
+    if (querySearchTerm) {
+      setSearchTerm(querySearchTerm); // Atualiza o estado se houver um parâmetro de URL
+    }
+  }, [searchParams]);
+
+  // Atualiza a URL sempre que searchTerm mudar
+  useEffect(() => {
+    const currentParams = new URLSearchParams(window.location.search);
+    
+    if (searchTerm) {
+      currentParams.set('search', searchTerm); // Define ou atualiza o parâmetro de busca
+    } else {
+      currentParams.delete('search'); // Se não houver valor, remove o parâmetro de busca
+    }
+
+    // Atualiza a URL com os parâmetros atuais (mantendo dataInicio e dataFim)
+    window.history.pushState(
+      {},
+      '',
+      `${window.location.pathname}?${currentParams.toString()}`
+    );
+  }, [searchTerm]);
+  
   const openModalWithPurchaseInfo = (purchaseId: string) => {
     setSelectedPurchaseId(purchaseId);
     setShowModalInfo(true);
@@ -224,92 +258,106 @@ export function TableRelatorio({ compras, somaTotalCompras, loading}: RelatorioC
             </div>
           </div>
           <div className={styles.tableContainer}>
-          <table className={styles.comprasTable}>
-            <thead>
-              <tr>
-                <th>Data da compra</th>
-                <th>Compra</th>
-                <th>Cliente</th>
-                <th>Total</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentCompras.length > 0 ? (
-                currentCompras.map((compra) => (
-                  <tr
-                    key={compra.id}
-                    className={`${compra.isVencida === 1 ? `${styles.vencida} ${styles.vencidaRow}` : ''} 
-                      ${compra.statusCompra === 1 ? `${styles.aprovada}` : ''}`}
-                  >
-                    <td className={styles.tableCell}>
-                      {compra.tipoCompra === 1 && <span className={styles.serviceIndicator}></span>}
-                      {adjustDate(compra.dataDaCompra ?? '')}
+            <table className={styles.comprasTable}>
+              <thead>
+                <tr>
+                  <th>Data da compra</th>
+                  <th>Compra</th>
+                  <th>Cliente</th>
+                  <th>Total</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentCompras.length > 0 ? (
+                  currentCompras.map((compra) => (
+                    <tr
+                      key={compra.id}
+                      className={`${compra.isVencida === 1 ? `${styles.vencida} ${styles.vencidaRow}` : ''} 
+                        ${compra.statusCompra === 1 ? `${styles.aprovada}` : ''}`}
+                    >
+                      <td className={styles.tableCell}>
+                        {compra.tipoCompra === 1 && <span className={styles.serviceIndicator}></span>}
+                        {adjustDate(compra.dataDaCompra ?? '')}
+                      </td>
+                      <td>{compra.descricaoCompra}</td>
+                      <td>{compra.cliente?.nome}</td>
+                      <td>
+                        {compra.totalCompra.toLocaleString('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        })}
+                      </td>
+                      <td className={styles.actionIcons}>
+                        <OverlayTrigger
+                          trigger={['hover', 'focus']}
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-info-${compra.id}`} className={styles.customTooltip}>
+                              Informações
+                            </Tooltip>
+                          }
+                        >
+                          <Info
+                            className={styles.iconInfo}
+                            role="button"
+                            aria-label={`Informações sobre compra ${compra.id}`}
+                            onClick={() => openModalWithPurchaseInfo(compra.id)}
+                          />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                          trigger={['hover', 'focus']}
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tooltip-link-compras-${compra.cliente?.id}`} className={styles.customTooltip}>
+                              Compras de {compra.cliente?.nome}
+                            </Tooltip>
+                          }
+                        >
+                          <Link href={`/dashboard/purchases/${compra.cliente?.id}`}>
+                            <ShoppingBasket
+                              className={styles.iconInfo}
+                              role="button"
+                              aria-label={`Informações sobre ${compra.cliente?.nome}`} />
+                          </Link>
+                        </OverlayTrigger>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className={styles.noRecords}>
+                      Nenhuma compra encontrada
                     </td>
-                    <td>{compra.descricaoCompra}</td>
-                    <td>{compra.cliente?.nome}</td>
-                    <td>
-                      {compra.totalCompra.toLocaleString('pt-BR', {
+                  </tr>
+                )}
+              </tbody>
+
+              {currentCompras.length > 0 && (
+                <tfoot>
+                  <tr className={styles.totalRow}>
+                    <td colSpan={3} style={{ textAlign: 'left', padding: '10px' }}>
+                      TOTAL
+                    </td>
+
+                    <td colSpan={1} className={styles.totalValue} style={{ textAlign: 'left', paddingLeft: '4px' }}>
+                      {somaAtual.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                       })}
                     </td>
-                    <td className={styles.actionIcons}>
-                      <OverlayTrigger
-                        trigger={['hover', 'focus']}
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`tooltip-info-${compra.id}`} className={styles.customTooltip}>
-                            Informações
-                          </Tooltip>
-                        }
-                      >
-                        <Info
-                          className={styles.iconInfo}
-                          role="button"
-                          aria-label={`Informações sobre compra ${compra.id}`}
-                          onClick={() => openModalWithPurchaseInfo(compra.id)}
-                        />
-                      </OverlayTrigger>
+
+                    <td style={{ textAlign: 'center' }}>
+                      {somaTotalCompras.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className={styles.noRecords}>
-                    Nenhuma compra encontrada
-                  </td>
-                </tr>
+                </tfoot>
               )}
-            </tbody>
-
-            {currentCompras.length > 0 && (
-              <tfoot>
-                <tr className={styles.totalRow}>
-                  <td colSpan={3} style={{ textAlign: 'left', padding: '10px' }}>
-                    TOTAL
-                  </td>
-
-                  <td colSpan={1} className={styles.totalValue} style={{ textAlign: 'left', paddingLeft: '4px' }}>
-                    {somaAtual.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    })}
-                  </td>
-
-                  <td style={{ textAlign: 'center' }}>
-                    {somaTotalCompras.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    })}
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-
-            </div>
-
+            </table>
+          </div>
           <div className={styles.container}>
             {/* Paginação do lado direito */}
             <div className={`${styles.pagination} ${currentCompras.length ? '' : styles.hidden}`}>
@@ -346,13 +394,11 @@ export function TableRelatorio({ compras, somaTotalCompras, loading}: RelatorioC
               </button>
             </div>
           </div>
-  
           <PurchaseInfoModal
             showModalInfo={showModalInfo}
             handleCloseModalInfo={handleCloseModalInfo}
             purchaseId={selectedPurchaseId}
           />
-  
           <ToastContainer />
         </>
       )}

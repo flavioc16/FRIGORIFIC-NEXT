@@ -51,6 +51,7 @@ router.get('/me', isAuthenticated, new DetailUserControle().handle);
 // Admin Routes new user (login)
 router.post('/users', new CreateUserController().handle);
 
+
 // Admin Routes Clients
 router.post('/clients', isAuthenticated, authorizeRole('ADMIN'), new CreateClienteController().handle);
 router.put('/clients', isAuthenticated, authorizeRole('ADMIN'), new UpdateClienteController().handle);
