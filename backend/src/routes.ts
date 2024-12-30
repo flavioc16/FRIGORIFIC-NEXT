@@ -14,6 +14,7 @@ import { CreateClienteController } from './controllers/admin/client/CreateClient
 import { GetClienteByIdController } from './controllers/admin/client/GetClienteByIdController';
 import { UpdateClienteController } from './controllers/admin/client/UpdateClienteController';
 import { DeleteClienteController } from './controllers/admin/client/DeleteClienteController';
+import { GetClientesCountController } from './controllers/admin/client/GetCountClientsController';
 
 //Product Controllers
 import { CreateProdutoController } from './controllers/admin/produto/CreateProdutoController';
@@ -59,6 +60,7 @@ router.get('/clients', isAuthenticated, authorizeRole('ADMIN'), new GetAllClient
 router.get('/clients/:clienteId', isAuthenticated, authorizeRole('ADMIN'), new GetClienteByIdController().handle);
 router.delete('/clients', isAuthenticated, authorizeRole('ADMIN'), new DeleteClienteController().handle);
 router.get('/clients/purchases/:clienteId/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorIdController().handle);
+router.get('/count/clients', isAuthenticated, authorizeRole('ADMIN'), new GetClientesCountController().handle);
 
 // Criar um novo produto
 router.post('/produtos', isAuthenticated, authorizeRole('ADMIN'), new CreateProdutoController().handle);
