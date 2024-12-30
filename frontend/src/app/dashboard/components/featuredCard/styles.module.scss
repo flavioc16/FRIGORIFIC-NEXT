@@ -1,0 +1,38 @@
+.cardCustom {
+  background-color: var(--roxo-900) !important;
+  color: #fff;
+  border: 1px solid #444;
+  width: 16.5rem; // Largura ajustada
+  height: 6.5rem; // Altura menor
+  padding: 0.5rem; // Espaçamento interno menor
+  margin-right: 1rem;
+  margin: 0.5rem; // Espaçamento externo menor
+  display: flex;
+  justify-content: center; /* Alinha o conteúdo do card ao centro horizontalmente */
+  align-items: center; /* Alinha o conteúdo do card ao centro verticalmente */
+}
+
+.cardBodyCustom {
+  display: flex;
+  justify-content: right; /* Centraliza o ícone horizontalmente */
+  align-items: right; /* Centraliza o ícone verticalmente */
+  height: 100%; /* Garante que o conteúdo ocupe toda a altura do card */
+}
+
+.cardHeaderCustom {
+  background-color: var(--roxo-900) !important;
+  color: #fff;
+  font-size: 0.9rem; // Tamanho menor para o texto do cabeçalho
+  justify-content: center;
+  text-align: center;
+}
+
+.cardButtonCustom {
+  background-color: var(--roxo-900) !important;
+  color: #fff;
+  border: none;
+
+  &:hover {
+    background-color: #666; // Cor ao passar o mouse
+  }
+}

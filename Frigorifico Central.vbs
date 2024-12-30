@@ -1,2 +1,2 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """C:\frigorifico\start.bat""", 0, False
+WshShell.Run """C:\Users\Usuario\FRIGORIFIC-NEXT\start.bat""", 0, False
