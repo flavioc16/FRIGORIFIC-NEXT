@@ -23,6 +23,7 @@ import { GetAllProdutosController } from './controllers/admin/produto/GetAllProd
 import { GetProdutoByIdController } from './controllers/admin/produto/GetProdutoByIdController';
 import { DeleteProdutoController } from './controllers/admin/produto/DeleteProdutoController';
 import { GetTotalProdutosController } from './controllers/admin/produto/GetTotalProdutoController';
+import { GetProdutosCountController } from './controllers/admin/produto/GetCountProdutoController';
 
 // Admin Compra Controllers
 import { GetTotalComprasDoDiaController } from './controllers/admin/compra/GetTotalComprasDoDiaController';
@@ -69,6 +70,7 @@ router.get('/produtos', isAuthenticated, authorizeRole('ADMIN'), new GetAllProdu
 router.get('/produtos/:id', isAuthenticated, authorizeRole('ADMIN'), new GetProdutoByIdController().handle);
 router.get('/produtos/total', isAuthenticated, authorizeRole('ADMIN'), new GetTotalProdutosController().handle);
 router.delete('/produtos', isAuthenticated, authorizeRole('ADMIN'), new DeleteProdutoController().handle);
+router.get('/count/produtos', isAuthenticated, authorizeRole('ADMIN'), new GetProdutosCountController().handle);
 
 // Admin Routes Compras
 router.post('/compras', isAuthenticated, authorizeRole('ADMIN'), new CreateCompraController().handle);
