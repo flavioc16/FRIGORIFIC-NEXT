@@ -38,7 +38,10 @@ import { GetComprasPorDatasController } from './controllers/admin/relatorio/GetC
 
 // Outros Controllers
 import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
+
+//Pagamentos
 import { CreatePagamentoController } from './controllers/admin/pagamento/CreatePagamentoController';
+import { GetTotalPagamentosDoDiaController } from './controllers/admin/pagamento/GetTotalPagamentosDoDiaController';
 
 // Middlewares
 import { isAuthenticated } from './middlewares/isAuthenticated';
@@ -82,6 +85,8 @@ router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCom
 
 // Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);
+router.get('/total/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new GetTotalPagamentosDoDiaController().handle);
+
 
 //Admin Routes Relatorio
 router.get('/relatorio/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorDatasController().handle);

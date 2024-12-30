@@ -401,7 +401,20 @@
 .customFormGroup {
   margin-bottom: 1rem;
 }
-  
+
+.inputContainer {
+  position: relative; /* Garantir que o contêiner tenha posição relativa */
+}
+
+.icon {
+  position: absolute; /* Coloca o ícone dentro do campo de input */
+  right: 10px; /* Ajuste o valor para garantir que o ícone fique na borda direita */
+  top: 50%; /* Centraliza o ícone verticalmente */
+  color: var(--lilas-900);
+  transform: translateY(-50%); /* Ajuste para alinhamento perfeito */
+  cursor: pointer; /* Adiciona um cursor de ponteiro ao ícone */
+}
+
 .customFormLabel {
   display: block;
   margin-bottom: 0.5rem;
@@ -600,18 +613,8 @@
   float: right;
 }
 
-.inputContainer {
-  position: relative; /* Garantir que o contêiner tenha posição relativa */
-}
 
-.icon {
-  position: absolute; /* Coloca o ícone dentro do campo de input */
-  right: 10px; /* Ajuste o valor para garantir que o ícone fique na borda direita */
-  top: 50%; /* Centraliza o ícone verticalmente */
-  color: var(--lilas-900);
-  transform: translateY(-50%); /* Ajuste para alinhamento perfeito */
-  cursor: pointer; /* Adiciona um cursor de ponteiro ao ícone */
-}
+
 
 
 @keyframes spin {

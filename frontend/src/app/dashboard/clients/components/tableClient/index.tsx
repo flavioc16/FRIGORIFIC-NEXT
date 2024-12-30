@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Plus, UserPen, Trash } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Plus, UserPen, Trash, Lock, Eye, EyeOff } from 'lucide-react';
 import styles from './styles.module.scss';
 import stylesModal from './stylesModal.module.scss'
 import { useFocus } from '@/app/context/FocusContext';
@@ -61,13 +61,29 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
   const [username, setUsername] = useState<string | undefined>();
   const [password, setPassword] = useState('');
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+
+  const toggleShowPassword = () => {
+    // Alternar o estado da visibilidade da senha
+    const newState = !showPassword;
+    setShowPassword(newState);
+  
+    // Focar no campo de senha sempre que o ícone for clicado
+    if (passwordInputRef.current) {
+      setTimeout(() => {
+        passwordInputRef.current?.focus();  // Aguarda a renderização e aplica o foco
+      }, 0);
+    }
+  };
+  
   const [clientName, setClientName] = useState('');
   const [id, setClientId] = useState<string | null>(null);
 
   const [isEdit, setIsEdit] = useState(false); // Novo estado para controlar se é edição
 
   const modalTitle = "Deseja realmente excluir este cliente?";
-
 
   const handleClientsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setClientsPerPage(Number(event.target.value));
@@ -131,6 +147,7 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
       // Verifica se a senha foi fornecida no modo cadastro
       if (!isEdit && !password) {
         toast.error("A senha é obrigatória para cadastrar um novo cliente.");
+        passwordInputRef.current?.focus();
         return;
       }
   
@@ -632,16 +649,30 @@ export function TableClients({ clients, loading, updateClientes }: TableClientsP
                     />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="clientPassword" className={styles.customFormLabel}>Senha</label>
-                  <input
-                    id="clientPassword"
-                    type="password"
-                    placeholder="Senha do cliente"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={styles.customFormControl}
-                    autoComplete="new-password"
-                  />
+                  <label htmlFor="clientPassword" className={styles.customFormLabel}>
+                    Senha
+                  </label>
+                  <div className={styles.inputContainer}>
+                    <input
+                      id="clientPassword"
+                      type={showPassword ? "text" : "password"}  // Alterna o tipo conforme a visibilidade
+                      placeholder="Senha do cliente"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={styles.customFormControl}
+                      autoComplete="new-password"
+                      ref={passwordInputRef}  // Ref para o foco
+                    />
+                    
+                    {/* Ícones de exibição de senha */}
+                    {password === "" ? (
+                      <Lock className={styles.icon} onClick={() => passwordInputRef.current?.focus()} />
+                    ) : showPassword ? (
+                      <Eye className={styles.icon} onClick={toggleShowPassword} />
+                    ) : (
+                      <EyeOff className={styles.icon} onClick={toggleShowPassword} />
+                    )}
+                  </div>
                 </div>
                 <div className={styles.buttonContainer}>
                   <button type="submit" className={styles.customBtnPrimary}>

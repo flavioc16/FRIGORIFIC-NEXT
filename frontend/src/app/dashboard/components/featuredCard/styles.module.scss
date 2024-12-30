@@ -2,7 +2,7 @@
   background-color: var(--roxo-900) !important;
   color: #fff;
   border: 1px solid #444;
-  width: 16.5rem; // Largura ajustada
+  width: 16.6rem; // Largura ajustada
   height: 6.5rem; // Altura menor
   padding: 0.5rem; // Espaçamento interno menor
   margin-right: 1rem;
@@ -36,3 +36,18 @@
     background-color: #666; // Cor ao passar o mouse
   }
 }
+
+.loadingIcon {
+  font-size: 24px;
+  animation: rotate 2s linear infinite; /* Adiciona animação de rotação ao ícone */
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

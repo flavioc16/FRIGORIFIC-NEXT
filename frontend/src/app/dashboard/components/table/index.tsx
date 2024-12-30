@@ -31,6 +31,7 @@ export interface Client {
 interface TableClientsProps {
   clients: Client[];
   loading: boolean;
+  
 }
 
 export function Table ({ clients, loading }: TableClientsProps) {

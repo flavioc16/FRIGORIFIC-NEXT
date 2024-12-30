@@ -26,6 +26,7 @@ interface CreatePurchaseModalProps {
   setTotalCompra: React.Dispatch<React.SetStateAction<string>>;
   setTipoCompra: React.Dispatch<React.SetStateAction<string | null>>;  // Permitir null
   updateCompras?: () => void;
+  
 }
 
 export default function CreatePurchaseModal({
