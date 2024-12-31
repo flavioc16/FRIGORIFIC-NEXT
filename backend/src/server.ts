@@ -75,8 +75,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
+const port = parseInt(process.env.PORT || '3000', 10);
+
 // Altere aqui para 0.0.0.0
-app.listen(3333, '0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log('Servidor Online!!!');
 });
 
