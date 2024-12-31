@@ -10,13 +10,23 @@
   display: flex;
   justify-content: center; /* Alinha o conteúdo do card ao centro horizontalmente */
   align-items: center; /* Alinha o conteúdo do card ao centro verticalmente */
+  position: relative;  /* Necessário para o ícone flutuar em relação ao card */
 }
 
 .cardBodyCustom {
   display: flex;
-  justify-content: right; /* Centraliza o ícone horizontalmente */
-  align-items: right; /* Centraliza o ícone verticalmente */
+  justify-content: space-between;  // Alinha o conteúdo nas extremidades (esquerda e direita)
+  align-items: center; /* Alinha o conteúdo verticalmente */
   height: 100%; /* Garante que o conteúdo ocupe toda a altura do card */
+  width: 100%; /* Garante que o conteúdo ocupe toda a largura do card */
+}
+
+.iconWrapper {
+  position: absolute;
+  top: 50%;  // Ajuste conforme necessário
+  left: 15px; // Alinha o ícone à esquerda do Card
+  font-size: 24px;  // Ajuste o tamanho do ícone conforme necessário
+  color: #fff;  // Cor do ícone
 }
 
 .cardHeaderCustom {
@@ -38,8 +48,33 @@
 }
 
 .loadingIcon {
+
+  margin-bottom: 15px;
+  margin-right: 20px;
   font-size: 24px;
   animation: rotate 2s linear infinite; /* Adiciona animação de rotação ao ícone */
+  position: absolute; /* Necessário para posicionamento absoluto dentro do contêiner */
+  top: 50%; /* Posiciona o ícone no meio verticalmente */
+  left: 50%; /* Posiciona o ícone no meio horizontalmente */
+
+}
+
+
+.eyeIcon {
+  cursor:  not-allowed;
+}
+
+.valueContainer {
+  display: flex;
+  justify-content: space-between;  // Organiza o conteúdo entre a esquerda e direita
+  align-items: center;  // Alinha o conteúdo verticalmente no centro
+  width: 100%;  // Ocupa toda a largura disponível
+}
+
+.value {
+  font-size: 18px;  // Ajuste o tamanho do valor
+  color: #fff;  // Cor do texto
+  margin-top: 8px;
 }
 
 @keyframes rotate {
@@ -50,4 +85,3 @@
     transform: rotate(360deg);
   }
 }
-

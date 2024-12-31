@@ -37,47 +37,51 @@ export default function FeaturedCard({
   {/* Exibe o título, se fornecido */}
   {title && <Card.Header className={styles.cardHeader}>{title}</Card.Header>}
   <Card.Body className={styles.cardBodyCustom}>
-    {/* Renderizando o ícone principal passado como prop */}
-    {icon}
-
+    {/* Contêiner flexível para organizar o conteúdo */}
+    <div className={styles.contentWrapper}>
+      {/* Renderizando o ícone principal passado como prop */}
+      <div className={styles.iconWrapper}>
+        {icon}
+      </div>
+    </div>
     {/* Se estiver carregando, exibe o ícone de carregamento */}
     {isLoading ? (
-      <Loader className={styles.loadingIcon} />
-    ) : (
-      <>
-        {/* Renderiza o valor em dinheiro, mascarado ou não, se fornecido */}
-        {value && (
-          <span className={styles.value}>
-            {isValueVisible ? value : "******"}
-          </span>
-        )}
+        <Loader className={styles.loadingIcon} />
+      ) : (
+        <>
+          {/* Renderiza o valor em dinheiro, mascarado ou não, se fornecido */}
+          {value && (
+            <span className={styles.value}>
+              {isValueVisible ? value : "******"}
+            </span>
+          )}
 
-        {/* Exibe a contagem de produtos, se fornecida */}
-        {count !== undefined && (
-          <span className={styles.count}>
-            {count}
-          </span>
-        )}
-      </>
-    )}
-
-    {/* Condicional para exibir o ícone Eye */}
-    {showEyeIcon && !isLoading && (
-      <span
-        className={styles.eyeIcon}
-        onMouseEnter={() => {
-          setIsValueVisible(true); // Mostra o valor real ao passar o mouse
-          if (updateValueCompras) {
-            updateValueCompras(); // Chama a função quando o mouse passa sobre o ícone
-          }
-        }} 
-        onMouseLeave={() => setIsValueVisible(false)} // Esconde o valor ao retirar o mouse
-      >
-        {isValueVisible ? <Eye /> : <EyeOff />}
-      </span>
-    )}
+          {/* Exibe a contagem de produtos, se fornecida */}
+          {count !== undefined && (
+            <span className={styles.count}>
+              {count}
+            </span>
+          )}
+        </>
+      )}
+      {/* Condicional para exibir o ícone Eye */}
+      {showEyeIcon && !isLoading && (
+        <span
+          className={styles.eyeIcon}
+          onMouseEnter={() => {
+            setIsValueVisible(true); // Mostra o valor real ao passar o mouse
+            if (updateValueCompras) {
+              updateValueCompras(); // Chama a função quando o mouse passa sobre o ícone
+            }
+          }} 
+          onMouseLeave={() => setIsValueVisible(false)} // Esconde o valor ao retirar o mouse
+        >
+          {isValueVisible ? <Eye /> : <EyeOff />}
+        </span>
+      )}
   </Card.Body>
 </Card>
+
 
   );
 }
