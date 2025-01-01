@@ -1,5 +1,5 @@
 "use client"; // Garantindo que o código seja executado no cliente 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { Search, X, ChevronLeft, ChevronRight, Plus, ShoppingBasket } from 'lucide-react';
 import styles from './styles.module.scss';
 import { useFocus } from '@/app/context/FocusContext';
