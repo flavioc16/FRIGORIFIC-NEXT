@@ -11,6 +11,7 @@ import { Modal, Tooltip, OverlayTrigger} from 'react-bootstrap';
 import { getCookie } from 'cookies-next';
 import DeleteModal from '@/app/dashboard/components/modalDelete';
 import { BeatLoader } from 'react-spinners';
+import SearchInput from '@/app/dashboard/components/searchInput';
 
 export interface Produto {
   id: string;
@@ -426,28 +427,11 @@ export default function TableProducts({ produtos, loading, updateProdutos }: Tab
                 </label>
               </div>
               <div className={styles.searchContainer}>
-                <input
-                  type="text"
+                <SearchInput
                   placeholder="Buscar Produto"
-                  value={searchTerm}
-                  autoFocus
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.filterInput}
-                  ref={inputRef}
-                  aria-label="Buscar Produto"
-                  onFocus={() => setIsMenuInputFocused(true)}
-                  onBlur={() => setIsMenuInputFocused(false)}
+                  onSearch={(value) => setSearchTerm(value)} // Atualiza o termo de busca
+                  setCurrentPage={setCurrentPage} // Passando a função para resetar a página
                 />
-                {searchTerm ? (
-                  <X
-                    className={styles.clearIcon}
-                    onClick={handleSearchClear}
-                    role="button"
-                    aria-label="Limpar pesquisa"
-                  />
-                ) : (
-                  <Search className={styles.searchIcon} aria-hidden="true" />
-                )}
               </div>
             </div>
           </div>

@@ -18,6 +18,7 @@ import CreatePurchaseModal from '../../components/modalEfetuarCompra';
 import DeleteModal from '../../components/modalDelete';
 import PaymentModal from '../../purchases/modalEfetuarPagamento';
 import PurchaseInfoModal from '../modalMostrarInfo';
+import SearchInput from '../../components/searchInput';
 
 export interface Compra {
   id: string;
@@ -358,26 +359,11 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
                 <label htmlFor="resultsPerPage" className={styles.ppage}>por página</label>
               </div>
               <div className={styles.searchContainer}>
-                <input
-                  type="text"
+                <SearchInput
                   placeholder="Buscar Compra"
-                  value={searchTerm}
-                  autoFocus
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.filterInput}
-                  ref={inputRef}
-                  aria-label="Buscar Compra"
+                  onSearch={(value) => setSearchTerm(value)} // Atualiza o termo de busca
+                  setCurrentPage={setCurrentPage} // Passando a função para resetar a página
                 />
-                {searchTerm ? (
-                  <X
-                    className={styles.clearIcon}
-                    onClick={() => setSearchTerm('')}
-                    role="button"
-                    aria-label="Limpar pesquisa"
-                  />
-                ) : (
-                  <Search className={styles.searchIcon} aria-hidden="true" />
-                )}
               </div>
             </div>
           </div>
