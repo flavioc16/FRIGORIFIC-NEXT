@@ -16,7 +16,12 @@ import { UpdateClienteController } from './controllers/admin/client/UpdateClient
 import { DeleteClienteController } from './controllers/admin/client/DeleteClienteController';
 import { GetClientesCountController } from './controllers/admin/client/GetCountClientsController';
 
-//Product Controllers
+//Admin Juros Controllers
+import { CountJurosByTodayController } from './controllers/admin/juros/CountJurosByTodayController';
+import { GetClienteApllicatedJurosTodayController } from './controllers/admin/juros/GetClienteApllicatedJurosTodayController';
+import { UpdateNotificationStatusJurosController } from './controllers/admin/juros/UpdateNotificationStatusJurosController';
+
+//Admin Product Controllers
 import { CreateProdutoController } from './controllers/admin/produto/CreateProdutoController';
 import { UpdateProdutoController } from './controllers/admin/produto/UpdateProdutoController';
 import { GetAllProdutosController } from './controllers/admin/produto/GetAllProdutosController';
@@ -32,6 +37,15 @@ import { CreateCompraController } from './controllers/admin/compra/CreateCompraC
 import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByIdController';
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
 import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
+
+//Admin Lembretes Controllers
+import { CreateLembreteController } from './controllers/admin/lembrete/CreateLembreteController';
+import { GetAllLembretesController } from './controllers/admin/lembrete/GetAllLembretesController';
+import { GetLembreteByIdController } from './controllers/admin/lembrete/GetLembreteByIdController';
+import { UpdateLembreteController } from './controllers/admin/lembrete/UpdateLembreteController';
+import { DeleteLembreteController } from './controllers/admin/lembrete/DeleteLembreteController';
+import { GetLembretesTodayController } from './controllers/admin/lembrete/GetLembretesTodayController';
+import { CountLembretesByTodayController } from './controllers/admin/lembrete/CountLembretesByTodayController';
 
 //Relatorio
 import { GetComprasPorDatasController } from './controllers/admin/relatorio/GetComprasPorDatasController';
@@ -87,6 +101,19 @@ router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCom
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);
 router.get('/total/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new GetTotalPagamentosDoDiaController().handle);
 
+//Admin Routes Lembretes
+router.post('/lembrete', isAuthenticated, authorizeRole('ADMIN'), new CreateLembreteController().handle);
+router.get('/lembretes', isAuthenticated, authorizeRole('ADMIN'), new GetAllLembretesController().handle);
+router.get('/lembrete/:id', isAuthenticated, authorizeRole('ADMIN'), new GetLembreteByIdController().handle);
+router.put('/lembrete/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateLembreteController().handle);
+router.delete('/lembrete/:id', isAuthenticated, authorizeRole('ADMIN'), new DeleteLembreteController().handle);
+router.get('/lembretes/today', isAuthenticated, authorizeRole('ADMIN'), new GetLembretesTodayController().handle);
+router.get('/lembretes/count', isAuthenticated, authorizeRole('ADMIN'), new CountLembretesByTodayController().handle);
+
+//Admin Routes 
+router.get('/juros/count', isAuthenticated, authorizeRole('ADMIN'), new CountJurosByTodayController().handle);
+router.get('/juros/clients', isAuthenticated, authorizeRole('ADMIN'), new GetClienteApllicatedJurosTodayController().handle);
+router.put('/juros/clients/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdateNotificationStatusJurosController().handle);
 
 //Admin Routes Relatorio
 router.get('/relatorio/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorDatasController().handle);

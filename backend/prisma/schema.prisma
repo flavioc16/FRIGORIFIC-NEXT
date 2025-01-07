@@ -26,6 +26,7 @@ model User {
   clientes   Cliente[]
   compras    Compra[]
   pagamentos Pagamento[]
+  lembretes   Lembrete[]
 
   @@map("users")
 }
@@ -68,7 +69,7 @@ model Produto {
 
 model Compra {
   id                 String    @id @default(uuid())
-  descricaoCompra    String    @db.VarChar(500)
+  descricaoCompra    String    @db.VarChar(255)
   totalCompra        Float
   valorInicialCompra Float     
   tipoCompra         Int
@@ -91,6 +92,20 @@ model Compra {
   @@map("compras")
 }
 
+model Juros {
+  id           String    @id @default(uuid())
+  valor        Float
+  descricao    String    @db.VarChar(255)
+  created_at   DateTime  @default(now())
+  compraId     String
+  clienteId    String
+  notification   Boolean   @default(false) 
+
+  compra       Compra    @relation(fields: [compraId], references: [id]) // Relação direta
+  cliente      Cliente   @relation(fields: [clienteId], references: [id])
+
+  @@map("juros")
+}
 
 
 model Pagamento {
@@ -110,19 +125,21 @@ model Pagamento {
   
 }
 
-model Juros {
-  id           String    @id @default(uuid())
-  valor        Float
-  descricao    String    @db.VarChar(255)
-  created_at   DateTime  @default(now())
-  compraId     String
-  clienteId    String
+model Lembrete {
+  id             String   @id @default(uuid())             // ID único para o lembrete
+  descricao      String                                   // Descrição do lembrete
+  notification   Boolean  @default(false)                 // Indica se a notificação foi enviada ou não
+  dataCadastro   DateTime @default(now())                 // Data em que o lembrete foi cadastrado
+  created_at     DateTime @default(now())                 // Data de criação do registro
+  updated_at     DateTime @updatedAt                      // Data de última atualização do registro
 
-  compra       Compra    @relation(fields: [compraId], references: [id]) // Relação direta
-  cliente      Cliente   @relation(fields: [clienteId], references: [id])
+  userId         String                                   // ID do administrador que criou o lembrete
+  user           User     @relation(fields: [userId], references: [id]) // Relação com o administrador (User)
 
-  @@map("juros")
+  @@map("lembretes")                                      // Nome da tabela no banco
 }
+
+
 
 
 
