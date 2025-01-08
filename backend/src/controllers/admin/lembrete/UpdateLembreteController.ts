@@ -3,18 +3,18 @@ import { UpdateLembreteService } from '../../../services/admin/lembrete/UpdateLe
 
 class UpdateLembreteController {
     async handle(req: Request, res: Response) {
-        const { id } = req.params;
-        const { descricao, notification } = req.body;
-        const userId = req.user_id; // ID do usuário autenticado
+        const { id } = req.params; // ID do lembrete vindo da URL
+        const { descricao, notification, dataCadastro } = req.body; // Inclui dataCadastro no corpo da requisição
 
         const updateLembreteService = new UpdateLembreteService();
 
         try {
+        
             const lembrete = await updateLembreteService.execute({
                 id,
                 descricao,
                 notification,
-                userId,
+                dataCadastro: dataCadastro ? new Date(dataCadastro) : undefined, // Converte para objeto Date ou mantém undefined
             });
 
             return res.json(lembrete);

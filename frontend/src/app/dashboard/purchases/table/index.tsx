@@ -148,17 +148,6 @@ export function TableCompras({ compras, somaTotalCompras, loading, cliente, upda
     updateCompras();
   };
 
-  const popoverContent = (
-    <Popover id="popover-basic" className={styles.Popover}>
-      <Popover.Header as="h3" className={styles.PopoverHeader}>
-        Cadastrar nova compra
-      </Popover.Header>
-      <Popover.Body className={styles.PopoverBody}>
-        Click para adicionar novas compras!
-      </Popover.Body>
-    </Popover>
-  );
-
   const handleCloseModalPayment = () => {
     setShowModalPayment(false);
     updateCompras();

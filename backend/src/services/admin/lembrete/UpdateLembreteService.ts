@@ -4,13 +4,13 @@ const prisma = new PrismaClient();
 
 interface UpdateLembreteRequest {
     id: string;
+    dataCadastro: Date;
     descricao?: string;
     notification?: boolean;
-    userId: string;
 }
 
 class UpdateLembreteService {
-    async execute({ id, descricao, notification, userId }: UpdateLembreteRequest) {
+    async execute({ id, descricao, notification, dataCadastro}: UpdateLembreteRequest) {
         // Verifica se o lembrete existe
         const lembrete = await prisma.lembrete.findUnique({
             where: { id },
@@ -20,17 +20,13 @@ class UpdateLembreteService {
             throw new Error('Lembrete não encontrado.');
         }
 
-        // Verifica se o usuário que está tentando atualizar é o mesmo que criou o lembrete ou se é um admin
-        if (lembrete.userId !== userId) {
-            throw new Error('Você não tem permissão para atualizar este lembrete.');
-        }
-
-        // Atualiza o lembrete
         const updatedLembrete = await prisma.lembrete.update({
             where: { id },
             data: {
-                descricao: descricao ?? lembrete.descricao, // Atualiza se houver nova descrição, senão mantém a original
-                notification: notification ?? lembrete.notification, // Atualiza se houver novo valor para notification
+                // Converte dataCadastro para um objeto Date válido ou mantém o valor existente
+                dataCadastro: dataCadastro ??  lembrete.dataCadastro,
+                descricao: descricao ?? lembrete.descricao, 
+                notification: notification ?? lembrete.notification, 
             },
         });
 
