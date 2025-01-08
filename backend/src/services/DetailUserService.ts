@@ -18,6 +18,13 @@ class DetailUserService {
             user = await prismaClient.cliente.findFirst({
                 where: {
                     id: user_id
+                }, select:{
+                    id: true,
+                    nome: true,
+                    endereco: true,
+                    referencia: true,
+                    email: true,
+                    telefone: true, 
                 }
             });
         } else {

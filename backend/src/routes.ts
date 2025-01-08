@@ -56,6 +56,9 @@ import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdCl
 //Pagamentos
 import { CreatePagamentoController } from './controllers/admin/pagamento/CreatePagamentoController';
 import { GetTotalPagamentosDoDiaController } from './controllers/admin/pagamento/GetTotalPagamentosDoDiaController';
+import { GetPaymentsEntreDatasController } from './controllers/admin/pagamento/GetPaymentsEntreDatasController';
+import { UpdatePagamentoController } from './controllers/admin/pagamento/UpdatePagamentoController';
+import { DeletePagamentoController } from './controllers/admin/pagamento/DeletePagamentoController';
 
 // Middlewares
 import { isAuthenticated } from './middlewares/isAuthenticated';
@@ -100,6 +103,9 @@ router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCom
 // Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);
 router.get('/total/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new GetTotalPagamentosDoDiaController().handle);
+router.get('/pagamentos/entre-datas', isAuthenticated, authorizeRole('ADMIN'), new GetPaymentsEntreDatasController().handle);
+router.put('/pagamentos/:id', isAuthenticated, authorizeRole('ADMIN'), new UpdatePagamentoController().handle);
+router.delete('/pagamentos/:id', isAuthenticated, authorizeRole('ADMIN'), new DeletePagamentoController().handle);
 
 //Admin Routes Lembretes
 router.post('/lembrete', isAuthenticated, authorizeRole('ADMIN'), new CreateLembreteController().handle);

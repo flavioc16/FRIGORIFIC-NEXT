@@ -15,9 +15,6 @@ class GetAllLembretesService {
 
         // Busca todos os lembretes associados ao usuário
         const lembretes = await prisma.lembrete.findMany({
-            where: {
-                userId, // Filtra pelos lembretes do usuário autenticado
-            },
             orderBy: {
                 dataCadastro: 'desc', // Ordena pelo campo dataCadastro de forma decrescente
             },
