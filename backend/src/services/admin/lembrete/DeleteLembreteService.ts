@@ -18,11 +18,6 @@ class DeleteLembreteService {
             throw new Error('Lembrete não encontrado.');
         }
 
-        // Verifica se o usuário que está tentando excluir é o mesmo que criou o lembrete ou se é um admin
-        if (lembrete.userId !== userId) {
-            throw new Error('Você não tem permissão para excluir este lembrete.');
-        }
-
         // Exclui o lembrete
         await prisma.lembrete.delete({
             where: { id },

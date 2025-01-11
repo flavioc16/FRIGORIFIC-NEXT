@@ -35,6 +35,8 @@ class CreatePagamentoService {
     // Calcula o total pendente
     const totalPendente = compras.reduce((acc, compra) => acc + compra.totalCompra, 0);
 
+    valorPagamento = Number(valorPagamento.toFixed(2)); // Arredonda o valor do pagamento para 2 casas decimais
+
     if (valorPagamento <= 0 || valorPagamento > totalPendente) {
       throw new Error("Valor do pagamento inválido.");
     }

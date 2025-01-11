@@ -21,7 +21,7 @@ interface PagamentoComDados {
   id: string;
   valorPagamento: number;
   cliente: Cliente;
-  created: string;
+  created_at: string;
   totalPagamentos: number;
 }
 
@@ -31,18 +31,16 @@ interface DadosPagamentos {
   loading: boolean;
 }
 
-
 export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPagamentos) {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [comprasPerPage, setComprasPerPage] = useState(10);
+  const [pagamentosPerPage, setpagamentosPerPage] = useState(10);
   const [somaAtual, setSomaAtual] = useState<number>(0);
 
   const [showModalInfo, setShowModalInfo] = useState(false);
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string>("");
 
-  
   const openModalWithPaymentInfo = (purchaseId: string) => {
     setSelectedPurchaseId(purchaseId);
     setShowModalInfo(true);
@@ -70,16 +68,30 @@ export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPa
   
   const filteredPagamentos = useMemo(() => {
     const filtered = pagamentos.filter((pagamento) => {
-      const searchLower = searchTerm.toLowerCase();
+      const searchLower = searchTerm.trim().toLowerCase();
   
       const formatCurrency = (value: number): string => {
-        return value
-          .toFixed(2)
-          .replace('.', ',');
+        return value.toFixed(2).replace('.', ',');
+      };
+  
+      const formatDate = (dateString: string): string => {
+        if (!dateString) return '';
+  
+        const date = new Date(dateString);
+        // Ajusta a data conforme o fuso horário universal
+        date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+  
+        // Formata a data no formato "dd/MM/yyyy"
+        return date.toLocaleDateString('pt-BR', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric' 
+        }).toLowerCase(); // Converte a data para letras minúsculas
       };
   
       return (
-        pagamento.cliente?.nome.toLowerCase().includes(searchLower) || // Busca na descrição
+        pagamento.cliente?.nome.toLowerCase().includes(searchLower) ||
+        formatDate(pagamento.created_at).includes(searchLower) ||
         formatCurrency(pagamento.valorPagamento).includes(searchLower)
       );
     });
@@ -91,10 +103,10 @@ export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPa
   }, [pagamentos, searchTerm]);
   
   
-  const indexOfLastPagamento = currentPage * comprasPerPage;
-  const indexOfFirstPagamento = indexOfLastPagamento - comprasPerPage;
-  const currentCompras = filteredPagamentos.slice(indexOfFirstPagamento, indexOfLastPagamento);
-  const totalPages = Math.ceil(filteredPagamentos.length / comprasPerPage);
+  const indexOfLastPagamento = currentPage * pagamentosPerPage;
+  const indexOfFirstPagamento = indexOfLastPagamento - pagamentosPerPage;
+  const currentPagamentos = filteredPagamentos.slice(indexOfFirstPagamento, indexOfLastPagamento);
+  const totalPages = Math.ceil(filteredPagamentos.length / pagamentosPerPage);
 
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -145,8 +157,8 @@ export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPa
                 <label htmlFor="resultsPerPage">Exibir:</label>
                 <select
                   id="resultsPerPage"
-                  value={comprasPerPage}
-                  onChange={(e) => setComprasPerPage(Number(e.target.value))}
+                  value={pagamentosPerPage}
+                  onChange={(e) => setpagamentosPerPage(Number(e.target.value))}
                   className={styles.customSelect}
                   aria-label="Número de compras por página"
                 >
@@ -169,62 +181,44 @@ export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPa
             <table className={styles.comprasTable}>
               <thead>
                 <tr>
-                  <th>Data do Pagamento</th>
-                  <th>Pagamento</th>
+                  <th>Data</th>
                   <th>Cliente</th>
-                  <th>Valor do Pagamento</th>
-                  <th>Ação</th>
+                  <th>Valor Pagamento</th>
+                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
-                {pagamentos.length > 0 ? (
-                  pagamentos.map((pagamento) => (
-                    <tr key={pagamento.id}>
-                      <td className={styles.tableCell}>{adjustDate(pagamento.created ?? '')}</td>
-                      <td>{pagamento.cliente?.nome}</td>
-                      <td>
-                        {pagamento.valorPagamento.toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </td>
-                      <td className={styles.actionIcons}>
-                        <OverlayTrigger
-                          trigger={['hover', 'focus']}
-                          placement="top"
-                          overlay={
-                            <Tooltip id={`tooltip-info-${pagamento.id}`} className={styles.customTooltip}>
-                              Informações
-                            </Tooltip>
-                          }
-                        >
-                          <Info
-                            className={styles.iconInfo}
-                            role="button"
-                            aria-label={`Informações sobre pagamento ${pagamento.id}`}
-                            onClick={() => openModalWithPaymentInfo(pagamento.id)}
-                          />
-                        </OverlayTrigger>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className={styles.noRecords}>
-                      Nenhum pagamento encontrado
+              {currentPagamentos.length > 0 ? (
+                currentPagamentos.map((pagamento) => (
+                  <tr key={pagamento.id}>
+                    <td>{(adjustDate(pagamento.created_at))}</td>
+                    <td>{pagamento.cliente?.nome}</td>
+                    <td>
+                      {pagamento.valorPagamento.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
                     </td>
+                    <td> - </td>
                   </tr>
-                )}
-              </tbody>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className={styles.noRecords}>
+                    Nenhum pagamento encontrado
+                  </td>
+                </tr>
+              )}
+            </tbody>
 
-              {currentCompras.length > 0 && (
+              {currentPagamentos.length > 0 && (
                 <tfoot>
                   <tr className={styles.totalRow}>
-                    <td colSpan={3} style={{ textAlign: 'left', padding: '10px' }}>
+                    <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
                       TOTAL
                     </td>
 
-                    <td colSpan={1} className={styles.totalValue} style={{ textAlign: 'left', paddingLeft: '4px' }}>
+                    <td colSpan={1} className={styles.totalValue} style={{ textAlign: 'left', paddingLeft: '7px' }}>
                       {somaAtual.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
@@ -244,7 +238,7 @@ export function TablePagamentos({ pagamentos, totalPagamentos, loading}: DadosPa
           </div>
           <div className={styles.container}>
             {/* Paginação do lado direito */}
-            <div className={`${styles.pagination} ${currentCompras.length ? '' : styles.hidden}`}>
+            <div className={`${styles.pagination} ${currentPagamentos.length ? '' : styles.hidden}`}>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}

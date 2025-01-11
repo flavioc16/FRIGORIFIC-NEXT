@@ -14,7 +14,7 @@ interface PagamentoComDados {
   id: string;
   valorPagamento: number;
   cliente: Cliente;
-  created: string;
+  created_at: string;
   totalPagamentos: number;
 }
 
@@ -23,7 +23,7 @@ interface DadosPagamentos {
   totalPagamentos: number;
 }
 
-export default function Relatorios() {
+export default function Pagamentos() {
   const [pagamentos, setPagamentos] = useState<DadosPagamentos>({ pagamentos: [], totalPagamentos: 0 });
   const [loading, setLoading] = useState(true);
   const [dataInicio, setDataInicio] = useState("");
@@ -56,12 +56,15 @@ export default function Relatorios() {
         },
       });
       setPagamentos(response.data);
+      setTotalPagamentos(response.data.totalPagamentos);
     } catch (error) {
       console.error("Erro ao buscar pagamentos:", error);
     } finally {
       setLoading(false);
     }
   }
+
+  
 
   return (
     <main className={styles.contentArea}>

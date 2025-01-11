@@ -138,8 +138,6 @@
 }
 
 
-
-
 .comprasTable {
     width: 100%;
     table-layout: fixed; /* Faz com que as larguras sejam fixas */
@@ -156,6 +154,9 @@
         white-space: nowrap;
         vertical-align: middle;
         color: var(--gray-200);
+    }
+    td{
+        padding: 8px;
     }
   
     th {
@@ -174,24 +175,20 @@
     
     /* Coluna Descrição */
     th:nth-child(2), td:nth-child(2) {
-        width: 25%; /* Maior proporção */
+        width: 45%; /* Maior proporção */
     }
     
     /* Coluna Total */
     th:nth-child(3), td:nth-child(3) {
-        width: 40%; /* Menor proporção */
+        width: 30%; /* Menor proporção */
     }
     
     /* Coluna Ação */
     th:nth-child(4), td:nth-child(4) {
         width: 15%; /* Menor proporção */
-        text-align: inherit;
-    }
-    /* Coluna Ação */
-    th:nth-child(5), td:nth-child(5) {
-        width: 10%; /* Menor proporção */
         text-align: center;
     }
+    
   
     tr:nth-child(even) {
         background-color: var(--lilas-900);
