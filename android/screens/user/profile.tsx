@@ -11,7 +11,6 @@ export default function ProfileScreen() {
       <Text style={[styles.title, { color: themeMode === 'dark' ? '#fff' : '#000' }]}>
         Perfil do Usuário
       </Text>
-      <Button title="Voltar" onPress={() => router.replace('/home')} />
     </View>
   );
 }

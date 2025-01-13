@@ -24,7 +24,6 @@ export default function LoginScreen() {
 
     try {
       await signIn({ username, password });
-      router.replace('/dashboard');
     } catch (error: any) {
       setErrorMessage(error);
     }
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
   },
   eyeButton: {
     position: 'absolute',
-    right: 15, // Ajustar para ficar com um pequeno espaço do lado direito
+    right: 1, // Ajustar para ficar com um pequeno espaço do lado direito
     top: '50%',
     transform: [{ translateY: -20 }], // Ajusta a posição vertical do ícone
   },
