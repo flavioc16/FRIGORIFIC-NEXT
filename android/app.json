@@ -32,8 +32,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -43,7 +42,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "9d7ec945-75c1-40f6-aa90-ab3e06dd28ba"
+        "projectId": "441d3156-95d0-43c6-9714-4a09a454c3af"
       }
     },
     "owner": "flavioc16"

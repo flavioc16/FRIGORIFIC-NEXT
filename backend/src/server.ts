@@ -53,7 +53,13 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: ['http://192.168.0.128:3000', 'http://localhost:3000', 'https://frontend-web-hazel-nine.vercel.app'],  // Permite as origens do frontend
+  origin: [ // Permite as origens do frontend
+    'http://192.168.0.128:3000', 
+    'http://localhost:3000', 
+    'https://frontend-web-hazel-nine.vercel.app', 
+    'http://192.168.0.128:8081',
+    'http://localhost:8081'
+  ],  
   methods: 'GET, POST, PUT, DELETE',  // Métodos HTTP permitidos
   allowedHeaders: 'Content-Type, Authorization'  // Cabeçalhos permitidos
 };
