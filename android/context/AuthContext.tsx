@@ -81,12 +81,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     getUser();
   }, []);
-
   async function signIn({ username, password }: SignInProps) {
     setLoadingAuth(true);
-
+  
     if (!username || !password) {
-      return;
+      setLoadingAuth(false);
+      throw 'Usuário ou senha não podem estar vazios.';
     }
   
     try {
@@ -114,13 +114,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   
       setUser(userData);
     } catch (error: any) {
-      // Lança o erro para ser tratado onde a função for chamada
-      throw error.response?.data?.message || 'Erro ao realizar o login. Tente novamente.';
+      throw (
+        error.response?.data?.message || 'Erro ao realizar o login. Tente novamente.'
+      );
     } finally {
       setLoadingAuth(false);
     }
   }
-  
   
 
   async function signOut() {

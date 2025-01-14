@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext'; // Importando o ThemeContext
 
 export default function ProfileScreen() {

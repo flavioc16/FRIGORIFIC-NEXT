@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { 
   View, 
   Text, 
   TextInput, 
   TouchableOpacity, 
   StyleSheet,
-  Image 
+  Image,
+  ActivityIndicator 
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
@@ -13,18 +14,49 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { signIn } = useContext(AuthContext);
+  const { signIn, loadingAuth } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+  const usernameRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+
   async function handleLogin() {
     setErrorMessage(null);
+
+    if (!username) {
+      setErrorMessage('O campo de usuário precisa ser preenchido.');
+      usernameRef.current?.focus(); // Foca no campo de usuário
+      return;
+    }
+
+    if (!password) {
+      setErrorMessage('O campo de senha precisa ser preenchido.');
+      passwordRef.current?.focus(); // Foca no campo de senha
+      return;
+    }
 
     try {
       await signIn({ username, password });
     } catch (error: any) {
+      console.log('Erro recebido:', error);
+
+      // Caso o erro seja uma string ou um objeto, trate ambos
+      let errorMsg = '';
+  
+      if (typeof error === 'string') {
+        if (error.toLowerCase().includes('username') || error.toLowerCase().includes('password')) {
+          errorMsg = 'Usuário ou senha incorretos.';
+        }
+      } else if (error?.message) {
+        if (error.message.toLowerCase().includes('username') || error.message.toLowerCase().includes('password')) {
+          errorMsg = 'Usuário ou senha incorretos.';
+        }
+      } else {
+        errorMsg = 'Erro desconhecido. Tente novamente.';
+      }
       setErrorMessage(error);
     }
   }
@@ -47,6 +79,7 @@ export default function LoginScreen() {
           style={styles.userButton}
         />
         <TextInput
+          ref={usernameRef}
           style={styles.input}
           autoCapitalize="none"
           placeholder="Usuário"
@@ -59,6 +92,7 @@ export default function LoginScreen() {
       
       <View style={styles.passwordContainer}>
         <TextInput
+          ref={passwordRef} 
           style={[styles.input, styles.passwordInput]} // Aplicando um estilo maior para o input
           placeholder="Senha"
           secureTextEntry={!isPasswordVisible}
@@ -70,18 +104,31 @@ export default function LoginScreen() {
           onPress={() => setIsPasswordVisible(!isPasswordVisible)} 
           style={styles.eyeButton}
         >
-          <FontAwesome 
-            name={password === '' ? 'lock' : (isPasswordVisible ? 'eye' : 'eye-slash')} 
+          <FontAwesome
+            name={password === '' ? 'lock' : (isPasswordVisible ? 'eye' : 'eye-slash')}
             size={24}
             color="#888"
-            style={styles.eyeIcon}
+            style={[
+              styles.eyeIcon,
+              password === '' ? styles.lockIconMargin : styles.eyeIconMargin
+            ]}
           />
+
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={handleLogin}>
-        <Text style={styles.button}>Entrar</Text>
-      </TouchableOpacity>
+      <TouchableOpacity 
+          onPress={handleLogin} 
+          style={[styles.button, loadingAuth && styles.disabledButton]} 
+          disabled={loadingAuth}
+        >
+          {loadingAuth ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Entrar</Text>
+          )}
+        </TouchableOpacity>
+
 
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
     </View>
@@ -131,6 +178,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  disabledButton: {
+    backgroundColor: '#7e1a1a', // Cor mais clara para indicar o estado desabilitado
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+  },
   errorText: {
     marginTop: 8,
     color: '#ff4d4d',
@@ -165,6 +221,13 @@ const styles = StyleSheet.create({
   eyeIcon: {
     width: 24,
     height: 24,
+    marginRight: 10,
+  },
+  lockIconMargin: {
+    marginRight: 10, // margem específica para o 'lock'
+  },
+  eyeIconMargin: {
+    marginRight: 15, // margem específica para 'eye' ou 'eye-slash'
   },
 });
 

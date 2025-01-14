@@ -21,13 +21,13 @@ class AuthUserService {
 
         // Caso o usuário não seja encontrado, lança um erro
         if (!user) {
-            throw new Error("Username ou passworld incorretos.");
+            throw new Error("Usuario ou senha incorretos.");
         }
 
         // Verifica se a senha fornecida corresponde à senha armazenada no banco
         const passwordMatch = await compare(password, user.password);
         if (!passwordMatch) {
-            throw new Error("passowrd incorrect.");
+            throw new Error("Senha incorreta.");
         }
 
         // Cria um token JWT com as informações do usuário

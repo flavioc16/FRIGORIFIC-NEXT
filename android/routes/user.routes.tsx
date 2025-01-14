@@ -7,33 +7,41 @@ import { useNavigation } from '@react-navigation/native'; // Para navegar
 import Dashboard from '@/screens/user/dashboard';
 import Settings from '@/screens/user/settings';
 import Profile from '@/screens/user/profile';
+import { useTheme } from '@/context/ThemeContext';
 
-const Tab = createBottomTabNavigator();
+export type StackParamList = {
+  Dashboard: undefined;
+  Settings: undefined;
+  Profile: undefined;
+};
+
+const Stack = createBottomTabNavigator<StackParamList>();
 
 export default function UserRoutes() {
   const navigation = useNavigation();
+  const { themeColor, themeMode } = useTheme(); 
 
   return (
-    <Tab.Navigator
+    <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#222', // Cor de fundo do cabeçalho
-          borderBottomWidth: 0
+          backgroundColor: themeColor, // Cor de fundo do cabeçalho
+          borderBottomWidth: 0,
         },
         headerTitleStyle: {
-          color: '#fff', // Cor do título
+          color: themeMode === 'dark' ? '#fff' : '#000',
         },
         tabBarActiveTintColor: '#e91e63', // Cor do ícone quando ativo
         tabBarInactiveTintColor: '#aaa', // Cor do ícone quando inativo
         tabBarStyle: {
-          backgroundColor: '#222', // Cor de fundo da barra de navegação
+          backgroundColor: themeMode === 'dark' ? '#222' : '#fff', 
           borderTopWidth: 0, // Remove a borda superior da barra de navegação
           borderBottomWidth: 0
         },
       }}
     >
-      <Tab.Screen
-        name="dashboard"
+      <Stack.Screen
+        name="Dashboard"
         component={Dashboard}
         options={{
           tabBarLabel: 'Dashboard', // Rótulo da aba
@@ -48,8 +56,8 @@ export default function UserRoutes() {
           ), // Seta de voltar
         }}
       />
-      <Tab.Screen
-        name="settings"
+      <Stack.Screen
+        name="Settings"
         component={Settings}
         options={{
           tabBarLabel: 'Configurações', // Rótulo da aba
@@ -59,8 +67,8 @@ export default function UserRoutes() {
           headerShown: false, // Não exibe cabeçalho na tela Settings
         }}
       />
-      <Tab.Screen
-        name="profile"
+      <Stack.Screen
+        name="Profile"
         component={Profile}
         options={{
           tabBarLabel: 'Perfil', // Rótulo da aba
@@ -75,6 +83,6 @@ export default function UserRoutes() {
           ), // Seta de voltar
         }}
       />
-    </Tab.Navigator>
+    </Stack.Navigator>
   );
 }
