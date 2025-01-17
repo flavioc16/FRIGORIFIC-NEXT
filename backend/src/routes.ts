@@ -32,11 +32,12 @@ import { GetProdutosCountController } from './controllers/admin/produto/GetCount
 
 // Admin Compra Controllers
 import { GetTotalComprasDoDiaController } from './controllers/admin/compra/GetTotalComprasDoDiaController';
-import { GetAllComprasController } from './controllers/admin/compra/GetComprasController';
+import { GetAllComprasController } from './controllers/admin/compra/GetAllComprasController';
 import { CreateCompraController } from './controllers/admin/compra/CreateCompraController';
 import { GetCompraByIdController } from './controllers/admin/compra/GetCompraByIdController';
 import { UpdateCompraController } from './controllers/admin/compra/UpdateCompraController';
 import { DeleteCompraController } from './controllers/admin/compra/DeleteCompraController';
+import { GetComprasByClienteIdController } from './controllers/admin/compra/GetComprasByClienteIdController';
 
 //Admin Lembretes Controllers
 import { CreateLembreteController } from './controllers/admin/lembrete/CreateLembreteController';
@@ -99,6 +100,7 @@ router.get('/compras', isAuthenticated, authorizeRole('ADMIN'), new GetAllCompra
 router.get('/compras/total-do-dia', isAuthenticated, authorizeRole('ADMIN'), new GetTotalComprasDoDiaController().handle);
 router.get('/compras/:compraId', isAuthenticated, authorizeRole('ADMIN'), new GetCompraByIdController().handle);
 router.delete('/compras', isAuthenticated, authorizeRole('ADMIN'), new DeleteCompraController().handle);
+router.get('/cliente/:clienteId', isAuthenticated, authorizeRole('USER'), new GetComprasByClienteIdController().handle);
 
 // Admin Routes Pagamentos
 router.post('/pagamentos', isAuthenticated, authorizeRole('ADMIN'), new CreatePagamentoController().handle);

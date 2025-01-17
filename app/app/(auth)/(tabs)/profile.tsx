@@ -5,13 +5,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { AuthContext } from '../../../src/context/AuthContext'; // Certifique-se de ajustar o caminho
 
-export default function ProfileScreen() {
+export default function TabThreeScreen() {
   // Use useContext para acessar o AuthContext
   const { signOut } = useContext(AuthContext);
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Profile Screen</ThemedText>
+      <ThemedText type="title" style={{ marginTop: 50 }}>Profile Screen</ThemedText>
       <Button title="Sair" onPress={signOut} />
     </ThemedView>
   );

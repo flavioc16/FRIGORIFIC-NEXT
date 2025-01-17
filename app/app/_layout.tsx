@@ -93,8 +93,15 @@ export default function RootLayout() {
               headerShown: false,
             }} 
           />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
+          <Stack.Screen 
+            name="index" 
+            options={{ 
+              headerShown: false 
+              }} 
+            />
+          <Stack.Screen 
+            name="+not-found"
+           />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>

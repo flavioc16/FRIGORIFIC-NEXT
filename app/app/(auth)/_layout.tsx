@@ -29,10 +29,35 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colorScheme === 'dark' ? '#0d0f16' : '#ffffff',
+          },
+          headerTintColor: colorScheme === 'dark' ? '#ffffff' : '#000000',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        {/* (tabs) Layout */}
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{
+            title: 'Inicio', 
+            headerShown: false 
+          }} />
+
+        {/* Details Screen */}
+        <Stack.Screen
+            name="compras"
+            options={{
+              title: 'Compras', // Remova o título
+              headerShown: true, // Oculte o cabeçalho
+            }}
+          />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="auto"  />
     </ThemeProvider>
   );
 }
