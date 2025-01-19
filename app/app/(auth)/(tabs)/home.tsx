@@ -11,7 +11,7 @@ import { useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; // Importa o useRouter
 
-
+import { HelloWave } from '@/components/HelloWave'; // Certifique-se de importar o componente corretamente
 
 export default function TabOneScreen() {
   const { user } = useContext(AuthContext);
@@ -23,7 +23,7 @@ export default function TabOneScreen() {
   const headerImageSource =
     colorScheme === 'dark'
       ? require('../../../assets/images/LOGO-VERMELHO-E-BRANCA.png') // Imagem para tema escuro
-      : require('../../../assets/images/LOGO-TODA-VERMELHA.png')  // Imagem para tema claro
+      : require('../../../assets/images/LOGO-TODA-VERMELHA.png'); // Imagem para tema claro
 
   useEffect(() => {
     // Tenta pegar o usuário do AsyncStorage, caso não tenha no contexto
@@ -45,40 +45,24 @@ export default function TabOneScreen() {
       headerImage={
         <Image
           source={headerImageSource}
-          style={styles.headerImage} 
+          style={styles.headerImage}
           resizeMode="cover"
         />
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="defaultSemiBold" style={{ fontSize: 20 }}>
-          Olá, {currentUser?.client?.[0]?.nome || 'Carregando...'}
+          Olá, {currentUser?.client?.[0]?.nome || 'Carregando...'}{' '}
         </ThemedText>
       </ThemedView>
-      <ThemedText>Produtos</ThemedText>
-      <Collapsible title="Estoque">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      {/* Botão para navegar para a tela de detalhes */}
-      <View style={{ marginTop: 20 }}>
-      <ThemedButton
-        title="Minhas compras"
-        onPress={() => router.push('/(auth)/compras')}
-        lightBackgroundColor="#b62828" // Verde no tema claro
-        darkBackgroundColor="#b62828" // Verde-escuro no tema escuro
-        lightTextColor="#FFFFFF" // Branco no tema claro
-        darkTextColor="#E0F2F1" // Branco-esverdeado no tema escuro
-      />
+      <View style={{ marginTop: 10 }}>
+        <ThemedButton
+          title="Minhas compras"
+          onPress={() => router.push('/(auth)/purchases')}
+          lightBackgroundColor="#b62828" // Vermelho no tema claro
+          darkBackgroundColor="#b62828" // Vermelho no tema escuro
+          lightTextColor="#FFFFFF" // Branco no tema claro
+          darkTextColor="#E0F2F1" // Branco-esverdeado no tema escuro
+        />
       </View>
     </ParallaxScrollView>
   );
@@ -93,7 +77,11 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: 'row',
+    alignItems: 'center', // Alinha texto e aceno na mesma linha
     gap: 8,
     borderBottomEndRadius: 10,
+  },
+  wave: {
+    fontSize: 20, // Ajuste o tamanho do "aceno" conforme necessário
   },
 });

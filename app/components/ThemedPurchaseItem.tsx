@@ -17,42 +17,68 @@ interface ThemedPurchaseItemProps {
 }
 
 export default function ThemedPurchaseItem({
-  id,
   descricaoCompra,
   totalCompra,
-  valorInicialCompra,
-  tipoCompra,
-  statusCompra,
-  created_at,
-  updated_at,
   dataDaCompra,
   dataVencimento,
   isVencida,
 }: ThemedPurchaseItemProps) {
-  const backgroundColor = useThemeColor({ light: "#f0f0f0", dark: "#333" }, "background");
+  // Função para formatar datas
+  const formatDate = (date: string) => {
+    const formattedDate = new Date(date);
+    const day = formattedDate.getDate().toString().padStart(2, "0"); // Garantir que o dia tenha 2 dígitos
+    const month = (formattedDate.getMonth() + 1).toString().padStart(2, "0"); // Ajustar o mês (0-11 para 1-12)
+    const year = formattedDate.getFullYear();
+    
+    return `${day}/${month}/${year}`;
+  };
+
+  // Defina a cor de fundo com base no status de vencimento
+  const backgroundColor = isVencida ? "#ff4d4d" : useThemeColor({ light: "#f0f0f0", dark: "#333" }, "background");
   const textColor = useThemeColor({ light: "#000", dark: "#fff" }, "text");
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.text, { color: textColor }]}>Descrição: {descricaoCompra}</Text>
-      <Text style={[styles.text, { color: textColor }]}>Total: R${totalCompra.toFixed(2)}</Text>
-      <Text style={[styles.text, { color: textColor }]}>Data da Compra: {dataDaCompra}</Text>
-      <Text style={[styles.text, { color: textColor }]}>
-        Status: {isVencida ? "Vencida" : "Não Vencida"}
-      </Text>
-      <Text style={[styles.text, { color: textColor }]}>Vencimento: {dataVencimento}</Text>
+      <View style={styles.textContainer}>
+        <View style={styles.row}>
+          <Text style={[styles.text, { color: textColor, fontWeight: "bold", fontSize: 16 }]}>Descrição:</Text>
+          <Text style={[styles.text, { color: textColor, fontWeight: "bold", fontSize: 16 }]}>{descricaoCompra}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.text, { color: textColor }]}>Data da compra:</Text>
+          <Text style={[styles.text, { color: textColor}]}>{formatDate(dataDaCompra)}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.text, { color: textColor }]}>Vencimento:</Text>
+          <Text style={[styles.text, { color: textColor}]}>{formatDate(dataVencimento)}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.text, { color: textColor }]}>Valor:</Text>
+          <Text style={[styles.text, { color: textColor, fontWeight: "bold"  }]}>
+            {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(totalCompra)}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row", // Para alinhar o conteúdo de forma horizontal
     padding: 10,
-    marginBottom: 10,
+    marginTop: 15,
     borderRadius: 5,
   },
+  textContainer: {
+    flex: 1, // O conteúdo ocupa o restante do espaço
+  },
+  row: {
+    flexDirection: "row", // Alinha os itens de forma horizontal
+    justifyContent: "space-between", // Coloca o label e o dado nas extremidades
+  },
   text: {
+    paddingVertical: 2,
     fontSize: 14,
-    marginBottom: 4,
   },
 });

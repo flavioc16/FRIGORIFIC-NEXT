@@ -35,8 +35,8 @@ export default function LoginScreen() {
   const passwordRef = useRef<TextInput>(null);
 
   const logoSource = useColorScheme() === 'dark'
-    ? require('../../assets/images/LOGOVERTICAL.png')  // Logo para o tema escuro
-    : require('../../assets/images/logo-preto.png'); 
+    ? require('../../assets/images/LOGO-VERMELHO-E-BRANCA.png')  // Logo para o tema escuro
+    : require('../../assets/images/LOGO-TODA-VERMELHA.png'); 
 
   const borderColor = useThemeColor({}, 'border'); // Define a cor da borda
   const backgroundColor = useThemeColor({}, 'background'); // Define a cor do fundo
@@ -93,12 +93,13 @@ export default function LoginScreen() {
   return (
     <ThemedView style={[styles.container, { overflow: 'hidden' }]}> 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+         style={{ flex: 1 }}
+         behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'position' : undefined}
       >
         <ScrollView 
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <TouchableWithoutFeedbackWrapper onPress={Keyboard.dismiss}>
             <ThemedView style={styles.container}>
@@ -211,10 +212,8 @@ const styles = StyleSheet.create({
     paddingRight: 40,
   },
   logo: {
-    width: '70%',
+    width: 400,
     height: 150,
-    aspectRatio: 443 / 169,
-    marginBottom: 16,
   },
   button: {
     width: '100%',

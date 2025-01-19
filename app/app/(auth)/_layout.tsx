@@ -50,7 +50,7 @@ export default function RootLayout() {
 
         {/* Details Screen */}
         <Stack.Screen
-            name="compras"
+            name="purchases"
             options={{
               title: 'Compras', // Remova o título
               headerShown: true, // Oculte o cabeçalho
