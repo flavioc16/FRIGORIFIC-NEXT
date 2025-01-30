@@ -48,22 +48,23 @@ import { DeleteLembreteController } from './controllers/admin/lembrete/DeleteLem
 import { GetLembretesTodayController } from './controllers/admin/lembrete/GetLembretesTodayController';
 import { CountLembretesByTodayController } from './controllers/admin/lembrete/CountLembretesByTodayController';
 
-//Relatorio
+// Admin Relatorio
 import { GetComprasPorDatasController } from './controllers/admin/relatorio/GetComprasPorDatasController';
 
-// Outros Controllers
+// Admin Outros Controllers
 import { GetComprasPorIdController } from './controllers/admin/GetComprasPorIdClientController';
 
-//Pagamentos
+// Admin Pagamentos
 import { CreatePagamentoController } from './controllers/admin/pagamento/CreatePagamentoController';
 import { GetTotalPagamentosDoDiaController } from './controllers/admin/pagamento/GetTotalPagamentosDoDiaController';
 import { GetPaymentsEntreDatasController } from './controllers/admin/pagamento/GetPaymentsEntreDatasController';
 import { UpdatePagamentoController } from './controllers/admin/pagamento/UpdatePagamentoController';
 import { DeletePagamentoController } from './controllers/admin/pagamento/DeletePagamentoController';
 
-// Middlewares
+// Admin Middlewares
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import { authorizeRole } from './middlewares/authorizeRole';
+
 
 const router = Router();
 
@@ -125,6 +126,8 @@ router.put('/juros/clients/:id', isAuthenticated, authorizeRole('ADMIN'), new Up
 
 //Admin Routes Relatorio
 router.get('/relatorio/compras', isAuthenticated, authorizeRole('ADMIN'), new GetComprasPorDatasController().handle);
+
+
 
 
 export { router };

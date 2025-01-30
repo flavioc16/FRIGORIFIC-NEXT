@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
+import { router } from 'expo-router';
 
 type AuthContextData = {
   user: UserProps | null;
@@ -54,8 +55,8 @@ export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
-  const [loadingAuth, setLoadingAuth] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingAuth, setLoadingAuth] = useState(false); // Estado para o carregamento da autenticação
+  const [loading, setLoading] = useState(true); // Estado para o carregamento do contexto e AsyncStorage
 
   const isAuthenticated = !!user?.token;
 
@@ -63,40 +64,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async function getUser() {
       try {
         const userInfo = await AsyncStorage.getItem('@frigorifico');
-
         if (userInfo) {
-          const hasUser: UserProps = JSON.parse(userInfo);
+          const hasUser = JSON.parse(userInfo);
 
           if (hasUser?.token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
-            setUser(hasUser);
+
+            setUser({
+              id: hasUser.id,
+              name: hasUser.name,
+              role: hasUser.role,
+              token: hasUser.token,
+              username: hasUser.username,
+              client: hasUser.client,
+            });
           }
         }
       } catch (error) {
         console.log('Erro ao recuperar usuário do AsyncStorage:', error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Indica que a verificação de autenticação foi concluída
       }
     }
 
     getUser();
   }, []);
+
   async function signIn({ username, password }: SignInProps) {
     setLoadingAuth(true);
-  
+
     if (!username || !password) {
       setLoadingAuth(false);
       throw 'Usuário ou senha não podem estar vazios.';
     }
-  
+
     try {
-      const response = await api.post('/session', {
-        username,
-        password,
-      });
-  
+      const response = await api.post('/session', { username, password });
       const { id, name, role, token, client } = response.data;
-  
+
       const userData = {
         id,
         name,
@@ -105,27 +110,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         token,
         client,
       };
-  
-      // Salvar no AsyncStorage
+
       await AsyncStorage.setItem('@frigorifico', JSON.stringify(userData));
-  
-      // Configurar o token no cabeçalho padrão da API
+
+      // Configura o token no cabeçalho da API
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  
-      setUser(userData);
+
+      setUser(userData); // Atualiza o estado de usuário
     } catch (error: any) {
-      throw (
-        error.response?.data?.message || 'Erro ao realizar o login. Tente novamente.'
-      );
+      throw error.response?.data?.message || 'Erro ao realizar o login. Tente novamente.';
     } finally {
-      setLoadingAuth(false);
+      setLoadingAuth(false); // Finaliza o carregamento da autenticação
     }
   }
-  
 
   async function signOut() {
     await AsyncStorage.clear().then(() => {
       setUser(null);
+      router.replace('/(public)/login');
     });
   }
 

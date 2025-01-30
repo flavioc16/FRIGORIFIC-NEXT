@@ -25,21 +25,22 @@ export async function isAuthenticated(
         req.user_id = sub;
         req.role = role;
 
+        // Verificar se é um usuário do tipo 'USER' e se ele possui o cliente associado
         if (role === 'USER') {
             const cliente = await prismaClient.cliente.findFirst({
                 where: {
-                    userId: sub
+                    userId: sub // Certifique-se de que 'userId' é o campo correto
                 }
             });
 
             if (!cliente) {
-                return res.status(401).json({ error: 'Client not found',  });
+                return res.status(401).json({ error: 'Client not found' });
             }
 
-            req.cliente_id = cliente.id;
+            req.cliente_id = cliente.id; // Adicionando o ID do cliente na requisição
         }
 
-        next();
+        next(); // Continua para o próximo middleware ou a rota
     } catch (error) {
         console.error('Token verification failed:', error);
         return res.status(401).json({ error: 'Invalid token' });

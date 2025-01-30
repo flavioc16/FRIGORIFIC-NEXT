@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "android",
-    "slug": "android",
+    "name": "danilo",
+    "slug": "danilo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/LOGO-SPLASH.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,9 +13,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/LOGO-SPLASH.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.flavioc16.danilo"
     },
     "web": {
       "bundler": "metro",
@@ -27,13 +28,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/LOGO-SPLASH.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -43,7 +43,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "441d3156-95d0-43c6-9714-4a09a454c3af"
+        "projectId": "e42cc07f-2d2b-4aa4-9c91-f60a2c6b0245"
       }
     },
     "owner": "flavioc16"
