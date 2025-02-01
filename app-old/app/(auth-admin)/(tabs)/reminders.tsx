@@ -6,13 +6,13 @@ import { ThemedView } from '@/components/ThemedView';
 import { AuthContext } from '../../../src/context/AuthContext';
 
 
-export default function ProfileScreen() {
+export default function RemindersScreen() {
 
   const { signOut } = useContext(AuthContext);
   return (
     <>
       <ThemedView style={styles.container}>
-        <ThemedText type="title">Profile Screen.</ThemedText>
+        <ThemedText type="title">Reminders Screen.</ThemedText>
          <Button title="Sair" onPress={signOut} />
       </ThemedView>
     </>

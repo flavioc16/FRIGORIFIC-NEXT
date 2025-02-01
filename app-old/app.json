@@ -46,6 +46,9 @@
         "projectId": "e42cc07f-2d2b-4aa4-9c91-f60a2c6b0245"
       }
     },
-    "owner": "flavioc16"
+    "owner": "flavioc16",
+    "router": {
+      "pages": "src/screens" 
+    }
   }
 }

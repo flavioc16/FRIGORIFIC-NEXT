@@ -6,8 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 export default function IndexScreen() {
   return (
     <ThemedView style={styles.container}>
-      {/* Indicador de carregamento */}
-      <ActivityIndicator size="large" color="#007bff" />
+      <ActivityIndicator size="large" color="#ff0000" />
     </ThemedView>
   );
 }
