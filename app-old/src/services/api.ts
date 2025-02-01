@@ -1,7 +1,14 @@
 import axios from "axios";
 
-const api = axios.create({
-    baseURL: 'http://192.168.0.128:3333'
-})
+const apiUrl = 'https://backend-api-beta-inky.vercel.app/';
 
-export  { api };
+//http://192.168.0.2:3333
+if (!apiUrl) {
+  throw new Error('API URL is not defined in app config');
+}
+
+const api = axios.create({
+  baseURL: apiUrl
+});
+
+export { api };

@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 export default function IndexScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ActivityIndicator size="large" color="#007bff" />
+      <ActivityIndicator size="large" color="#ae2121" />
     </ThemedView>
   );
 }

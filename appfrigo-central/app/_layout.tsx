@@ -40,7 +40,7 @@ export default function RootLayout() {
           if (parsedUser.role === 'USER') {
             router.replace('/(auth)/(tabs)/home'); // Caminho para área de cliente
           } else if (parsedUser.role === 'ADMIN') {
-            router.replace('/(auth-admin)/(tabs)/home'); // Caminho para área de admin
+            router.replace('/(auth-admin)/(tabs)/home/home'); // Caminho para área de admin
           }
         } else {
           router.replace('/(public)/login'); // Caso o role não exista, redireciona para login

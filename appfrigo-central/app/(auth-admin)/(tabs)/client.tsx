@@ -33,12 +33,6 @@ export default function TabTwoScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* A imagem do header pode ser colocada fora de uma lista ou scrollView */}
-      <Image
-        source={headerImageSource}
-        style={styles.headerImage}
-        resizeMode="cover"
-      />
       <ThemedClientItem />
     </ThemedView>
   );

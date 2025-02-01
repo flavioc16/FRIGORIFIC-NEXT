@@ -4,7 +4,7 @@
     "slug": "appfrigo-central",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/SIMBOLO_FUNDO_VERMELHO.webp",
+    "icon": "./assets/images/favicon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/SIMBOLO_FUNDO_VERMELHO.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.flavioc16.appfrigocentral"
@@ -50,7 +50,7 @@
     "owner": "flavioc16",
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "listUnknownPackages": false
+        "exclude": ["lucide-react-native", "glob", "rimraf"]
       }
     }
   }

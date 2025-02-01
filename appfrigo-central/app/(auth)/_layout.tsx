@@ -40,20 +40,17 @@ export default function RootLayout() {
           },
         }}
       >
-        {/* (tabs) Layout */}
         <Stack.Screen 
           name="(tabs)" 
           options={{
             title: 'Inicio', 
             headerShown: false 
           }} />
-
-        {/* Details Screen */}
         <Stack.Screen
             name="purchases"
             options={{
-              title: 'Compras', // Remova o título
-              headerShown: true, // Oculte o cabeçalho
+              title: 'Compras', 
+              headerShown: true, 
             }}
           />
       </Stack>

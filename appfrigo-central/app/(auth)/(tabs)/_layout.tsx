@@ -9,6 +9,8 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 
+import {House, User, ScanBarcode, Bell, CalendarCheck, HandCoins, } from 'lucide-react-native';
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -31,14 +33,14 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Inicio',
-          tabBarIcon: ({ color }) => <IconSymbol size={33} name="house.fill" color={color} />,
+           tabBarIcon: ({ color, size }) => <House size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color }) => <Ionicons name="person" size={28} color={color} />, 
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </Tabs>
